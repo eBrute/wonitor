@@ -18,6 +18,7 @@ Note that the pages will not show anything, since there is no database yet. The 
 
 ## Setting up the game server
 Note: You could do this part before setting up the web server. In this case Wonitor will probably throw some errors and deactivate itself until it gets reloaded (i.e. on mapchange).
+
 1. Add the Wonitor mod to your NS2 server. <br />
   Mod id: 235ee3a6 <br />
   http://steamcommunity.com/sharedfiles/filedetails/?id=593421222
