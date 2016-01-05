@@ -325,6 +325,18 @@ function SetPlotConfigData(plotSpecs) {
     plotTypeSelect.options[0].selected = true;
   }
 
+  var ySortSelect = xpath0('./tr[position()='+(lineNumber++)+']//select', advancedOptions);
+  if (plotSpecs["ySort"]) {
+    for (var i=0; i<ySortSelect.options.length; i++) {
+      if (ySortSelect.options[i].value == plotSpecs["ySort"]) {
+        ySortSelect.options[i].selected = true;
+        break;
+      }
+    }
+  } else {
+    ySortSelect.options[2].selected = true;
+  }
+
   var tSortSelect = xpath0('./tr[position()='+(lineNumber++)+']//select', advancedOptions);
   if (plotSpecs["tSort"]) {
     for (var i=0; i<tSortSelect.options.length; i++) {
@@ -864,10 +876,24 @@ function CreatePlot(responseText, plotSpecs) {
     });
   }
   else { // plotType != 'pie'
-    queryData.sort(function(a, b) {
-      return alphanumCaseInsensitiveCompare(a[xSrcField], b[xSrcField]);
-    });
+    if (plotSpecs["ySort"]=='asc') {
+      queryData.sort(function(a, b) {
+        return alphanumCaseInsensitiveCompare(a[ySrcField], b[ySrcField]);
+      });
+    }
+    else if (plotSpecs["ySort"]=="desc") {
+      queryData.sort(function(a, b) {
+        return alphanumCaseInsensitiveCompare(b[ySrcField], a[ySrcField]);
+      });
+    }
+    else {
+      queryData.sort(function(a, b) {
+        return alphanumCaseInsensitiveCompare(a[xSrcField], b[xSrcField]);
+      });
+    }
   }
+
+
 
   // add data to traces
   for (var i=0; i<queryData.length; i++) {
@@ -1062,6 +1088,11 @@ function PlotConfigToString() {
   var plotTypeSelect = xpath0('./tr[position()='+(lineNumber++)+']//select', advancedOptions);
   if (plotTypeSelect.value != "") {
     arr.push("plotType="+plotTypeSelect.value);
+  }
+
+  var ySortSelect = xpath0('./tr[position()='+(lineNumber++)+']//select', advancedOptions);
+  if (ySortSelect.value != "none") {
+    arr.push("ySort="+ySortSelect.value);
   }
 
   var tSortSelect = xpath0('./tr[position()='+(lineNumber++)+']//select', advancedOptions);
