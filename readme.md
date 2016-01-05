@@ -20,8 +20,12 @@ Note that the pages will not show anything, since there is no database yet. The 
 Note: You could do this part before setting up the web server. In this case Wonitor will probably throw some errors and deactivate itself until it gets reloaded (i.e. on mapchange).
 
 1. Add the Wonitor mod to your NS2 server. <br />
-  Mod id: 235ee3a6 <br />
+  Mod ID: 235ee3a6 <br />
   http://steamcommunity.com/sharedfiles/filedetails/?id=593421222
+
+  In order for the mod to work, Shine Administration mod needs to be running on the server: <br />
+  Mod ID: 706d242 <br />
+  http://steamcommunity.com/sharedfiles/filedetails/?id=117887554
 
 2. Create a mod config file. <br />
   You could either create it manually or run the mod without a config file, in which case an empty config will be generated for you. The config is located at **%configdir%/shine/plugins/wonitor.json** where **%configdir%** will usually be located in **%APPDATA%/Natural Selection 2** if not specified otherwise.
