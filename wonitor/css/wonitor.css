@@ -1,0 +1,77 @@
+* {
+  margin:0;
+  padding:0;
+  font-family: Verdana, 'Lucida Sans Unicode', sans-serif;
+}
+body {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  color: #cdcdcd;
+  background: #262b33;
+  background: linear-gradient(to bottom, #262b33 0%,#3f4754 100%);
+  background-attachment: fixed;
+  background-size: 100% auto;
+}
+h2 {
+  margin-top: 0.6em;
+  margin-bottom: 0.1em;
+  margin-left: 6px;
+  text-shadow: 0px 0px 3px #aaaaaa;
+}
+.container {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+.panel {
+  margin: 5px;
+  padding: 10px;
+  box-sizing: border-box;
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  flex: 1 1 auto;
+}
+.panel span {
+  text-shadow: 0px 0px 2px #aaaaaa;
+}
+.panel div {
+  min-width: 200px;
+  min-height: 300px;
+  overflow: hidden;
+}
+.panel.col2 div { min-width: 400px; }
+.panel.col3 div { min-width: 600px; }
+footer {
+  margin: 15px;
+  text-align:center;
+}
+.bigLink {
+  color: inherit;
+  text-decoration: none;
+  background: hsl(360, 36%, 37%);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  border-radius: 10px;
+}
+.configLink {
+  color: inherit;
+  text-decoration: none;
+  float: right;
+  line-height: 18px;
+  vertical-align: top;
+  font-size: 22px;
+  border-radius: 100%;
+}
+.bigLink:hover, .configLink:hover {
+  background: hsl(360, 36%, 47%);
+  background: rgba(255, 255, 255, 0.1);
+  cursor:pointer;
+}
+.bigLink:active, .configLink:active {
+  background: hsl(360, 36%, 67%);
+  background: rgba(255, 255, 255, 0.2);
+}

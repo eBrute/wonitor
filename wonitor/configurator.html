@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="favicon.ico" type="image/icon">
+  <link rel="stylesheet" href="css/configurator.css">
+</head>
+<body>
+  <header class="header"></header>
+  <div class="middle">
+    <aside class="aside-examples">
+      <input type="checkbox" id="explToggle" class="toggle" checked />
+      <h2><label for="explToggle">Examples</label></h2>
+      <div>
+      <ul>
+        <li><a href="#x=winner&y=count">Team balance</a></li>
+        <li><a href="#x=winner&y=count&t=map">Team wins by map</a></li>
+        <li><a href="#x=map&y=count&t=winner&autoRotate">Team balance by map</a></li>
+        <li><a href="#x=map&y=count&t=winner&autoRotate&tNormalize&yLabel=Win Ratio">Win Ratio by map</a></li>
+        <li><a href="#x=winner&y=count&t=serverId">Team balance by server</a></li>
+        <li><a href="#x=map&y=count">Map distribution</a></li>
+        <li><a href="#x=map&y=length_sum&yScaleBy=60&plotType=pie&yLabel=Round Length Sum in Minutes">Map share by total playtime</a></li>
+        <li><a href="#x=id&y=length&t=map">Game lengths by map</a></li>
+        <li><a href="#x=length&y=numRounds&xBinSize=60&xScaleBy=60&xLabel=Round Length in Minutes">Game length distribution</a></li>
+        <li><a href="#x=length&y=count&xBinSize=60&xScaleBy=60&xLabel=Round Length in Minutes&t=map">Game length distribution by map</a></li>
+        <li><a href="#x=length&xBinSise=60&xScaleBy=60&y=map&s=count&t=map&sizeRef=0.01&xLabel=Round Length in Minutes">Game lengths by map</a></li>
+        <li><a href="#x=numPlayers&#y=length&yScaleBy=60&yLabel=Round Length in Minutes&t=map">Game lengths by player count</a></li>
+        <li><a href="#x=numPlayers&y=length_avg&yScaleBy=60&t=map&length_gt=180&yLabel=Round Length Average in Minutes">Average game length by player count</a></li>
+        <li><a href="#x=startLocation1&y=startLocation2&s=count&sizeRef=0.01&t=map">Games played per start location</a></li>
+        <li><a href="#x=startLocation1&y=startLocation2&s=count&sizeRef=0.01&t=winner">Winner by start location</a></li>
+        <li><a href="#x=killsTeam1&y=killsTeam2&s=length&t=winner">Kill Comparison</a></li>
+        <li><a href="#x=startHiveTech&y=length&yScaleBy=60&t=winner&serverId_is=po6yMII6Le&map_is=ns2_summit&length_gt=180&startLocation2_is=Atrium">Constraints</a></li>
+        <li><a href="#x=time&y=averageSkill&t=serverId&plotType=lines">Average Skill Development</a></li>
+        <li><a href="#x=startHiveTech&y=map&s=count&t=winner&sizeRef=0.01">Hive Tech Efficiency</a></li>
+        <li><a href="#x=numPlayers2&y=numPlayers1&s=numPlayersRR&t=winner&sizeRef=0.01">Readyroom Quitters</a></li>
+        <li><a href="#x=time&y=serverId&t=serverId">Are we recording?</a></li>
+      </ul>
+      </div>
+      <br>
+      ↩ <a href="./">back</a>
+    </aside>
+    <div class="main">
+      <div id="plotDiv" plotSpecs=""></div>
+    </div>
+    <aside class="aside-config" id="configurator">
+      <input type="checkbox" id="confToggle" class="toggle" checked />
+      <h2><label for="confToggle">Configure</label> <button id="applyButton">apply</button></h2>
+      <div>
+
+      <input type="checkbox" id="axesToggle" class="toggle" />
+      <h3><label for="axesToggle">Axes</label></h3>
+      <div>
+      <table>
+        <tr>
+          <td class=""><label><input type="checkbox" class="axisToggle" id="yAxisCheckbox" checked disabled /><span></span></label></td>
+          <td class="">Plot</td>
+          <td class=""><select id="yAxisSelector"></select><span></span></td>
+          <td nowrap>on y</td>
+          <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td colspan="3"><small>using
+            <table style="display:inline-table;">
+              <tr>
+                <td><label><input type="radio" name="yAxisAcc" value="" checked /><span></span>value</label></td>
+                <td><label><input type="radio" name="yAxisAcc" value="sum" /><span></span>sum</label></td>
+              </tr>
+              <tr>
+                <td><label><input type="radio" name="yAxisAcc" value="avg" /><span></span>average</label></td>
+                <td><label><input type="radio" name="yAxisAcc" value="every" /><span></span>grouped every</label> <input type="text" size=5 /></td>
+              </tr>
+            </table>
+            </small>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td colspan="3"><small><table>
+            <tr>
+              <td>multiplied by</td>
+              <td><input type="text" size=3 /></td>
+            </tr>
+            <tr>
+              <td>divided by</td>
+              <td><input type="text" size=3 /></td>
+            </tr>
+          </table></small>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td colspan="3"><small><table>
+            <tr>
+              <td>format as</td>
+              <td><input class="timeFormatInput" type="text" size="8" /></td>
+            </tr>
+          </table></small>
+          </td>
+        </tr>
+        <tr>
+          <td><label><input type="checkbox" class="axisToggle" id="xAxisCheckbox" checked disabled /><span></span></label></td>
+          <td>over</td>
+          <td><select id="xAxisSelector"></select><span></span></td>
+          <td nowrap>on x</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td colspan="3"><small>using
+            <table style="display:inline-table;">
+              <tr>
+                <td><label><input type="radio" name="xAxisAcc" value="" checked /><span></span>value</label></td>
+                <td><label><input type="radio" name="xAxisAcc" value="sum" /><span></span>sum</label></td>
+              </tr>
+              <tr>
+                <td><label><input type="radio" name="xAxisAcc" value="avg" /><span></span>average</label></td>
+                <td><label><input type="radio" name="xAxisAcc" value="every" /><span></span>grouped every</label> <input type="text" size=5 /></td>
+              </tr>
+            </table>
+            </small>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td colspan="3"><small><table>
+            <tr>
+              <td>multiplied by</td>
+              <td><input type="text" size=3 /></td>
+            </tr>
+            <tr>
+              <td>divided by</td>
+              <td><input type="text" size=3 /></td>
+            </tr>
+          </table></small>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td colspan="3"><small><table>
+            <tr>
+              <td>format as</td>
+              <td><input class="timeFormatInput" type="text" size="8" /></td>
+            </tr>
+          </table></small>
+          </td>
+        </tr>
+        <tr>
+          <td><label><input type="checkbox" class="axisToggle" id="sAxisCheckbox"/><span></span></label></td>
+          <td>using</td>
+          <td><select id="sAxisSelector"></select><span></span></td>
+          <td nowrap>as size</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td colspan="3"><small>using
+            <table style="display:inline-table;">
+              <tr>
+                <td><label><input type="radio" name="sAxisAcc" value="" checked /><span></span>value</label></td>
+                <td><label><input type="radio" name="sAxisAcc" value="sum" /><span></span>sum</label></td>
+              </tr>
+              <tr>
+                <td><label><input type="radio" name="sAxisAcc" value="avg" /><span></span>average</label></td>
+                <td><label><input type="radio" name="sAxisAcc" value="every" /><span></span>grouped every</label> <input type="text" size=5 /></td>
+              </tr>
+            </table>
+            </small>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td colspan="3"><small><table>
+            <tr>
+              <td>multiplied by</td>
+              <td><input type="text" size=3 /></td>
+            </tr>
+            <tr>
+              <td>divided by</td>
+              <td><input type="text" size=3 /></td>
+            </tr>
+          </table></small>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td colspan="3"><small><table>
+            <tr>
+              <td>format as</td>
+              <td><input class="timeFormatInput" type="text" size="8" /></td>
+            </tr>
+          </table></small>
+          </td>
+        </tr>
+        <tr>
+          <td><label><input type="checkbox" class="axisToggle" id="tAxisCheckbox"/><span></span></label></td>
+          <td>for every</td>
+          <td><select id="tAxisSelector"></select><span></span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td colspan="3"><small>using
+                <label><input type="radio" name="tAxisAcc" value="" checked/><span></span>value</label>
+                <label><input type="radio" name="tAxisAcc" value="sum" /><span></span>sum</label>
+                <label><input type="radio" name="tAxisAcc" value="avg" /><span></span>average</label>
+            </small>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td colspan="3"><small><table>
+            <tr>
+              <td>multiplied by</td>
+              <td><input type="text" size=3 /></td>
+            </tr>
+            <tr>
+              <td>divided by</td>
+              <td><input type="text" size=3 /></td>
+            </tr>
+          </table></small>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td colspan="3"><small><table>
+            <tr>
+              <td>format as</td>
+              <td><input class="timeFormatInput" type="text" size="8" /></td>
+            </tr>
+          </table></small>
+          </td>
+        </tr>
+      </table>
+      </div>
+      <br />
+
+      <input type="checkbox" id="constToggle" class="toggle" checked />
+      <h3><label for="constToggle">Constraints</label>
+        <select id="constraintsAdd" class="addButton">
+          <option class="selectHead" selected>add</option>
+        </select></h3>
+      <div>
+      <table id="constraintsTable">
+        <tbody>
+        </tbody>
+      </table>
+      </div>
+      <br />
+
+      <input type="checkbox" id="advToggle" class="toggle" checked />
+      <h3><label for="advToggle">Advanced</h3>
+      <div>
+      <table id="advOptions">
+        <tr>
+          <td>PlotType</td>
+          <td><select>
+            <option value="" selected>💹 Automatic</option>
+            <option value="pie">◕ Pie Chart</option>
+            <option value="bar">📊 Bar Chart</option>
+            <option value="scatter">⠞ Scatter Plot</option>
+            <option value="lines">📈 Line Plot</option>
+          </select><span></span></td>
+        </tr>
+        <tr>
+          <td>Sort Datasets</td>
+          <td><select>
+            <option value="asc" selected>Ascending</option>
+            <option value="desc">Descending</option>
+            <option value="none">None</option>
+          </select><span></span></td>
+        </tr>
+        <tr><td>AutoRotate Bar Charts</td><td><label><input type="checkbox" /><span></span></label></td></tr>
+        <tr><td>Hide Legend</td><td><label><input type="checkbox" /><span></span></label></td></tr>
+        <tr><td>Normalize data sets</td><td><label><input type="checkbox" /><span></span></label></td></tr>
+        <tr><td>Scale Scatter Points by</td><td><input type="text" size="8" /></td></tr>
+        <tr><td>Pie Chart Text Info</td><td><input class="textInfoInput" type="text" size="8" /></td></tr>
+        <tr><td>x-Label</td><td><input type="text" size="20" /></td></tr>
+        <tr><td>y-Label</td><td><input type="text" size="20" /></td></tr>
+        <tr><td>Title</td><td><input type="text" size="20" /></td></tr>
+      </table>
+      </div>
+      </div>
+      <br>
+      <span class="generalInfo">
+        All times are UTC.<br>
+        Never draw statistical conclusions from sampling sizes below 20.
+      </span>
+    </aside>
+  </div>
+  <footer class="footer"></footer>
+  <script src="js/d3.min.js" charset="utf-8"></script>
+  <script src="js/plotly.min.js" charset="utf-8"></script>
+  <script src="js/husl.min.js" charset="utf-8"></script>
+  <script src="js/wonitor.js" charset="utf-8"></script>
+  <div id="jsCheck" style="position:fixed;top:0;bottom:0;left:0;right:0;width:100%;height:100%;background:#262b33;background:rgba(0,0,0,0.8);">
+    <div style="position:relative;margin:10%;padding:2em;text-align:center;color:#cdcdcd;background:#803C3C;border-radius:16px;border:10px #532727 solid;font-size:32px;">
+      Your viewer doesn't (fully) support JavaScript.<br>
+      Try to open the page in another browser or enable JavaScript.
+    </div>
+  </div>
+  <script>document.getElementById('jsCheck').remove();</script>
+</body>
+</html>
