@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/wonitor.css">
 </head>
 <body>
+  <h2>Wonitor Server Statistics</h2>
   <div class="container">
     <div class="panel col1">
       <span>Team Balance</span>
@@ -51,56 +52,7 @@
       </font>
     </div>
   </div>
-  <script>
-    function xpath(p, context) {
-      if (!context) context = document;
-      var i, arr = [], xpr = document.evaluate(p, context, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
-      for (i=0; item=xpr.snapshotItem(i); i++) arr.push(item);
-      return arr;
-    }
 
-    var panels = xpath('//div[contains(@class,"panel")]');
-    for (var i=0; i<panels.length; i++) {
-      var headline = xpath('./span', panels[i])[0];
-      var plotdiv  = xpath('.//div[@plotSpecs or @plotspecs]', panels[i])[0];
-      var configLink = document.createElement('a');
-      configLink.className = "configLink";
-      configLink.href = "configurator.html"+plotdiv.getAttribute("plotSpecs");
-      configLink.textContent = "⚙";
-      panels[i].insertBefore(configLink, headline.nextSibling);
-    }
-
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (xhttp.readyState == 4 && xhttp.status == 200) {
-          var serverData = JSON.parse(xhttp.responseText);
-          if (!serverData.servers) return;
-          return addServers(serverData);
-        }
-    };
-    xhttp.open("GET","getInfo.php",false);
-    xhttp.send();
-
-    function addServers(serverData) {
-      var body = xpath('//body')[0];
-      var template = xpath('./div[contains(@class,"container")]', body)[0];
-      for (var i=0; i<serverData.servers.length; i++) {
-        var h2 = document.createElement('h2');
-        h2.textContent = serverData.servers[i].serverName;
-
-        var clone = template.cloneNode(true);
-        var charts = xpath('//div[@plotSpecs]', clone);
-        for (var j=0; j<charts.length; j++) {
-          var specs = charts[j].getAttribute('plotSpecs');
-          charts[j].setAttribute('plotSpecs', specs+"&serverId_is="+serverData.servers[i].serverId);
-        }
-
-        body.insertBefore(clone, body.firstChild);
-        body.insertBefore(h2, body.firstChild);
-      }
-      template.remove();
-    }
-  </script>
   <footer>
     <a class="bigLink" href="configurator.html">Make your own</a>
   </footer>
@@ -108,6 +60,18 @@
   <script src="js/plotly.min.js" charset="utf-8"></script>
   <script src="js/husl.min.js" charset="utf-8"></script>
   <script src="js/wonitor.js" charset="utf-8"></script>
+  <script>
+    var panels = xpath('//div[contains(@class,"panel")]');
+    for (var i=0; i<panels.length; i++) {
+      var headline = xpath0('./span', panels[i]);
+      var plotdiv  = xpath0('.//div[@plotSpecs or @plotspecs]', panels[i]);
+      var configLink = document.createElement('a');
+      configLink.className = "configLink";
+      configLink.href = "configurator.html"+plotdiv.getAttribute("plotSpecs");
+      configLink.textContent = "⚙";
+      panels[i].insertBefore(configLink, headline.nextSibling);
+    }
+  </script>
   <div id="jsCheck" style="position:fixed;top:0;bottom:0;left:0;right:0;width:100%;height:100%;background:#262b33;background:rgba(0,0,0,0.8);">
     <div style="position:relative;margin:10%;padding:2em;text-align:center;color:#cdcdcd;background:#803C3C;border-radius:16px;border:10px #532727 solid;font-size:32px;">
       Your viewer doesn't (fully) support JavaScript.<br>
