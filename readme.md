@@ -88,7 +88,7 @@ When the javascript is loaded afterwards, the appropriate chart will be added to
 
   For number fields, the grouped field can be appended by **_every_<num>** to round down the field towards the nearest multiple of <num> before grouping. I.e. *'query.php?data=count&group_by=numPlayers_every_10'* gives the number of rounds for player counts in between 0-9, 10-19, 20-29, etc., or *'query.php?data=count&group_by=length_every_60'* returns the number of rounds that lastest for 1 minute (60+ sec), 2 minutes (120+ sec), etc.
 
-* constraints can be placed on any regular field by using the field name and a constraint operator [**is**(=),**gt**(>),**ge**(>=),**lt**(<),**le**(<=)]. I.e. *'query.php?data=id&map_is=ns2_summit&length_gt=300&numPlayers_ge=10'* selects only those entries for which the map is summit, the round length exceeds 5 minutes and the player count is greater or equal ten.
+* constraints can be placed on any regular field by using the field name and a constraint operator [**is**(=),**ne**(!=),**gt**(>),**ge**(>=),**lt**(<),**le**(<=)]. I.e. *'query.php?data=id&map_is=ns2_summit&length_gt=300&numPlayers_ge=10'* selects only those entries for which the map is summit, the round length exceeds 5 minutes and the player count is greater or equal ten.
 
 * **showQuery** without parameters; reveals the underlying SQL query. I.e. *'query.php?data=count,map&group_by=map&length_ge=300&showQuery'* shows *'SELECT COUNT(1) AS count, map, map AS [group1] FROM rounds WHERE length >= :length_ge GROUP BY [group1]'*
 

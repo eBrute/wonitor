@@ -71,6 +71,7 @@
     // constraints for the sql query (WHERE )
     $constraintTypes = array(
         '_is' => '=',
+        '_ne' => '!=',
         '_lt' => '<',
         '_le' => '<=',
         '_gt' => '>',
