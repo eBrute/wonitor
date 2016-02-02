@@ -2,16 +2,19 @@
     date_default_timezone_set( 'UTC' );
     $isodate = date( 'c', time() );
 
+    require_once 'dbUtil.php';
+
     // uncomment the next block to enable logging
     // logs all incoming requests to $logFile
     /*
-    if ( !file_exists( './data' ) ) { mkdir( './data', 0777, true ); }
+    if (!file_exists('./data')) { mkdir('./data', 0755, true); }
+    if (!file_exists('./data')) { exit('Error: unable to create data directory'); }
     $logFile = './data/logfile.log';
     file_put_contents( $logFile, $isodate . ' ', FILE_APPEND | LOCK_EX ) or die( 'Error: Unable to write file' );
     file_put_contents( $logFile, 'POST ' . json_encode( $_POST ) . ' ', FILE_APPEND | LOCK_EX ) or die( 'Error: Unable to write file' );
     file_put_contents( $logFile, 'GET ' . json_encode( $_GET ) . "\n", FILE_APPEND | LOCK_EX ) or die( 'Error: Unable to write file' );
     */
-    
+
     // all fields listed here are query-able
     // changes in the sql structure should also enter here, value should not be null
     $fieldTypes = array(
@@ -68,6 +71,7 @@
     // constraints for the sql query (WHERE )
     $constraintTypes = array(
         '_is' => '=',
+        '_ne' => '!=',
         '_lt' => '<',
         '_le' => '<=',
         '_gt' => '>',
@@ -75,15 +79,7 @@
         );
 
 
-    function openDB( & $file_db ) {
-        // Create ( connect to ) SQLite database in file
-        $file_db = new PDO( 'sqlite:./data/rounds.sqlite3' );
-        // Set errormode to exceptions
-        $file_db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-    }
-
-
-    function queryDB( & $file_db ) {
+    function queryDB( & $db ) {
         global $fieldTypes, $statsTypes, $constraintTypes;
 
         // select data
@@ -196,7 +192,7 @@
         if ( $groupBy ) {
             $query .= ' GROUP BY ' . $groupBy;
         }
-        $statement = $file_db->prepare( $query );
+        $statement = $db->prepare( $query );
         if ( isset( $_GET['showQuery']) ) {
             echo $statement->queryString . "\n";
         }
@@ -225,22 +221,16 @@
     }
 
 
-    function closeDB( & $file_db ) {
-        // Close file db connection
-        $file_db = null;
-    }
-
-
     function main() {
-        $file_db = null;
+        global $roundsDb;
+        $db = openDB( $roundsDb );
         try {
-            openDB( $file_db );
-            queryDB( $file_db );
-            closeDB( $file_db );
+            queryDB( $db );
         }
-        catch( PDOException $e ) {
+        catch (PDOException $e) {
             echo $e->getMessage();
         }
+        closeDB( $db );
     }
 
     main();

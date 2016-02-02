@@ -23,6 +23,7 @@
         <li><a href="#x=map&y=count">Map popularity</a></li>
         <li><a href="#x=map&y=length_sum&yScaleBy=60&plotType=pie&yLabel=Round Length Sum in Minutes">Map share by total playtime</a></li>
         <li><a href="#x=id&y=length&t=map">Game lengths by map</a></li>
+        <li><a href="#x=length&xBinSize=300&xScaleBy=60&y=count&t=winner&tNormalize&yLabel=Win%20Ratio&numPlayers_gt=4">Who wins when</a></li>
         <li><a href="#x=length&y=numRounds&xBinSize=60&xScaleBy=60&xLabel=Round Length in Minutes">Game length distribution</a></li>
         <li><a href="#x=length&y=count&xBinSize=60&xScaleBy=60&xLabel=Round Length in Minutes&t=map">Game length distribution by map</a></li>
         <li><a href="#x=length&xBinSise=60&xScaleBy=60&y=map&s=count&t=map&sizeRef=0.01&xLabel=Round Length in Minutes">Game lengths by map</a></li>
@@ -31,9 +32,10 @@
         <li><a href="#x=startLocation1&y=startLocation2&s=count&sizeRef=0.01&t=map">Games played per start location</a></li>
         <li><a href="#x=startLocation1&y=startLocation2&s=count&sizeRef=0.01&t=winner">Winner by start location</a></li>
         <li><a href="#x=killsTeam1&y=killsTeam2&s=length&t=winner">Kill Comparison</a></li>
-        <li><a href="#x=startHiveTech&y=length&yScaleBy=60&t=winner&serverId_is=po6yMII6Le&map_is=ns2_summit&length_gt=180&startLocation2_is=Atrium">Constraints</a></li>
+        <li><a href="#x=startHiveTech&y=length&yScaleBy=60&t=winner&map_is=ns2_summit&length_gt=180&startLocation2_is=Atrium">Constraints</a></li>
         <li><a href="#x=time&y=averageSkill&t=serverId&plotType=lines">Average Skill Development</a></li>
-        <li><a href="#x=startHiveTech&y=map&s=count&t=winner&sizeRef=0.01">Hive Tech Efficiency</a></li>
+        <li><a href="#x=startHiveTech&y=map&s=count&t=winner&sizeRef=0.01">Hive Tech Popularity</a></li>
+        <li><a href="#x=startHiveTech&y=numRounds&t=winner&tNormalize">Hive Tech Efficiency</a></li>
         <li><a href="#x=numPlayers2&y=numPlayers1&s=numPlayersRR&t=winner&sizeRef=0.01">Readyroom Quitters</a></li>
         <li><a href="#x=time&y=serverId&t=serverId">Are we recording?</a></li>
       </ul>
@@ -260,7 +262,7 @@
       <br />
 
       <input type="checkbox" id="advToggle" class="toggle" checked />
-      <h3><label for="advToggle">Advanced</h3>
+      <h3><label for="advToggle">Advanced</label></h3>
       <div>
       <table id="advOptions">
         <tr>

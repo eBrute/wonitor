@@ -1,4 +1,4 @@
-Wonitor - Server Side Statistics for Natural Selection 2
+Wonitor - Server-side Statistics for Natural Selection 2
 ========================================================
 Wonitor is a mod for the game Natural Selection 2. It runs on the server and collects certain data which is used for statistical analysis. The data is send to the Wonitor web server, where it is stored and can also be viewed.
 
@@ -8,7 +8,8 @@ Note: If you use an existing Wonitor web server, you only need to get your *Serv
    It should be reachable via HTTP, so make sure you have no redirect to HTTPS (for the bare minimum, *update.php* needs to be served via HTTP, you are free to use HTTPS for everything else)
 
 2. Add the Wonitor files to your web server. <br />
-  If you choose to move the .js and .css files, you will need to adjust the relative path in all .html files.
+  Make sure that the parent directory is writable by your webserver (Apache, Nginx, ...) <br />
+  If you choose to move the .js and .css files, you will need to adjust the relative path in all .html and .php files.
 
 3. Figure out how to reach your webserver. For now we will just assume you have everything hosted under *http://example.com/wonitor/*. You could as well use *localhost* if the web server and the ns2 game server are on the same machine.
 
@@ -40,7 +41,7 @@ Note: You could do this part before setting up the web server. In this case Woni
   ```
   There are two entries
     * *ServerIdentifier* is some string that can be chosen freely. It is used to identify and authenticate your game server (see Whitelisting). Note that you should use a different ServerIdentifier per game server. Multiple servers using the same identifier will be treated as one, even if they have different names, ports and IP addresses. On the other hand, data containing a new ServerIdentifier will be treated as coming from a completely new server, even if server name and IP have not changed. This allows you to switch between different configurations on a server (i.e. custom maps, rookie friendly, modded) or move your game server to a new machine without interfering with the existing database.
-    * *WonitorURL* should be pointing to **update.php** on your web server.
+    * *WonitorURL* should be pointing to **update.php** on your web server. If the webserver is running on the same machine, you can use ```"http://localhost/wonitor/update.php"```.
 
 
 ## Whitelisting
@@ -87,7 +88,7 @@ When the javascript is loaded afterwards, the appropriate chart will be added to
 
   For number fields, the grouped field can be appended by **_every_<num>** to round down the field towards the nearest multiple of <num> before grouping. I.e. *'query.php?data=count&group_by=numPlayers_every_10'* gives the number of rounds for player counts in between 0-9, 10-19, 20-29, etc., or *'query.php?data=count&group_by=length_every_60'* returns the number of rounds that lastest for 1 minute (60+ sec), 2 minutes (120+ sec), etc.
 
-* constraints can be placed on any regular field by using the field name and a constraint operator [**is**(=),**gt**(>),**ge**(>=),**lt**(<),**le**(<=)]. I.e. *'query.php?data=id&map_is=ns2_summit&length_gt=300&numPlayers_ge=10'* selects only those entries for which the map is summit, the round length exceeds 5 minutes and the player count is greater or equal ten.
+* constraints can be placed on any regular field by using the field name and a constraint operator [**is**(=),**ne**(!=),**gt**(>),**ge**(>=),**lt**(<),**le**(<=)]. I.e. *'query.php?data=id&map_is=ns2_summit&length_gt=300&numPlayers_ge=10'* selects only those entries for which the map is summit, the round length exceeds 5 minutes and the player count is greater or equal ten.
 
 * **showQuery** without parameters; reveals the underlying SQL query. I.e. *'query.php?data=count,map&group_by=map&length_ge=300&showQuery'* shows *'SELECT COUNT(1) AS count, map, map AS [group1] FROM rounds WHERE length >= :length_ge GROUP BY [group1]'*
 
@@ -142,6 +143,11 @@ numCCs | number of command stations at round end
 numTechPointsCaptured | number of captured tech points at round end
 biomassLevel | biomass level at round end
 
+## Feedback
+Need something added? Head to <br />
+http://forums.unknownworlds.com/discussion/139786/wonitor-server-side-statistics-tool <br />
+New versions will be announced there as well.
+
 ## License Information
 The project includes minified version of plotly.js, d3.js and husl.js. The copyright lies with their respective owners.
 
@@ -155,7 +161,7 @@ Copyright (c) 2010-2016, Michael Bostock
 
 https://github.com/plotly/plotly.js <br />
 https://plot.ly/javascript/ <br />
-Copyright 2015 Plotly, Inc. <br />
+Copyright (c) 2015 Plotly, Inc. <br />
 Code released under the MIT license.
 
 Everything else is free to use as you see fit.
