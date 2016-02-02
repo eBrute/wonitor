@@ -428,8 +428,12 @@ function AddConstraintToTable(constraint, constraintValue) {
     return [null, -1];
   }
 
-  if (constraint == "map_is" && (constraintValue==null || (serverData.maps && serverData.maps.indexOf(constraintValue) != -1))) {
-    row.append("td").attr("align","center").text("is");
+  if ( (constraint == "map_is" || constraint == "map_ne") && (constraintValue==null || (serverData.maps && serverData.maps.indexOf(constraintValue) != -1))) {
+    var cell = row.append("td");
+    var select = cell.append("select");
+    select.append("option").attr("value","is").text("=").property("selected", constraintOperator == 'is');
+    select.append("option").attr("value","ne").text("≠").property("selected", constraintOperator == 'ne');
+    cell.append("span");
     var cell = row.append("td");
     var select = cell.append("select");
     for (var i=0; i<serverData.maps.length; i++) {
@@ -438,8 +442,12 @@ function AddConstraintToTable(constraint, constraintValue) {
     }
     cell.append("span");
   }
-  else if ( (constraint == "startLocation1_is" || constraint == "startLocation2_is") && (constraintValue==null || indexOfStartLocation(constraintValue)[1] != -1 )) {
-    row.append("td").attr("align","center").text("is");
+  else if ( (constraint == "startLocation1_is" || constraint == "startLocation1_ne" || constraint == "startLocation2_is" || constraint == "startLocation2_ne") && (constraintValue==null || indexOfStartLocation(constraintValue)[1] != -1 )) {
+    var cell = row.append("td");
+    var select = cell.append("select");
+    select.append("option").attr("value","is").text("=").property("selected", constraintOperator == 'is');
+    select.append("option").attr("value","ne").text("≠").property("selected", constraintOperator == 'ne');
+    cell.append("span");
     var cell = row.append("td");
     var select = cell.append("select");
     for (var map in serverData.startLocations) {
@@ -450,8 +458,11 @@ function AddConstraintToTable(constraint, constraintValue) {
       }
     }
     cell.append("span");
-  } else if ( fields[constraintField] && fields[constraintField].legend && constraintOperator == "is" && (constraintValue==null || fields[constraintField].legend[constraintValue] !=null)) {
-    row.append("td").attr("align","center").text("is");
+  } else if ( fields[constraintField] && fields[constraintField].legend && (constraintOperator == "is" || constraintOperator == "ne") && (constraintValue==null || fields[constraintField].legend[constraintValue] !=null)) {
+    var cell = row.append("td");
+    var select = cell.append("select");
+    select.append("option").attr("value","is").text("=").property("selected", constraintOperator == 'is');
+    select.append("option").attr("value","ne").text("≠").property("selected", constraintOperator == 'ne');
     var cell = row.append("td");
     var select = cell.append("select");
     for (var value in fields[constraintField].legend) {
@@ -465,6 +476,7 @@ function AddConstraintToTable(constraint, constraintValue) {
     select.append("option").attr("value","gt").text(">").property("selected", constraintOperator == 'gt');
     select.append("option").attr("value","ge").text("≥").property("selected", constraintOperator == 'ge');
     select.append("option").attr("value","is").text("=").property("selected", constraintOperator == 'is');
+    select.append("option").attr("value","ne").text("≠").property("selected", constraintOperator == 'ne');
     select.append("option").attr("value","le").text("≤").property("selected", constraintOperator == 'le');
     select.append("option").attr("value","lt").text("<").property("selected", constraintOperator == 'lt');
     cell.append("span");
@@ -524,6 +536,7 @@ function GetFieldIsAggregated(fieldName) {
 
 function IsKeyConstraint(key) {
   return key.endsWith("_is") ||
+  key.endsWith("_ne") ||
   key.endsWith("_gt") ||
   key.endsWith("_ge") ||
   key.endsWith("_lt") ||
