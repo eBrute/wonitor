@@ -8,56 +8,61 @@
 </head>
 <body>
 <?php
-  $file_db = new PDO( 'sqlite:./data/rounds.sqlite3' );
-  $file_db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-  global $fieldTypes, $statsTypes, $constraintTypes;
-  $query = 'SELECT serverId, serverName FROM rounds GROUP BY serverId ORDER BY count(1) DESC';
-  $servers = $file_db->query( $query, PDO::FETCH_ASSOC )->fetchAll();
-  $file_db = null;
-  foreach ($servers as $server){
+  require_once 'dbUtil.php';
+  global $roundsDb;
+  $db = openDB( $roundsDb );
+  $query = 'SELECT serverId, serverName, COUNT(1) as rounds FROM rounds GROUP BY serverId ORDER BY count(1) DESC';
+  $servers = $db->query( $query, PDO::FETCH_ASSOC )->fetchAll();
+  closeDB( $db );
+  // add total stats
+  if (count($servers)>1) {
+    $servers[] = array("serverName"=>"All Servers", "rounds" => array_sum( array_map( function($server) { return $server["rounds"]; }, $servers) ));
+  }
+  foreach ($servers as $server) {
+    $serverConstraint = isset($server["serverId"]) ? "&serverId_is=".$server["serverId"] : "";
 ?>
-  <h2><?php echo $server["serverName"];?></h2>
+  <h2><?php echo $server["serverName"];?> <span>(<?php echo $server["rounds"];?> rounds on record)</span></h2>
   <div class="container">
     <div class="panel col1">
       <span>Team Balance</span>
       <font size="2">
-      <div plotSpecs="#x=winner&y=count&numPlayers_gt=4&serverId_is=<?php echo $server["serverId"];?>"></div>
+      <div plotSpecs="#x=winner&y=count&numPlayers_gt=4<?php echo $serverConstraint;?>"></div>
       </font>
     </div>
     <div class="panel col1">
       <span>Map Ranking (Rounds)</span>
       <font size="1">
-      <div plotSpecs="#x=map&y=numRounds&plotType=pie&textInfo=text&serverId_is=<?php echo $server["serverId"];?>"></div>
+      <div plotSpecs="#x=map&y=numRounds&plotType=pie&textInfo=text<?php echo $serverConstraint;?>"></div>
       </font>
     </div>
     <div class="panel col1">
       <span>Map Ranking (Hours)</span>
       <font size="1">
-      <div plotSpecs="#x=map&y=length_sum&yScaleBy=3600&plotType=pie&yLabel=Round Length Sum in Hours&textInfo=text&serverId_is=<?php echo $server["serverId"];?>"></div>
+      <div plotSpecs="#x=map&y=length_sum&yScaleBy=3600&plotType=pie&yLabel=Round Length Sum in Hours&textInfo=text<?php echo $serverConstraint;?>"></div>
       </font>
     </div>
     <div class="panel col3">
       <span>Team Balance by Map</span>
       <font size="1">
-      <div plotSpecs="#x=map&y=count&t=winner&tNormalize&yLabel=Win Ratio&numPlayers_gt=4&serverId_is=<?php echo $server["serverId"];?>"></div>
+      <div plotSpecs="#x=map&y=count&t=winner&tNormalize&yLabel=Win Ratio&numPlayers_gt=4<?php echo $serverConstraint;?>"></div>
       </font>
     </div>
     <div class="panel col2">
       <span>Game Lengths Distribution</span>
       <font size="1">
-      <div plotSpecs="#x=length&xBinSize=60&xScaleBy=60&y=numRounds&xLabel=Round Length in Minutes&numPlayers_gt=4&serverId_is=<?php echo $server["serverId"];?>"></div>
+      <div plotSpecs="#x=length&xBinSize=60&xScaleBy=60&y=numRounds&xLabel=Round Length in Minutes&numPlayers_gt=4<?php echo $serverConstraint;?>"></div>
       </font>
     </div>
     <div class="panel col3">
       <span>Game Lengths by Map</span>
       <font size="1">
-      <div plotSpecs="#x=length&xBinSize=60&xScaleBy=60&y=map&s=count&t=map&sizeRef=0.02&xLabel=Round Length in Minutes&tSort=none&hideLegend&numPlayers_gt=4&serverId_is=<?php echo $server["serverId"];?>"></div>
+      <div plotSpecs="#x=length&xBinSize=60&xScaleBy=60&y=map&s=count&t=map&sizeRef=0.05&xLabel=Round Length in Minutes&tSort=none&hideLegend&numPlayers_gt=4<?php echo $serverConstraint;?>"></div>
       </font>
     </div>
     <div class="panel col3">
       <span>Winner by Start Location</span>
       <font size="1">
-      <div plotSpecs="#x=startLocation1&y=startLocation2&s=count&sizeRef=0.03&t=winner&numPlayers_gt=4&serverId_is=<?php echo $server["serverId"];?>"></div>
+      <div plotSpecs="#x=startLocation1&y=startLocation2&s=count&sizeRef=0.08&t=winner&numPlayers_gt=4<?php echo $serverConstraint;?>"></div>
       </font>
     </div>
   </div>

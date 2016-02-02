@@ -2,22 +2,30 @@
     date_default_timezone_set('UTC');
     $isodate = date('c', time());
 
-    if (!file_exists('./data')) { mkdir('./data', 0777, true); }
+    require_once 'config.php';
+    require_once 'dbUtil.php';
 
-    // uncomment the next block to enable logging
-    // logs all incoming requests to $logFile
-    // WARNING logs are public and might reveal your pre-hashed serverId, use for debuggin only and delete afterwards
-    /*
+    if (!file_exists('./data')) {
+        if (!mkdir('./data', 0755, true)) {
+            die("Error: unable to create data directory.<br>\nMake sure user <b>" . `whoami` . "</b> has permissions to write into the wonitor root directory or manually create the <b>./data</b> directory with permissions to read and write for user <b>" . `whoami` . "</b>.");
+        }
+    }
+
     $logFile = './data/logfile.txt';
-    file_put_contents($logFile, $isodate . ' ', FILE_APPEND | LOCK_EX) or die('Error: Unable to write file');
-    file_put_contents($logFile, 'POST ' . json_encode($_POST) . ' ', FILE_APPEND | LOCK_EX) or die('Error: Unable to write file');
-    file_put_contents($logFile, 'GET '  . json_encode($_GET) . "\n", FILE_APPEND | LOCK_EX) or die('Error: Unable to write file');
-    */
+    if ($logging) {
+        file_put_contents($logFile, $isodate . ' ',                      FILE_APPEND | LOCK_EX) or die('Error: Unable to write file');
+        file_put_contents($logFile, 'POST ' . json_encode($_POST) . ' ', FILE_APPEND | LOCK_EX) or die('Error: Unable to write file');
+        file_put_contents($logFile, 'GET '  . json_encode($_GET) . "\n", FILE_APPEND | LOCK_EX) or die('Error: Unable to write file');
+    }
+    else {
+        if (file_exists($logFile)) {
+           unlink($logFile);
+        }
+    }
 
-    // white list: all requests that do not contain on of these serverIds will be rejected
-    // case sensitive, comma separated
-    // I.e. $serverIdWhiteList = array('MyServer','MyOtherServer','someRandomString');
-    $serverIdWhiteList = array();
+    if ($debug_showServerIds) {
+        showServerIds();
+    }
 
     $fieldTypes = array(
         'serverName' => 'TEXT',
@@ -60,48 +68,208 @@
         'numCCs' => 'INTEGER',
         'numTechPointsCaptured' => 'INTEGER',
         'biomassLevel' => 'INTEGER'
-        );
+    );
+
+    $ns2plusStructure = array(
+        'RoundInfo' => array(
+            'id' => 'INTEGER PRIMARY KEY',
+            'roundDate' => 'INTEGER',
+            'roundLength' => 'REAL',
+            'winningTeam' => 'INTEGER',
+            'maxPlayers1' => 'INTEGER',
+            'maxPlayers2' => 'INTEGER',
+            'mapName' => 'TEXT',
+            'startingLocation1' => 'TEXT',
+            'startingLocation2' => 'TEXT',
+            'locationNames' => 'TEXT',
+            'tournamentMode' => 'INTEGER',
+            'minimapExtents' => 'TEXT',
+        ),
+        'ServerInfo' => array(
+            'roundId' => 'INTEGER',
+            'serverId' => 'TEXT',
+            'name' => 'TEXT',
+            'ip' => 'TEXT',
+            'port' => 'INTEGER',
+            'slots' => 'INTEGER',
+            'modIds' => 'TEXT',
+            'modNames' => 'TEXT',
+            'rookieOnly' => 'INTEGER',
+            'buildNumber' => 'INTEGER'
+        ),
+        'Research' => array(
+            'roundId' => 'INTEGER',
+            'gameTime' => 'REAL',
+            'teamNumber' => 'INTEGER',
+            'researchId' => 'TEXT'
+        ),
+        'Buildings' => array(
+            'roundId' => 'INTEGER',
+            'gameTime' => 'REAL',
+            'teamNumber' => 'INTEGER',
+            'techId' => 'TEXT',
+            'destroyed' => 'INTEGER',
+            'built' => 'INTEGER',
+            'recycled' => 'INTEGER'
+        ),
+        'MarineCommStats' => array(
+            'roundId' => 'INTEGER',
+            'steamId' => 'INTEGER',
+            'medpackPicks' => 'INTEGER',
+            'medpackMisses' => 'INTEGER',
+            'medpackHitsAcc' => 'INTEGER',
+            'medpackRefilled' => 'REAL',
+            'ammopackPicks' => 'INTEGER',
+            'ammopackMisses' => 'INTEGER',
+            'ammopackRefilled' => 'INTEGER',
+            'catpackPicks' => 'INTEGER',
+            'catpackMisses' => 'INTEGER'
+        ),
+        'PlayerRoundStats' => array(
+            'roundId' => 'INTEGER',
+            'steamId' => 'INTEGER',
+            'playerName' => 'TEXT',
+            'lastTeam' => 'INTEGER',
+            'hiveSkill' => 'INTEGER',
+            'isRookie' => 'INTEGER',
+            'teamNumber' => 'INTEGER',
+            'timePlayed' => 'REAL',
+            'timeBuilding' => 'REAL',
+            'commanderTime' => 'REAL',
+            'kills' => 'INTEGER',
+            'assists' => 'INTEGER',
+            'deaths' => 'INTEGER',
+            'killstreak' => 'INTEGER',
+            'hits' => 'INTEGER',
+            'onosHits' => 'INTEGER',
+            'misses' => 'INTEGER',
+            'playerDamage' => 'REAL',
+            'structureDamage' => 'REAL',
+            'score' => 'INTEGER'
+        ),
+        'PlayerStats' => array(
+            'steamId' => 'INTEGER PRIMARY KEY',
+            'playerName' => 'TEXT',
+            'hiveSkill' => 'INTEGER',
+            'isRookie' => 'INTEGER',
+            'timePlayed' => 'REAL DEFAULT 0',
+            'roundsPlayed' => 'INTEGER DEFAULT 0',
+            'timePlayed1' => 'REAL DEFAULT 0',
+            'timePlayed2' => 'REAL DEFAULT 0',
+            'timeBuilding' => 'REAL DEFAULT 0',
+            'commanderTime' => 'REAL DEFAULT 0',
+            'wins' =>  'INTEGER DEFAULT 0',
+            'losses' =>  'INTEGER DEFAULT 0',
+            'commanderWins' =>  'INTEGER DEFAULT 0',
+            'commanderLosses' =>  'INTEGER DEFAULT 0',
+            'kills' => 'INTEGER DEFAULT 0',
+            'deaths' => 'INTEGER DEFAULT 0',
+            'assists' => 'INTEGER DEFAULT 0',
+            'killstreak' => 'INTEGER DEFAULT 0',
+            'hits' => 'INTEGER DEFAULT 0',
+            'onosHits' => 'INTEGER DEFAULT 0',
+            'misses' => 'INTEGER DEFAULT 0',
+            'playerDamage' => 'REAL DEFAULT 0',
+            'structureDamage' => 'REAL DEFAULT 0',
+            'score' => 'INTEGER DEFAULT 0',
+            'lastSeen' => 'INTEGER'
+        ),
+        'PlayerWeaponStats' => array(
+            'roundId' => 'INTEGER',
+            'steamId' => 'INTEGER',
+            'weapon' => 'TEXT',
+            'teamNumber' => 'INTEGER',
+            'hits' => 'INTEGER',
+            'onosHits' => 'INTEGER', //NOTE will be zero if teamNumber==2
+            'misses' => 'INTEGER',
+            'playerDamage' => 'REAL',
+            'structureDamage' => 'REAL',
+            'kills' => 'INTEGER'
+        ),
+        'PlayerClassStats' => array(
+            'roundId' => 'INTEGER',
+            'steamId' => 'INTEGER',
+            'class' => 'TEXT',
+            'classTime' => 'REAL'
+        ),
+        'KillFeed' => array(
+            'roundId' => 'INTEGER',
+            'gameTime' => 'REAL',
+            'victimClass' => 'TEXT',
+            'victimSteamId' => 'INTEGER',
+            'victimLocation' => 'TEXT',
+            'victimPosition' => 'TEXT',
+            'killerWeapon' => 'TEXT',
+            'killerTeamNumber' => 'INTEGER',
+            'killerClass' => 'TEXT',
+            'killerSteamId' => 'INTEGER',
+            'killerLocation' => 'TEXT',
+            'killerPosition' => 'TEXT',
+        )
+    );
 
     $data = array();
 
 
     function readData() {
-       global $data, $fieldTypes;
+       global $data;
 
         if ( !array_key_exists( 'data', $_POST ) ) {
             exit('invalid data');
         }
 
         $data = json_decode($_POST['data'], true);
-
-        foreach ( $fieldTypes as $fieldName => $fieldType ) {
-            if ( !array_key_exists( $fieldName, $data ) ) {
-                exit('Field ' . $fieldName . ' missing');
-            }
+        if ($data == NULL) {
+          exit('Error reading data');
         }
     }
 
 
-    function checkWhitelist(& $data) {
+    function checkData() {
+        global $data, $fieldTypes;
+        if ( !array_key_exists( 'messageType', $_POST ) ) {
+            exit('Unknown message type');
+        }
+        if ( $_POST['messageType'] == 'MatchEnd' ) {
+            foreach ( $fieldTypes as $fieldName => $fieldType ) {
+                if ( !array_key_exists( $fieldName, $data ) ) {
+                    exit('Field ' . $fieldName . ' missing');
+                }
+            }
+        }
+        elseif ( $_POST['messageType'] == 'NS2PlusStats' ) {
+            if (
+                !array_key_exists( 'RoundInfo', $data )  ||
+                !array_key_exists( 'ServerInfo', $data ) ||
+                !array_key_exists( 'Research', $data )   ||
+                !array_key_exists( 'Buildings', $data )  ||
+                !array_key_exists( 'Locations', $data )  ||
+                !array_key_exists( 'MarineCommStats', $data ) ||
+                !array_key_exists( 'PlayerStats', $data )
+            ) {
+                exit('Fields missing');
+            }
+        }
+        else {
+            exit('Unsupported message type:' . $_POST['messageType']);
+        }
+    }
+
+
+    function checkWhitelist() {
         global $serverIdWhiteList;
-        if ( ! in_array( $data['serverId'], $serverIdWhiteList ) ) {
-            exit('serverId ' . $data['serverId'] . ' not Whitelisted');
+        if ( !array_key_exists( 'serverId', $_POST ) ) {
+            exit('Missing serverId');
+        }
+        if ( ! in_array( $_POST['serverId'], $serverIdWhiteList ) ) {
+            exit('serverId ' . $_POST['serverId'] . ' not Whitelisted');
         }
         // NOTE: if serverId is a secret, possible timing attack here
         // NOTE: possible optimization here if hashes would be saved as blobs
     }
 
 
-
-    function openDB(& $file_db) {
-        // Create (connect to) SQLite database in file
-        $file_db = new PDO('sqlite:./data/rounds.sqlite3');
-        // Set errormode to exceptions
-        $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    }
-
-
-    function createTable(& $file_db) {
+    function createRoundsTable(& $db) {
         global $fieldTypes;
         $execStatement = "CREATE TABLE IF NOT EXISTS rounds (\n\tid INTEGER PRIMARY KEY";
         foreach ($fieldTypes as $fieldName => $fieldType ) {
@@ -109,11 +277,11 @@
         }
         $execStatement .= ')';
 
-        $file_db->exec($execStatement);
+        $db->exec($execStatement);
     }
 
 
-    function insertData(& $file_db, & $data) {
+    function insertRoundData(& $db, & $data) {
         global $fieldTypes;
 
         // Prepare INSERT statement to SQLite3 file db
@@ -121,71 +289,366 @@
         end($fieldTypes); $lastKey = key($fieldTypes);
         foreach ( $fieldTypes as $fieldName => $fieldType ) {
             $insertStatement .= $fieldName;
-            if ($fieldName != $lastKey) $insertStatement .= ',';
+            if ( $fieldName != $lastKey ) $insertStatement .= ',';
         }
         $insertStatement .= ') VALUES (';
         foreach ( $fieldTypes as $fieldName => $fieldType ) {
             $insertStatement .= ':' . $fieldName;
-            if ($fieldName != $lastKey) $insertStatement .= ',';
+            if ( $fieldName != $lastKey ) $insertStatement .= ',';
         }
         $insertStatement .= ')';
-        $stmt = $file_db->prepare($insertStatement);
+        $stmt = $db->prepare($insertStatement);
 
         // Bind parameters to statement variables
-        $stmt->bindValue(':serverName',           $data['serverName']);
-        $stmt->bindValue(':serverIp',             $data['serverIp']);
-        $stmt->bindValue(':serverPort',           $data['serverPort']);
-        $stmt->bindValue(':serverId',   shortHash($data['serverId']));
-        $stmt->bindValue(':version',              $data['version']);
-        $stmt->bindValue(':modIds',   json_encode($data['modIds']));
-        $stmt->bindValue(':time',                 $data['time']);
-        $stmt->bindValue(':map',                  $data['map']);
-        $stmt->bindValue(':winner',               $data['winner']);
-        $stmt->bindValue(':length',               $data['length']);
-        $stmt->bindValue(':isTournamentMode',     $data['isTournamentMode'], PDO::PARAM_BOOL);
-        $stmt->bindValue(':isRookieServer',       $data['isRookieServer']  , PDO::PARAM_BOOL);
-        $stmt->bindValue(':startPathDistance',    $data['startPathDistance']);
-        $stmt->bindValue(':startHiveTech',        $data['startHiveTech']);
-        $stmt->bindValue(':startLocation1',       $data['startLocation1']);
-        $stmt->bindValue(':startLocation2',       $data['startLocation2']);
-        $stmt->bindValue(':numPlayers1',          $data['numPlayers1']);
-        $stmt->bindValue(':numPlayers2',          $data['numPlayers2']);
-        $stmt->bindValue(':numPlayersRR',         $data['numPlayersRR']);
-        $stmt->bindValue(':numPlayersSpec',       $data['numPlayersSpec']);
-        $stmt->bindValue(':numPlayers',           $data['numPlayers']);
-        $stmt->bindValue(':maxPlayers',           $data['maxPlayers']);
-        $stmt->bindValue(':numRookies1',          $data['numRookies1']);
-        $stmt->bindValue(':numRookies2',          $data['numRookies2']);
-        $stmt->bindValue(':numRookiesRR',         $data['numRookiesRR']);
-        $stmt->bindValue(':numRookiesSpec',       $data['numRookiesSpec']);
-        $stmt->bindValue(':numRookies',           $data['numRookies']);
-        $stmt->bindValue(':skillTeam1',           $data['skillTeam1']);
-        $stmt->bindValue(':skillTeam2',           $data['skillTeam2']);
-        $stmt->bindValue(':averageSkill',         $data['averageSkill']);
-        $stmt->bindValue(':killsTeam1',           $data['killsTeam1']);
-        $stmt->bindValue(':killsTeam2',           $data['killsTeam2']);
-        $stmt->bindValue(':kills',                $data['kills']);
-        $stmt->bindValue(':numRTs1',              $data['numRTs1']);
-        $stmt->bindValue(':numRTs2',              $data['numRTs2']);
-        $stmt->bindValue(':numRTs',               $data['numRTs']);
-        $stmt->bindValue(':numHives',             $data['numHives']);
-        $stmt->bindValue(':numCCs',               $data['numCCs']);
-        $stmt->bindValue(':numTechPointsCaptured',$data['numTechPointsCaptured']);
-        $stmt->bindValue(':biomassLevel',         $data['biomassLevel']);
+        $stmt->bindValue(':serverName',           $data['serverName'],        PDO::PARAM_STR);
+        $stmt->bindValue(':serverIp',             $data['serverIp'],          PDO::PARAM_STR);
+        $stmt->bindValue(':serverPort',           $data['serverPort'],        PDO::PARAM_INT);
+        $stmt->bindValue(':serverId',   shortHash($_POST['serverId']),        PDO::PARAM_STR);
+        $stmt->bindValue(':version',              $data['version'],           PDO::PARAM_STR);
+        $stmt->bindValue(':modIds',   json_encode($data['modIds']),           PDO::PARAM_STR);
+        $stmt->bindValue(':time',                 $data['time'],              PDO::PARAM_STR);
+        $stmt->bindValue(':map',                  $data['map'],               PDO::PARAM_STR);
+        $stmt->bindValue(':winner',               $data['winner'],            PDO::PARAM_INT);
+        $stmt->bindValue(':length',               $data['length'],            PDO::PARAM_STR);
+        $stmt->bindValue(':isTournamentMode',     $data['isTournamentMode'],  PDO::PARAM_BOOL);
+        $stmt->bindValue(':isRookieServer',       $data['isRookieServer'],    PDO::PARAM_BOOL);
+        $stmt->bindValue(':startPathDistance',    $data['startPathDistance'], PDO::PARAM_STR);
+        $stmt->bindValue(':startHiveTech',        $data['startHiveTech'],     PDO::PARAM_STR);
+        $stmt->bindValue(':startLocation1',       $data['startLocation1'],    PDO::PARAM_STR);
+        $stmt->bindValue(':startLocation2',       $data['startLocation2'],    PDO::PARAM_STR);
+        $stmt->bindValue(':numPlayers1',          $data['numPlayers1'],       PDO::PARAM_INT);
+        $stmt->bindValue(':numPlayers2',          $data['numPlayers2'],       PDO::PARAM_INT);
+        $stmt->bindValue(':numPlayersRR',         $data['numPlayersRR'],      PDO::PARAM_INT);
+        $stmt->bindValue(':numPlayersSpec',       $data['numPlayersSpec'],    PDO::PARAM_INT);
+        $stmt->bindValue(':numPlayers',           $data['numPlayers'],        PDO::PARAM_INT);
+        $stmt->bindValue(':maxPlayers',           $data['maxPlayers'],        PDO::PARAM_INT);
+        $stmt->bindValue(':numRookies1',          $data['numRookies1'],       PDO::PARAM_INT);
+        $stmt->bindValue(':numRookies2',          $data['numRookies2'],       PDO::PARAM_INT);
+        $stmt->bindValue(':numRookiesRR',         $data['numRookiesRR'],      PDO::PARAM_INT);
+        $stmt->bindValue(':numRookiesSpec',       $data['numRookiesSpec'],    PDO::PARAM_INT);
+        $stmt->bindValue(':numRookies',           $data['numRookies'],        PDO::PARAM_INT);
+        $stmt->bindValue(':skillTeam1',           $data['skillTeam1'],        PDO::PARAM_INT);
+        $stmt->bindValue(':skillTeam2',           $data['skillTeam2'],        PDO::PARAM_INT);
+        $stmt->bindValue(':averageSkill',         $data['averageSkill'],      PDO::PARAM_STR);
+        $stmt->bindValue(':killsTeam1',           $data['killsTeam1'],        PDO::PARAM_INT);
+        $stmt->bindValue(':killsTeam2',           $data['killsTeam2'],        PDO::PARAM_INT);
+        $stmt->bindValue(':kills',                $data['kills'],             PDO::PARAM_INT);
+        $stmt->bindValue(':numRTs1',              $data['numRTs1'],           PDO::PARAM_INT);
+        $stmt->bindValue(':numRTs2',              $data['numRTs2'],           PDO::PARAM_INT);
+        $stmt->bindValue(':numRTs',               $data['numRTs'],            PDO::PARAM_INT);
+        $stmt->bindValue(':numHives',             $data['numHives'],          PDO::PARAM_INT);
+        $stmt->bindValue(':numCCs',               $data['numCCs']  ,          PDO::PARAM_INT);
+        $stmt->bindValue(':numTechPointsCaptured',$data['numTechPointsCaptured'], PDO::PARAM_INT);
+        $stmt->bindValue(':biomassLevel',         $data['biomassLevel'],      PDO::PARAM_INT);
 
         $stmt->execute();
     }
 
 
-    function deleteTable(& $file_db) {
-        // Drop table messages from file db
-        $file_db->exec('DROP TABLE rounds');
+    function createNS2PlusTables(& $db) {
+        global $ns2plusStructure;
+        $execStatement = '';
+        foreach ( $ns2plusStructure as $tableName => $tableContent ) {
+            $execStatement .= 'CREATE TABLE IF NOT EXISTS ' . $tableName . ' (';
+            end($tableContent); $lastKey = key($tableContent);
+            foreach ( $tableContent as $fieldName => $fieldType ) {
+                $execStatement .= "\n\t" . $fieldName . ' ' . $fieldType;
+                if ( $fieldName != $lastKey ) $execStatement .= ',';
+            }
+            $execStatement .= ");\n";
+        }
+        $db->exec($execStatement);
     }
 
 
-    function closeDB(& $file_db) {
-        // Close file db connection
-        $file_db = null;
+    function insertNS2PlusData(& $db, & $data) {
+        global $ns2plusStructure;
+
+        // RoundInfo
+        $insertStatement = buildQueryStatement('RoundInfo');
+        $stmt = $db->prepare($insertStatement);
+        $dt = $data['RoundInfo'];
+        $stmt->bindValue(':roundDate',            $dt['roundDate'],              PDO::PARAM_INT);
+        $stmt->bindValue(':roundLength',          $dt['roundLength'],            PDO::PARAM_STR);
+        $stmt->bindValue(':winningTeam',          $dt['winningTeam'],            PDO::PARAM_INT);
+        $stmt->bindValue(':maxPlayers1',          $dt['maxPlayers1'],            PDO::PARAM_INT);
+        $stmt->bindValue(':maxPlayers2',          $dt['maxPlayers2'],            PDO::PARAM_INT);
+        $stmt->bindValue(':mapName',              $dt['mapName'],                PDO::PARAM_STR);
+        $stmt->bindValue(':startingLocation1',    $dt['startingLocations']['1'], PDO::PARAM_STR);
+        $stmt->bindValue(':startingLocation2',    $dt['startingLocations']['2'], PDO::PARAM_STR);
+        $stmt->bindValue(':locationNames',  json_encode($data['Locations']),     PDO::PARAM_STR);
+        $stmt->bindValue(':tournamentMode',       $dt['tournamentMode'],         PDO::PARAM_BOOL);
+        $stmt->bindValue(':minimapExtents', json_encode($dt['minimapExtents']),  PDO::PARAM_STR);
+        $stmt->execute();
+
+        // Get Round Number
+        $query = 'SELECT MAX(id) as id FROM RoundInfo';
+        $roundId = intval($db->query( $query, PDO::FETCH_ASSOC )->fetch()['id']);
+
+        // ServerInfo
+        $insertStatement = buildQueryStatement('ServerInfo');
+        $stmt = $db->prepare($insertStatement);
+        $dt = $data['ServerInfo'];
+        $modIds = [];
+        $modNames = [];
+        foreach ( $dt['mods'] as $mod ) {
+            $modIds[]   = $mod['modId'];
+            $modNames[] = $mod['name'];
+        }
+        $stmt->bindValue(':roundId',              $roundId,              PDO::PARAM_INT);
+        $stmt->bindValue(':serverId',   shortHash($_POST['serverId']),   PDO::PARAM_STR);
+        $stmt->bindValue(':name',                 $dt['name'],           PDO::PARAM_STR);
+        $stmt->bindValue(':ip',                   $dt['ip'],             PDO::PARAM_STR);
+        $stmt->bindValue(':port',                 $dt['port'],           PDO::PARAM_INT);
+        $stmt->bindValue(':slots',                $dt['slots'],          PDO::PARAM_INT);
+        $stmt->bindValue(':modIds',   json_encode($modIds),              PDO::PARAM_STR);
+        $stmt->bindValue(':modNames', json_encode($modNames),            PDO::PARAM_STR);
+        $stmt->bindValue(':rookieOnly',           $dt['rookieOnly'], PDO::PARAM_BOOL);
+        $stmt->bindValue(':buildNumber',          $dt['buildNumber'],    PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Research
+        $insertStatement = buildQueryStatement('Research');
+        $stmt = $db->prepare($insertStatement);
+        $stmt->bindValue(':roundId',              $roundId,          PDO::PARAM_INT);
+        foreach ($data['Research'] as $researchEvent) {
+            $stmt->bindValue(':gameTime',         $researchEvent[0], PDO::PARAM_STR);
+            $stmt->bindValue(':teamNumber',       $researchEvent[1], PDO::PARAM_INT);
+            $stmt->bindValue(':researchId',       $researchEvent[2], PDO::PARAM_STR);
+            $stmt->execute();
+        }
+
+        // Buildings
+        $insertStatement = buildQueryStatement('Buildings');
+        $stmt = $db->prepare($insertStatement);
+        $stmt->bindValue(':roundId',              $roundId,          PDO::PARAM_INT);
+        foreach ($data['Buildings'] as $buildingEvent) {
+            $stmt->bindValue(':gameTime',         $buildingEvent[0], PDO::PARAM_STR);
+            $stmt->bindValue(':teamNumber',       $buildingEvent[1], PDO::PARAM_INT);
+            $stmt->bindValue(':techId',           $buildingEvent[2], PDO::PARAM_STR);
+            $stmt->bindValue(':destroyed',        $buildingEvent[3], PDO::PARAM_BOOL);
+            $stmt->bindValue(':built',            $buildingEvent[4], PDO::PARAM_BOOL);
+            $stmt->bindValue(':recycled',         $buildingEvent[5], PDO::PARAM_BOOL);
+            $stmt->execute();
+        }
+
+        // MarineCommStats
+        $insertStatement = buildQueryStatement('MarineCommStats');
+        $stmt = $db->prepare($insertStatement);
+        $stmt->bindValue(':roundId',              $roundId,                           PDO::PARAM_INT);
+        foreach ($data['MarineCommStats'] as $commander => $commStats) {
+            $stmt->bindValue(':steamId',          $commander,                         PDO::PARAM_INT);
+            $stmt->bindValue(':medpackPicks',     $commStats['medpack']['picks'],     PDO::PARAM_INT);
+            $stmt->bindValue(':medpackMisses',    $commStats['medpack']['misses'],    PDO::PARAM_INT);
+            $stmt->bindValue(':medpackHitsAcc',   $commStats['medpack']['hitsAcc'],   PDO::PARAM_INT);
+            $stmt->bindValue(':medpackRefilled',  $commStats['medpack']['refilled'],  PDO::PARAM_INT);
+            $stmt->bindValue(':ammopackPicks',    $commStats['ammopack']['picks'],    PDO::PARAM_INT);
+            $stmt->bindValue(':ammopackMisses',   $commStats['ammopack']['misses'],   PDO::PARAM_INT);
+            $stmt->bindValue(':ammopackRefilled', $commStats['ammopack']['refilled'], PDO::PARAM_STR);
+            $stmt->bindValue(':catpackPicks',     $commStats['catpack']['picks'],     PDO::PARAM_INT);
+            $stmt->bindValue(':catpackMisses',    $commStats['catpack']['misses'],    PDO::PARAM_INT);
+            $stmt->execute();
+        }
+
+        // PlayerRoundStats
+        $insertStatement  = buildQueryStatement('PlayerRoundStats');
+        $stmt  = $db->prepare($insertStatement);
+        $stmt->bindValue(':roundId',                 $roundId,                        PDO::PARAM_INT);
+        foreach ($data['PlayerStats'] as $player => $pStats) {
+            $stmt->bindValue( ':steamId',            $player,                         PDO::PARAM_INT);
+            $stmt->bindValue( ':playerName',         $pStats['playerName'],           PDO::PARAM_STR);
+            $stmt->bindValue( ':lastTeam',           $pStats['lastTeam'],             PDO::PARAM_INT);
+            $stmt->bindValue( ':hiveSkill',          $pStats['hiveSkill'],            PDO::PARAM_INT);
+            $stmt->bindValue( ':isRookie',           $pStats['isRookie'],             PDO::PARAM_BOOL);
+            foreach (['1','2'] as $t) {
+                $stmt->bindValue(':teamNumber',      $t,                              PDO::PARAM_INT);
+                $stmt->bindValue(':timePlayed',      $pStats[$t]['timePlayed'],       PDO::PARAM_STR);
+                $stmt->bindValue(':timeBuilding',    $pStats[$t]['timeBuilding'],     PDO::PARAM_STR);
+                $stmt->bindValue(':commanderTime',   $pStats[$t]['commanderTime'],    PDO::PARAM_STR);
+                $stmt->bindValue(':kills',           $pStats[$t]['kills'],            PDO::PARAM_INT);
+                $stmt->bindValue(':deaths',          $pStats[$t]['deaths'],           PDO::PARAM_INT);
+                $stmt->bindValue(':assists',         $pStats[$t]['assists'],          PDO::PARAM_INT);
+                $stmt->bindValue(':killstreak',      $pStats[$t]['killstreak'],       PDO::PARAM_INT);
+                $stmt->bindValue(':hits',            $pStats[$t]['hits'],             PDO::PARAM_INT);
+                $stmt->bindValue(':onosHits',        $pStats[$t]['onosHits'],         PDO::PARAM_INT);
+                $stmt->bindValue(':misses',          $pStats[$t]['misses'],           PDO::PARAM_INT);
+                $stmt->bindValue(':playerDamage',    $pStats[$t]['playerDamage'],     PDO::PARAM_STR);
+                $stmt->bindValue(':structureDamage', $pStats[$t]['structureDamage'],  PDO::PARAM_STR);
+                $stmt->bindValue(':score',           $pStats[$t]['score'],            PDO::PARAM_INT);
+                if ($pStats[$t]['timePlayed'] != 0) {
+                    $stmt->execute();
+                }
+            }
+        }
+
+        // PlayerStats
+        $insertStatement = 'INSERT OR IGNORE INTO PlayerStats (steamId) VALUES ( :steamId );';
+        $updateStatement = 'UPDATE PlayerStats SET
+            playerName = :playerName,
+            hiveSkill = :hiveSkill,
+            isRookie = :isRookie,
+            roundsPlayed = roundsPlayed + 1,
+            timePlayed1 = timePlayed1 + :timePlayed1,
+            timePlayed2 = timePlayed2 + :timePlayed2,
+            wins = wins + :wins,
+            losses = losses + :losses,
+            commanderWins = commanderWins + :commanderWins,
+            commanderLosses = commanderLosses + :commanderLosses,
+            lastSeen = :lastSeen
+        WHERE steamId = :steamId;';
+        $updateTeamStatement = 'UPDATE PlayerStats SET
+            timePlayed = timePlayed + :timePlayed,
+            timeBuilding = timeBuilding + :timeBuilding,
+            commanderTime = commanderTime + :commanderTime,
+            kills = kills + :kills,
+            deaths = deaths + :deaths,
+            assists = assists + :assists,
+            killstreak = MAX(killstreak, :killstreak),
+            hits = hits + :hits,
+            onosHits = onosHits + :onosHits,
+            misses = misses + :misses,
+            playerDamage = playerDamage + :playerDamage,
+            structureDamage = structureDamage + :structureDamage,
+            score = score + :score
+        WHERE steamId = :steamId;';
+        $stmt1 = $db->prepare($insertStatement);
+        $stmt2 = $db->prepare($updateStatement);
+        $stmt3 = $db->prepare($updateTeamStatement);
+        $commanderTimes = array('1' => [-1 => -1], '2' => [-1 => -1]); //max wont work with empty arrays
+        foreach ($data['PlayerStats'] as $player => $pStats) {
+            foreach (['1','2'] as $t) {
+              $commanderTimes[$t][$player] = $pStats[$t]['commanderTime'];
+            }
+        }
+        $marineComm = array_search(max($commanderTimes['1']), $commanderTimes['1']);
+        $alienComm  = array_search(max($commanderTimes['2']), $commanderTimes['2']);
+        $winningTeam = $data['RoundInfo']['winningTeam'];
+        foreach ($data['PlayerStats'] as $player => $pStats) {
+            $pLastTeam = $pStats['lastTeam'];
+            $isWinner = $winningTeam > 0 && $winningTeam == $pLastTeam;
+            $isLoser  = $winningTeam > 0 && ($pLastTeam == 1 || $pLastTeam == 2) && $winningTeam != $pLastTeam;
+            $isWinnerComm = ($player == $marineComm && $winningTeam == 1) || ($player == $alienComm && $winningTeam == 2);
+            $isLoserComm  = ($player == $marineComm && $winningTeam == 2) || ($player == $alienComm && $winningTeam == 1); //TODO loser is initial Comm not longest Comm
+            $stmt1->bindValue(':steamId',             $player,                         PDO::PARAM_INT);
+            $stmt2->bindValue(':steamId',             $player,                         PDO::PARAM_INT);
+            $stmt3->bindValue(':steamId',             $player,                         PDO::PARAM_INT);
+            $stmt2->bindValue(':playerName',          $pStats['playerName'],           PDO::PARAM_STR);
+            $stmt2->bindValue(':hiveSkill',           $pStats['hiveSkill'],            PDO::PARAM_INT);
+            $stmt2->bindValue(':isRookie',            $pStats['isRookie'],             PDO::PARAM_BOOL);
+            $stmt2->bindValue(':wins',                $isWinner ? 1 : 0,               PDO::PARAM_INT);
+            $stmt2->bindValue(':losses',              $isLoser  ? 1 : 0,               PDO::PARAM_INT);
+            $stmt2->bindValue(':commanderWins',       $isWinnerComm ? 1 : 0,           PDO::PARAM_INT);
+            $stmt2->bindValue(':commanderLosses',     $isLoserComm  ? 1 : 0,           PDO::PARAM_INT);
+            $stmt2->bindValue(':lastSeen',            $data['RoundInfo']['roundDate'], PDO::PARAM_INT);
+            $stmt1->execute();
+            foreach (['1','2'] as $t) {
+                $stmt2->bindValue(":timePlayed$t",    $pStats[$t]['timePlayed'],       PDO::PARAM_STR);
+                $stmt3->bindValue(':timePlayed',      $pStats[$t]['timePlayed'],       PDO::PARAM_STR);
+                $stmt3->bindValue(':timeBuilding',    $pStats[$t]['timeBuilding'],     PDO::PARAM_STR);
+                $stmt3->bindValue(':commanderTime',   $pStats[$t]['commanderTime'],    PDO::PARAM_STR);
+                $stmt3->bindValue(':kills',           $pStats[$t]['kills'],            PDO::PARAM_INT);
+                $stmt3->bindValue(':deaths',          $pStats[$t]['deaths'],           PDO::PARAM_INT);
+                $stmt3->bindValue(':assists',         $pStats[$t]['assists'],          PDO::PARAM_INT);
+                $stmt3->bindValue(':killstreak',      $pStats[$t]['killstreak'],       PDO::PARAM_INT);
+                $stmt3->bindValue(':hits',            $pStats[$t]['hits'],             PDO::PARAM_INT);
+                $stmt3->bindValue(':onosHits',        $pStats[$t]['onosHits'],         PDO::PARAM_INT);
+                $stmt3->bindValue(':misses',          $pStats[$t]['misses'],           PDO::PARAM_INT);
+                $stmt3->bindValue(':playerDamage',    $pStats[$t]['playerDamage'],     PDO::PARAM_STR);
+                $stmt3->bindValue(':structureDamage', $pStats[$t]['structureDamage'],  PDO::PARAM_STR);
+                $stmt3->bindValue(':score',           $pStats[$t]['score'],            PDO::PARAM_INT);
+                $stmt3->execute();
+            }
+            $stmt2->execute();
+        }
+
+        // PlayerWeaponStats
+        $insertStatement = buildQueryStatement('PlayerWeaponStats');
+        $stmt = $db->prepare($insertStatement);
+        $stmt->bindValue(':roundId',                 $roundId,                   PDO::PARAM_INT);
+        foreach ($data['PlayerStats'] as $player => $pStats) {
+            $stmt->bindValue(':steamId',             $player,                    PDO::PARAM_INT);
+            foreach ($pStats['weapons'] as $weapon => $wStats) {
+                $stmt->bindValue(':weapon',          $weapon,                    PDO::PARAM_STR);
+                $stmt->bindValue(':teamNumber',      $wStats['teamNumber'],      PDO::PARAM_INT);
+                $stmt->bindValue(':hits',            $wStats['hits'],            PDO::PARAM_INT);
+                $stmt->bindValue(':onosHits',        $wStats['onosHits'],        PDO::PARAM_INT);
+                $stmt->bindValue(':misses',          $wStats['misses'],          PDO::PARAM_INT);
+                $stmt->bindValue(':playerDamage',    $wStats['playerDamage'],    PDO::PARAM_STR);
+                $stmt->bindValue(':structureDamage', $wStats['structureDamage'], PDO::PARAM_STR);
+                $stmt->bindValue(':kills',           $wStats['kills'],           PDO::PARAM_INT);
+                $stmt->execute();
+            }
+        }
+
+        // PlayerClassStats
+        $insertStatement = buildQueryStatement('PlayerClassStats');
+        $stmt = $db->prepare($insertStatement);
+        $stmt->bindValue(':roundId',                 $roundId,                   PDO::PARAM_INT);
+        foreach ($data['PlayerStats'] as $player => $pStats) {
+            $stmt->bindValue(':steamId',             $player,                    PDO::PARAM_INT);
+            foreach ($pStats['status'] as $cStats) {
+                $stmt->bindValue(':class',           $cStats['statusId'],        PDO::PARAM_STR);
+                $stmt->bindValue(':classTime',       $cStats['classTime'],       PDO::PARAM_STR);
+                $stmt->execute();
+            }
+        }
+
+        // KillFeed
+        if ( !array_key_exists( 'KillFeed', $data ) ) return; // KillFeed is optional
+        $insertStatement = buildQueryStatement('KillFeed');
+        $stmt = $db->prepare($insertStatement);
+        $stmt->bindValue(':roundId',                 $roundId,           PDO::PARAM_INT);
+        foreach ($data['KillFeed'] as $killEvent) {
+            $victimLocation = intval($killEvent[3]);
+            $killerLocation = intval($killEvent[9]);
+            $victimLocationStr = $data['Locations'][$victimLocation-1];
+            $killerLocationStr = $data['Locations'][$killerLocation-1];
+            $stmt->bindValue(':gameTime',            $killEvent[0],      PDO::PARAM_STR);
+            $stmt->bindValue(':victimClass',         $killEvent[1],      PDO::PARAM_STR);
+            $stmt->bindValue(':victimSteamId',       $killEvent[2],      PDO::PARAM_INT);
+            $stmt->bindValue(':victimLocation',      $victimLocationStr, PDO::PARAM_STR);
+            $stmt->bindValue(':victimPosition',      $killEvent[4],      PDO::PARAM_STR);
+            $stmt->bindValue(':killerWeapon',        $killEvent[5],      PDO::PARAM_STR);
+            $stmt->bindValue(':killerTeamNumber',    $killEvent[6],      PDO::PARAM_INT);
+            $stmt->bindValue(':killerClass',         $killEvent[7],      PDO::PARAM_STR);
+            $stmt->bindValue(':killerSteamId',       $killEvent[8],      PDO::PARAM_INT);
+            $stmt->bindValue(':killerLocation',      $killerLocationStr, PDO::PARAM_STR);
+            $stmt->bindValue(':killerPosition',      $killEvent[10],     PDO::PARAM_STR);
+            $stmt->execute();
+        }
+    }
+
+
+    function buildQueryStatement($table) {
+        global $ns2plusStructure;
+        // Prepare INSERT statement
+        $insertStatement = "INSERT INTO $table (";
+        end($ns2plusStructure[$table]); $lastKey = key($ns2plusStructure[$table]);
+        foreach ( $ns2plusStructure[$table] as $fieldName => $fieldType ) {
+            if ( $fieldName != 'id' ) {
+                $insertStatement .= $fieldName;
+                if ( $fieldName != $lastKey )
+                    $insertStatement .= ',';
+            }
+        }
+        $insertStatement .= ') VALUES (';
+        foreach ( $ns2plusStructure[$table] as $fieldName => $fieldType ) {
+            if ( $fieldName != 'id' ) {
+                $insertStatement .= ':' . $fieldName;
+                if ( $fieldName != $lastKey )
+                    $insertStatement .= ',';
+            }
+        }
+        $insertStatement .= ')';
+        return $insertStatement;
+    }
+
+
+    function showServerIds() {
+        global $serverIdWhiteList;
+        foreach ( $serverIdWhiteList as $serverId ) {
+            echo "$serverId => " . shortHash($serverId) . " <br>\n";
+        }
     }
 
 
@@ -201,19 +664,27 @@
 
 
     function main() {
-        global $data;
-        $file_db = null;
+        global $data, $roundsDb, $ns2plusDb;
         readData();
-        checkWhitelist($data);
+        checkWhitelist();
+        checkData();
         try {
-            openDB($file_db);
-            createTable($file_db);
-            insertData($file_db, $data);
-            //deleteTable($file_db);
-            closeDB($file_db);
+            if ( $_POST['messageType'] == 'MatchEnd' ) {
+                $db = openDB( $roundsDb );
+                createRoundsTable( $db );
+                insertRoundData( $db, $data );
+                closeDB( $db );
+                echo "MatchEnd post successful\n";
+            }
+            if ( $_POST['messageType'] == 'NS2PlusStats' ) {
+                $db = openDB( $ns2plusDb );
+                createNS2PlusTables( $db );
+                insertNS2PlusData( $db, $data );
+                closeDB( $db );
+                echo "NS2PlusStats post successful\n";
+            }
         }
         catch(PDOException $e) {
-            // Print PDOException message
             echo $e->getMessage();
         }
     }
