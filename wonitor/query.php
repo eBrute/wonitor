@@ -2,8 +2,6 @@
     date_default_timezone_set( 'UTC' );
     $isodate = date( 'c', time() );
 
-    require_once 'dbUtil.php';
-
     // uncomment the next block to enable logging
     // logs all incoming requests to $logFile
     /*
@@ -77,6 +75,14 @@
         '_gt' => '>',
         '_ge' => '>='
         );
+
+
+    function openDB( & $db ) {
+        // Create ( connect to ) SQLite database in file
+        $db = new PDO( 'sqlite:./data/rounds.sqlite3' );
+        // Set errormode to exceptions
+        $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+    }
 
 
     function queryDB( & $db ) {
@@ -221,9 +227,15 @@
     }
 
 
+    function closeDB( & $db ) {
+        // Close file db connection
+        $db = null;
+    }
+
+
     function main() {
-        global $roundsDb;
-        $db = openDB( $roundsDb );
+        $db = null;
+        openDB( $db );
         try {
             queryDB( $db );
         }
