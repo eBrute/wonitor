@@ -174,12 +174,16 @@
             if ( strlen($key ) < 3 ) continue;
             $constraintField  = substr($key, 0, -3 );
             $constraintType = substr($key, -3 );
+            $constraintValues = explode( ',', $value);
 
             /* i.e. map_is=..., length_gt=..., numPlayers_ge=... */
             if ( !isset( $constraintTypes[$constraintType] ) ) continue;
             if ( !isset( $fieldTypes[$constraintField] ) ) continue;
 
-            $constraints[] = $constraintField . ' ' . $constraintTypes[$constraintType] . ' :'.$key;
+            foreach ($constraintValues as $index => $constraintValue) {
+                $constraints[] = $constraintField . ' ' . $constraintTypes[$constraintType] . ' :'.$key.$index;
+            }
+
         }
         // TODO SELECT time FROM rounds WHERE time > datetime('now', '-2 day');
 
@@ -202,11 +206,14 @@
             if ( strlen($key ) < 3 ) continue;
             $constraintField  = substr($key, 0, -3 );
             $constraintType = substr($key, -3 );
+            $constraintValues = explode( ',', $value);
 
             if ( !isset( $constraintTypes[$constraintType] ) ) continue;
             if ( !isset( $fieldTypes[$constraintField] ) ) continue;
 
-            $statement->bindValue( ':'.$key, $value ); // NOTE this is safe because we check the key above
+            foreach ($constraintValues as $index => $constraintValue) {
+                $statement->bindValue( ':'.$key.$index, $constraintValue ); // NOTE this is safe because we check the key above
+            }
         }
 
         // query db
