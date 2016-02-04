@@ -1,10 +1,10 @@
 <?php
     /* Database model/location
-     * i.e. $roundsDb = ['sqlite:./data/rounds.sqlite3'];
-     * or   $roundsDb = ['mysql:host=localhost;dbname=rounds', 'username', 'password'];
+     * i.e. $wonitorDb = ['sqlite:./data/rounds.sqlite3'];
+     * or   $wonitorDb = ['mysql:host=localhost;dbname=rounds', 'username', 'password'];
      * ./data is created if it does not exist
      */
-    $roundsDb  = ['sqlite:./data/rounds.sqlite3'];
+    $wonitorDb  = ['sqlite:./data/rounds.sqlite3'];
     $ns2plusDb = ['sqlite:./data/ns2plus.sqlite3'];
 
     function openDB($dbDef) {
@@ -32,7 +32,10 @@
     }
 
 
-    $fieldTypes = array(
+    // all fields listed here are query-able
+    // changes in the sql structure should also enter here, value should not be null
+    $wonitorStructure = array(
+      'rounds' => array(
         'id' => 'INTEGER PRIMARY KEY',
         'serverName' => 'TEXT',
         'serverIp' => 'TEXT',
@@ -74,7 +77,8 @@
         'numCCs' => 'INTEGER',
         'numTechPointsCaptured' => 'INTEGER',
         'biomassLevel' => 'INTEGER'
-        );
+      )
+    );
 
 
     $ns2plusStructure = array(

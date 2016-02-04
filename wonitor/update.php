@@ -1,7 +1,4 @@
 <?php
-    date_default_timezone_set('UTC');
-    $isodate = date('c', time());
-
     require_once 'config.php';
     require_once 'dbUtil.php';
 
@@ -13,6 +10,7 @@
 
     $logFile = './data/logfile.txt';
     if ($logging) {
+        $isodate = date('c', time());
         file_put_contents($logFile, $isodate . ' ',                      FILE_APPEND | LOCK_EX) or die('Error: Unable to write file');
         file_put_contents($logFile, 'POST ' . json_encode($_POST) . ' ', FILE_APPEND | LOCK_EX) or die('Error: Unable to write file');
         file_put_contents($logFile, 'GET '  . json_encode($_GET) . "\n", FILE_APPEND | LOCK_EX) or die('Error: Unable to write file');
@@ -45,13 +43,13 @@
 
 
     function checkData() {
-        global $data, $fieldTypes;
+        global $data, $wonitorStructure;
         if ( !array_key_exists( 'messageType', $_POST ) ) {
             exit('Unknown message type');
         }
         if ( $_POST['messageType'] == 'MatchEnd' ) {
-            foreach ( $fieldTypes as $fieldName => $fieldType ) {
-                if ( !array_key_exists( $fieldName, $data ) ) {
+            foreach ( $wonitorStructure['rounds'] as $fieldName => $fieldType ) {
+                if ( !array_key_exists( $fieldName, $data ) && $fieldType != 'INTEGER PRIMARY KEY' ) {
                     exit('Field ' . $fieldName . ' missing');
                 }
             }
@@ -88,37 +86,11 @@
     }
 
 
-    function createRoundsTable(& $db) {
-        global $fieldTypes;
-        $insertStatement = "CREATE TABLE IF NOT EXISTS rounds (";
-        end($fieldTypes); $lastKey = key($fieldTypes);
-        foreach ($fieldTypes as $fieldName => $fieldType ) {
-            $insertStatement .= "\n\t" . $fieldName . ' ' . $fieldType;
-            if ( $fieldName != $lastKey )
-                $insertStatement .= ',';
-        }
-        $insertStatement .= ')';
-
-        $db->exec($insertStatement);
-    }
-
-
     function insertRoundData(& $db, & $data) {
-        global $fieldTypes;
+        global $wonitorStructure;
 
         // Prepare INSERT statement to SQLite3 file db
-        $insertStatement = 'INSERT INTO rounds (';
-        end($fieldTypes); $lastKey = key($fieldTypes);
-        foreach ( $fieldTypes as $fieldName => $fieldType ) {
-            $insertStatement .= $fieldName;
-            if ( $fieldName != $lastKey ) $insertStatement .= ',';
-        }
-        $insertStatement .= ') VALUES (';
-        foreach ( $fieldTypes as $fieldName => $fieldType ) {
-            $insertStatement .= ':' . $fieldName;
-            if ( $fieldName != $lastKey ) $insertStatement .= ',';
-        }
-        $insertStatement .= ')';
+        $insertStatement = buildInsertQueryStatement($wonitorStructure, 'rounds');
         $stmt = $db->prepare($insertStatement);
 
         // Bind parameters to statement variables
@@ -167,22 +139,6 @@
     }
 
 
-    function createNS2PlusTables(& $db) {
-        global $ns2plusStructure;
-        $execStatement = '';
-        foreach ( $ns2plusStructure as $tableName => $tableContent ) {
-            $execStatement .= 'CREATE TABLE IF NOT EXISTS ' . $tableName . ' (';
-            end($tableContent); $lastKey = key($tableContent);
-            foreach ( $tableContent as $fieldName => $fieldType ) {
-                $execStatement .= "\n\t" . $fieldName . ' ' . $fieldType;
-                if ( $fieldName != $lastKey ) $execStatement .= ',';
-            }
-            $execStatement .= ");\n";
-        }
-        $db->exec($execStatement);
-    }
-
-
     function insertNS2PlusData(& $db, & $data) {
         global $ns2plusStructure;
 
@@ -190,7 +146,7 @@
         $data['RoundInfo']['roundDate'] = gmdate('Y-m-d H:i:s', $data['RoundInfo']['roundDate']);
 
         // RoundInfo
-        $insertStatement = buildInsertQueryStatement('RoundInfo');
+        $insertStatement = buildInsertQueryStatement($ns2plusStructure, 'RoundInfo');
         $stmt = $db->prepare($insertStatement);
         $dt = $data['RoundInfo'];
         $stmt->bindValue(':roundDate',            $dt['roundDate'],              PDO::PARAM_STR);
@@ -211,7 +167,7 @@
         $roundId = intval($db->query( $query, PDO::FETCH_ASSOC )->fetch()['roundId']);
 
         // ServerInfo
-        $insertStatement = buildInsertQueryStatement('ServerInfo');
+        $insertStatement = buildInsertQueryStatement($ns2plusStructure, 'ServerInfo');
         $stmt = $db->prepare($insertStatement);
         $dt = $data['ServerInfo'];
         $modIds = [];
@@ -233,7 +189,7 @@
         $stmt->execute();
 
         // Research
-        $insertStatement = buildInsertQueryStatement('Research');
+        $insertStatement = buildInsertQueryStatement($ns2plusStructure, 'Research');
         $stmt = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',              $roundId,          PDO::PARAM_INT);
         foreach ($data['Research'] as $researchEvent) {
@@ -244,7 +200,7 @@
         }
 
         // Buildings
-        $insertStatement = buildInsertQueryStatement('Buildings');
+        $insertStatement = buildInsertQueryStatement($ns2plusStructure, 'Buildings');
         $stmt = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',              $roundId,          PDO::PARAM_INT);
         foreach ($data['Buildings'] as $buildingEvent) {
@@ -258,7 +214,7 @@
         }
 
         // MarineCommStats
-        $insertStatement = buildInsertQueryStatement('MarineCommStats');
+        $insertStatement = buildInsertQueryStatement($ns2plusStructure, 'MarineCommStats');
         $stmt = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',              $roundId,                           PDO::PARAM_INT);
         foreach ($data['MarineCommStats'] as $commander => $commStats) {
@@ -276,7 +232,7 @@
         }
 
         // PlayerRoundStats
-        $insertStatement  = buildInsertQueryStatement('PlayerRoundStats');
+        $insertStatement  = buildInsertQueryStatement($ns2plusStructure, 'PlayerRoundStats');
         $stmt  = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',                 $roundId,                        PDO::PARAM_INT);
         foreach ($data['PlayerStats'] as $player => $pStats) {
@@ -387,7 +343,7 @@
         }
 
         // PlayerWeaponStats
-        $insertStatement = buildInsertQueryStatement('PlayerWeaponStats');
+        $insertStatement = buildInsertQueryStatement($ns2plusStructure, 'PlayerWeaponStats');
         $stmt = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',                 $roundId,                   PDO::PARAM_INT);
         foreach ($data['PlayerStats'] as $player => $pStats) {
@@ -406,7 +362,7 @@
         }
 
         // PlayerClassStats
-        $insertStatement = buildInsertQueryStatement('PlayerClassStats');
+        $insertStatement = buildInsertQueryStatement($ns2plusStructure, 'PlayerClassStats');
         $stmt = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',                 $roundId,                   PDO::PARAM_INT);
         foreach ($data['PlayerStats'] as $player => $pStats) {
@@ -420,7 +376,7 @@
 
         // KillFeed
         if ( !array_key_exists( 'KillFeed', $data ) ) return; // KillFeed is optional
-        $insertStatement = buildInsertQueryStatement('KillFeed');
+        $insertStatement = buildInsertQueryStatement($ns2plusStructure, 'KillFeed');
         $stmt = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',                 $roundId,           PDO::PARAM_INT);
         foreach ($data['KillFeed'] as $killEvent) {
@@ -444,21 +400,35 @@
     }
 
 
-    function buildInsertQueryStatement($table) {
-        global $ns2plusStructure;
+    function createTables(& $db, $dbStructure) {
+        $execStatement = '';
+        foreach ( $dbStructure as $tableName => $tableContent ) {
+            $execStatement .= 'CREATE TABLE IF NOT EXISTS ' . $tableName . ' (';
+            end($tableContent); $lastKey = key($tableContent);
+            foreach ( $tableContent as $fieldName => $fieldType ) {
+                $execStatement .= "\n\t" . $fieldName . ' ' . $fieldType;
+                if ( $fieldName != $lastKey ) $execStatement .= ',';
+            }
+            $execStatement .= ");\n";
+        }
+        $db->exec($execStatement);
+    }
+
+
+    function buildInsertQueryStatement($dbStructure, $table) {
         // Prepare INSERT statement
         $insertStatement = "INSERT INTO $table (";
-        end($ns2plusStructure[$table]); $lastKey = key($ns2plusStructure[$table]);
-        foreach ( $ns2plusStructure[$table] as $fieldName => $fieldType ) {
-            if ( $table != 'RoundInfo' && $fieldName != 'roundId' ) { // primary keys don't need values
+        end($dbStructure[$table]); $lastKey = key($dbStructure[$table]);
+        foreach ( $dbStructure[$table] as $fieldName => $fieldType ) {
+            if ($fieldType != 'INTEGER PRIMARY KEY') { // primary keys don't need values
                 $insertStatement .= $fieldName;
                 if ( $fieldName != $lastKey )
                     $insertStatement .= ',';
             }
         }
         $insertStatement .= ') VALUES (';
-        foreach ( $ns2plusStructure[$table] as $fieldName => $fieldType ) {
-            if ( $table != 'RoundInfo' && $fieldName != 'roundId' ) { // primary keys don't need values
+        foreach ( $dbStructure[$table] as $fieldName => $fieldType ) {
+            if ($fieldType != 'INTEGER PRIMARY KEY') { // primary keys don't need values
                 $insertStatement .= ':' . $fieldName;
                 if ( $fieldName != $lastKey )
                     $insertStatement .= ',';
@@ -489,21 +459,23 @@
 
 
     function main() {
-        global $data, $roundsDb, $ns2plusDb;
+        global $data;
+        global $wonitorDb, $wonitorStructure;
+        global $ns2plusDb, $ns2plusStructure;
         readData();
         checkWhitelist();
         checkData();
         try {
             if ( $_POST['messageType'] == 'MatchEnd' ) {
-                $db = openDB( $roundsDb );
-                createRoundsTable( $db );
+                $db = openDB( $wonitorDb );
+                createTables( $db, $wonitorStructure );
                 insertRoundData( $db, $data );
                 closeDB( $db );
                 echo "MatchEnd post successful\n";
             }
             if ( $_POST['messageType'] == 'NS2PlusStats' ) {
                 $db = openDB( $ns2plusDb );
-                createNS2PlusTables( $db );
+                createTables( $db, $ns2plusStructure );
                 insertNS2PlusData( $db, $data );
                 closeDB( $db );
                 echo "NS2PlusStats post successful\n";

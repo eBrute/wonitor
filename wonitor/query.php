@@ -1,7 +1,5 @@
 <?php
     date_default_timezone_set( 'UTC' );
-    $isodate = date( 'c', time() );
-
     require_once 'dbUtil.php';
 
     // uncomment the next block to enable logging
@@ -10,6 +8,7 @@
     if (!file_exists('./data')) { mkdir('./data', 0755, true); }
     if (!file_exists('./data')) { exit('Error: unable to create data directory'); }
     $logFile = './data/logfile.log';
+    $isodate = date( 'c', time() );
     file_put_contents( $logFile, $isodate . ' ', FILE_APPEND | LOCK_EX ) or die( 'Error: Unable to write file' );
     file_put_contents( $logFile, 'POST ' . json_encode( $_POST ) . ' ', FILE_APPEND | LOCK_EX ) or die( 'Error: Unable to write file' );
     file_put_contents( $logFile, 'GET ' . json_encode( $_GET ) . "\n", FILE_APPEND | LOCK_EX ) or die( 'Error: Unable to write file' );
@@ -34,7 +33,7 @@
 
 
     function queryDB( & $db ) {
-        global $fieldTypes, $statsTypes, $constraintTypes;
+        global $wonitorStructure, $statsTypes, $constraintTypes;
 
         // select data
         if ( !isset( $_GET['data'] ) ) exit(); // data field is required
@@ -72,7 +71,7 @@
             elseif ( $value == 'serverInfo' ) {
                 $dataFields[] = 'serverName, serverIp, serverPort, serverId';
             }
-            elseif ( isset( $fieldTypes[$value] ) ) {
+            elseif ( isset( $wonitorStructure['rounds'][$value] ) ) {
                 /* i.e. data=map */
                 $dataFields[] = $value;
             }
@@ -82,7 +81,7 @@
                 $dataStats = substr( $value, -4 );
 
                 if ( !isset( $statsTypes[$dataStats] ) ) exit(); // exit here to indicate sth is wrong
-                if ( !isset( $fieldTypes[$dataField] ) ) exit(); // exit here to indicate sth is wrong
+                if ( !isset( $wonitorStructure['rounds'][$dataField] ) ) exit(); // exit here to indicate sth is wrong
 
                 //              COUNT                    (  length      ) AS   length_cnt                                     ,   length
                 $dataFields[] = $statsTypes[$dataStats].'('.$dataField.') AS '.$dataField.$dataStats . ($dataStats=='_cnt' ? ', '.$dataField : ''); // no injection here because we tested the fields earlier
@@ -106,7 +105,7 @@
 
                 $group = explode( '_every_', $value);
 
-                if ( !isset( $fieldTypes[$group[0]] ) ) continue;
+                if ( !isset( $wonitorStructure['rounds'][$group[0]] ) ) continue;
 
                 if ( isset( $group[1] ) ) {
                     $binsize = (float) $group[1];
@@ -132,7 +131,7 @@
 
             /* i.e. map_is=..., length_gt=..., numPlayers_ge=... */
             if ( !isset( $constraintTypes[$constraintType] ) ) continue;
-            if ( !isset( $fieldTypes[$constraintField] ) ) continue;
+            if ( !isset( $wonitorStructure['rounds'][$constraintField] ) ) continue;
 
             foreach ($constraintValues as $index => $constraintValue) {
                 $constraints[] = $constraintField . ' ' . $constraintTypes[$constraintType] . ' :'.$key.$index;
@@ -163,7 +162,7 @@
             $constraintValues = explode( ',', $value);
 
             if ( !isset( $constraintTypes[$constraintType] ) ) continue;
-            if ( !isset( $fieldTypes[$constraintField] ) ) continue;
+            if ( !isset( $wonitorStructure['rounds'][$constraintField] ) ) continue;
 
             foreach ($constraintValues as $index => $constraintValue) {
                 $statement->bindValue( ':'.$key.$index, $constraintValue ); // NOTE this is safe because we check the key above
@@ -183,8 +182,8 @@
 
 
     function main() {
-        global $roundsDb;
-        $db = openDB( $roundsDb );
+        global $wonitorDb;
+        $db = openDB( $wonitorDb );
         try {
             queryDB( $db );
         }

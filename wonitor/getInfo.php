@@ -42,8 +42,8 @@
 
 
     function main() {
-        global $roundsDb;
-        $db = openDB( $roundsDb );
+        global $wonitorDb;
+        $db = openDB( $wonitorDb );
         try {
             queryDB( $db );
         }
