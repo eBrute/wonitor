@@ -27,187 +27,6 @@
         showServerIds();
     }
 
-    $fieldTypes = array(
-        'serverName' => 'TEXT',
-        'serverIp' => 'TEXT',
-        'serverPort' => 'INTEGER',
-        'serverId' => 'TEXT',
-        'version' => 'INTEGER',
-        'modIds' => 'TEXT',
-        'time' => 'TEXT',
-        'map' => 'TEXT',
-        'winner' => 'INTEGER',
-        'length' => 'REAL',
-        'isTournamentMode' => 'INTEGER',
-        'isRookieServer' => 'INTEGER',
-        'startPathDistance' => 'REAL',
-        'startHiveTech' => 'TEXT',
-        'startLocation1' => 'TEXT',
-        'startLocation2' => 'TEXT',
-        'numPlayers1' => 'INTEGER',
-        'numPlayers2' => 'INTEGER',
-        'numPlayersRR' => 'INTEGER',
-        'numPlayersSpec' => 'INTEGER',
-        'numPlayers' => 'INTEGER',
-        'maxPlayers' => 'INTEGER',
-        'numRookies1' => 'INTEGER',
-        'numRookies2' => 'INTEGER',
-        'numRookiesRR' => 'INTEGER',
-        'numRookiesSpec' => 'INTEGER',
-        'numRookies' => 'INTEGER',
-        'skillTeam1' => 'INTEGER',
-        'skillTeam2' => 'INTEGER',
-        'averageSkill' => 'REAL',
-        'killsTeam1' => 'INTEGER',
-        'killsTeam2' => 'INTEGER',
-        'kills' => 'INTEGER',
-        'numRTs1' => 'INTEGER',
-        'numRTs2' => 'INTEGER',
-        'numRTs' => 'INTEGER',
-        'numHives' => 'INTEGER',
-        'numCCs' => 'INTEGER',
-        'numTechPointsCaptured' => 'INTEGER',
-        'biomassLevel' => 'INTEGER'
-    );
-
-    $ns2plusStructure = array(
-        'RoundInfo' => array(
-            'id' => 'INTEGER PRIMARY KEY',
-            'roundDate' => 'INTEGER',
-            'roundLength' => 'REAL',
-            'winningTeam' => 'INTEGER',
-            'maxPlayers1' => 'INTEGER',
-            'maxPlayers2' => 'INTEGER',
-            'mapName' => 'TEXT',
-            'startingLocation1' => 'TEXT',
-            'startingLocation2' => 'TEXT',
-            'locationNames' => 'TEXT',
-            'tournamentMode' => 'INTEGER',
-            'minimapExtents' => 'TEXT',
-        ),
-        'ServerInfo' => array(
-            'roundId' => 'INTEGER',
-            'serverId' => 'TEXT',
-            'name' => 'TEXT',
-            'ip' => 'TEXT',
-            'port' => 'INTEGER',
-            'slots' => 'INTEGER',
-            'modIds' => 'TEXT',
-            'modNames' => 'TEXT',
-            'rookieOnly' => 'INTEGER',
-            'buildNumber' => 'INTEGER'
-        ),
-        'Research' => array(
-            'roundId' => 'INTEGER',
-            'gameTime' => 'REAL',
-            'teamNumber' => 'INTEGER',
-            'researchId' => 'TEXT'
-        ),
-        'Buildings' => array(
-            'roundId' => 'INTEGER',
-            'gameTime' => 'REAL',
-            'teamNumber' => 'INTEGER',
-            'techId' => 'TEXT',
-            'destroyed' => 'INTEGER',
-            'built' => 'INTEGER',
-            'recycled' => 'INTEGER'
-        ),
-        'MarineCommStats' => array(
-            'roundId' => 'INTEGER',
-            'steamId' => 'INTEGER',
-            'medpackPicks' => 'INTEGER',
-            'medpackMisses' => 'INTEGER',
-            'medpackHitsAcc' => 'INTEGER',
-            'medpackRefilled' => 'REAL',
-            'ammopackPicks' => 'INTEGER',
-            'ammopackMisses' => 'INTEGER',
-            'ammopackRefilled' => 'INTEGER',
-            'catpackPicks' => 'INTEGER',
-            'catpackMisses' => 'INTEGER'
-        ),
-        'PlayerRoundStats' => array(
-            'roundId' => 'INTEGER',
-            'steamId' => 'INTEGER',
-            'playerName' => 'TEXT',
-            'lastTeam' => 'INTEGER',
-            'hiveSkill' => 'INTEGER',
-            'isRookie' => 'INTEGER',
-            'teamNumber' => 'INTEGER',
-            'timePlayed' => 'REAL',
-            'timeBuilding' => 'REAL',
-            'commanderTime' => 'REAL',
-            'kills' => 'INTEGER',
-            'assists' => 'INTEGER',
-            'deaths' => 'INTEGER',
-            'killstreak' => 'INTEGER',
-            'hits' => 'INTEGER',
-            'onosHits' => 'INTEGER',
-            'misses' => 'INTEGER',
-            'playerDamage' => 'REAL',
-            'structureDamage' => 'REAL',
-            'score' => 'INTEGER'
-        ),
-        'PlayerStats' => array(
-            'steamId' => 'INTEGER PRIMARY KEY',
-            'playerName' => 'TEXT',
-            'hiveSkill' => 'INTEGER',
-            'isRookie' => 'INTEGER',
-            'timePlayed' => 'REAL DEFAULT 0',
-            'roundsPlayed' => 'INTEGER DEFAULT 0',
-            'timePlayed1' => 'REAL DEFAULT 0',
-            'timePlayed2' => 'REAL DEFAULT 0',
-            'timeBuilding' => 'REAL DEFAULT 0',
-            'commanderTime' => 'REAL DEFAULT 0',
-            'wins' =>  'INTEGER DEFAULT 0',
-            'losses' =>  'INTEGER DEFAULT 0',
-            'commanderWins' =>  'INTEGER DEFAULT 0',
-            'commanderLosses' =>  'INTEGER DEFAULT 0',
-            'kills' => 'INTEGER DEFAULT 0',
-            'deaths' => 'INTEGER DEFAULT 0',
-            'assists' => 'INTEGER DEFAULT 0',
-            'killstreak' => 'INTEGER DEFAULT 0',
-            'hits' => 'INTEGER DEFAULT 0',
-            'onosHits' => 'INTEGER DEFAULT 0',
-            'misses' => 'INTEGER DEFAULT 0',
-            'playerDamage' => 'REAL DEFAULT 0',
-            'structureDamage' => 'REAL DEFAULT 0',
-            'score' => 'INTEGER DEFAULT 0',
-            'lastSeen' => 'INTEGER'
-        ),
-        'PlayerWeaponStats' => array(
-            'roundId' => 'INTEGER',
-            'steamId' => 'INTEGER',
-            'weapon' => 'TEXT',
-            'teamNumber' => 'INTEGER',
-            'hits' => 'INTEGER',
-            'onosHits' => 'INTEGER', //NOTE will be zero if teamNumber==2
-            'misses' => 'INTEGER',
-            'playerDamage' => 'REAL',
-            'structureDamage' => 'REAL',
-            'kills' => 'INTEGER'
-        ),
-        'PlayerClassStats' => array(
-            'roundId' => 'INTEGER',
-            'steamId' => 'INTEGER',
-            'class' => 'TEXT',
-            'classTime' => 'REAL'
-        ),
-        'KillFeed' => array(
-            'roundId' => 'INTEGER',
-            'gameTime' => 'REAL',
-            'victimClass' => 'TEXT',
-            'victimSteamId' => 'INTEGER',
-            'victimLocation' => 'TEXT',
-            'victimPosition' => 'TEXT',
-            'killerWeapon' => 'TEXT',
-            'killerTeamNumber' => 'INTEGER',
-            'killerClass' => 'TEXT',
-            'killerSteamId' => 'INTEGER',
-            'killerLocation' => 'TEXT',
-            'killerPosition' => 'TEXT',
-        )
-    );
-
     $data = array();
 
 
@@ -271,13 +90,16 @@
 
     function createRoundsTable(& $db) {
         global $fieldTypes;
-        $execStatement = "CREATE TABLE IF NOT EXISTS rounds (\n\tid INTEGER PRIMARY KEY";
+        $insertStatement = "CREATE TABLE IF NOT EXISTS rounds (";
+        end($fieldTypes); $lastKey = key($fieldTypes);
         foreach ($fieldTypes as $fieldName => $fieldType ) {
-            $execStatement .= ",\n\t" . $fieldName . ' ' . $fieldType;
+            $insertStatement .= "\n\t" . $fieldName . ' ' . $fieldType;
+            if ( $fieldName != $lastKey )
+                $insertStatement .= ',';
         }
-        $execStatement .= ')';
+        $insertStatement .= ')';
 
-        $db->exec($execStatement);
+        $db->exec($insertStatement);
     }
 
 
@@ -364,11 +186,14 @@
     function insertNS2PlusData(& $db, & $data) {
         global $ns2plusStructure;
 
+        // convert timestamps to human readable times
+        $data['RoundInfo']['roundDate'] = gmdate('Y-m-d H:i:s', $data['RoundInfo']['roundDate']);
+
         // RoundInfo
-        $insertStatement = buildQueryStatement('RoundInfo');
+        $insertStatement = buildInsertQueryStatement('RoundInfo');
         $stmt = $db->prepare($insertStatement);
         $dt = $data['RoundInfo'];
-        $stmt->bindValue(':roundDate',            $dt['roundDate'],              PDO::PARAM_INT);
+        $stmt->bindValue(':roundDate',            $dt['roundDate'],              PDO::PARAM_STR);
         $stmt->bindValue(':roundLength',          $dt['roundLength'],            PDO::PARAM_STR);
         $stmt->bindValue(':winningTeam',          $dt['winningTeam'],            PDO::PARAM_INT);
         $stmt->bindValue(':maxPlayers1',          $dt['maxPlayers1'],            PDO::PARAM_INT);
@@ -382,11 +207,11 @@
         $stmt->execute();
 
         // Get Round Number
-        $query = 'SELECT MAX(id) as id FROM RoundInfo';
-        $roundId = intval($db->query( $query, PDO::FETCH_ASSOC )->fetch()['id']);
+        $query = 'SELECT MAX(roundId) as roundId FROM RoundInfo';
+        $roundId = intval($db->query( $query, PDO::FETCH_ASSOC )->fetch()['roundId']);
 
         // ServerInfo
-        $insertStatement = buildQueryStatement('ServerInfo');
+        $insertStatement = buildInsertQueryStatement('ServerInfo');
         $stmt = $db->prepare($insertStatement);
         $dt = $data['ServerInfo'];
         $modIds = [];
@@ -403,12 +228,12 @@
         $stmt->bindValue(':slots',                $dt['slots'],          PDO::PARAM_INT);
         $stmt->bindValue(':modIds',   json_encode($modIds),              PDO::PARAM_STR);
         $stmt->bindValue(':modNames', json_encode($modNames),            PDO::PARAM_STR);
-        $stmt->bindValue(':rookieOnly',           $dt['rookieOnly'], PDO::PARAM_BOOL);
+        $stmt->bindValue(':rookieOnly',           $dt['rookieOnly'],     PDO::PARAM_BOOL);
         $stmt->bindValue(':buildNumber',          $dt['buildNumber'],    PDO::PARAM_INT);
         $stmt->execute();
 
         // Research
-        $insertStatement = buildQueryStatement('Research');
+        $insertStatement = buildInsertQueryStatement('Research');
         $stmt = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',              $roundId,          PDO::PARAM_INT);
         foreach ($data['Research'] as $researchEvent) {
@@ -419,7 +244,7 @@
         }
 
         // Buildings
-        $insertStatement = buildQueryStatement('Buildings');
+        $insertStatement = buildInsertQueryStatement('Buildings');
         $stmt = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',              $roundId,          PDO::PARAM_INT);
         foreach ($data['Buildings'] as $buildingEvent) {
@@ -433,7 +258,7 @@
         }
 
         // MarineCommStats
-        $insertStatement = buildQueryStatement('MarineCommStats');
+        $insertStatement = buildInsertQueryStatement('MarineCommStats');
         $stmt = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',              $roundId,                           PDO::PARAM_INT);
         foreach ($data['MarineCommStats'] as $commander => $commStats) {
@@ -451,7 +276,7 @@
         }
 
         // PlayerRoundStats
-        $insertStatement  = buildQueryStatement('PlayerRoundStats');
+        $insertStatement  = buildInsertQueryStatement('PlayerRoundStats');
         $stmt  = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',                 $roundId,                        PDO::PARAM_INT);
         foreach ($data['PlayerStats'] as $player => $pStats) {
@@ -539,7 +364,7 @@
             $stmt2->bindValue(':losses',              $isLoser  ? 1 : 0,               PDO::PARAM_INT);
             $stmt2->bindValue(':commanderWins',       $isWinnerComm ? 1 : 0,           PDO::PARAM_INT);
             $stmt2->bindValue(':commanderLosses',     $isLoserComm  ? 1 : 0,           PDO::PARAM_INT);
-            $stmt2->bindValue(':lastSeen',            $data['RoundInfo']['roundDate'], PDO::PARAM_INT);
+            $stmt2->bindValue(':lastSeen',            $data['RoundInfo']['roundDate'], PDO::PARAM_STR);
             $stmt1->execute();
             foreach (['1','2'] as $t) {
                 $stmt2->bindValue(":timePlayed$t",    $pStats[$t]['timePlayed'],       PDO::PARAM_STR);
@@ -562,7 +387,7 @@
         }
 
         // PlayerWeaponStats
-        $insertStatement = buildQueryStatement('PlayerWeaponStats');
+        $insertStatement = buildInsertQueryStatement('PlayerWeaponStats');
         $stmt = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',                 $roundId,                   PDO::PARAM_INT);
         foreach ($data['PlayerStats'] as $player => $pStats) {
@@ -581,7 +406,7 @@
         }
 
         // PlayerClassStats
-        $insertStatement = buildQueryStatement('PlayerClassStats');
+        $insertStatement = buildInsertQueryStatement('PlayerClassStats');
         $stmt = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',                 $roundId,                   PDO::PARAM_INT);
         foreach ($data['PlayerStats'] as $player => $pStats) {
@@ -595,7 +420,7 @@
 
         // KillFeed
         if ( !array_key_exists( 'KillFeed', $data ) ) return; // KillFeed is optional
-        $insertStatement = buildQueryStatement('KillFeed');
+        $insertStatement = buildInsertQueryStatement('KillFeed');
         $stmt = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',                 $roundId,           PDO::PARAM_INT);
         foreach ($data['KillFeed'] as $killEvent) {
@@ -619,13 +444,13 @@
     }
 
 
-    function buildQueryStatement($table) {
+    function buildInsertQueryStatement($table) {
         global $ns2plusStructure;
         // Prepare INSERT statement
         $insertStatement = "INSERT INTO $table (";
         end($ns2plusStructure[$table]); $lastKey = key($ns2plusStructure[$table]);
         foreach ( $ns2plusStructure[$table] as $fieldName => $fieldType ) {
-            if ( $fieldName != 'id' ) {
+            if ( $table != 'RoundInfo' && $fieldName != 'roundId' ) { // primary keys don't need values
                 $insertStatement .= $fieldName;
                 if ( $fieldName != $lastKey )
                     $insertStatement .= ',';
@@ -633,7 +458,7 @@
         }
         $insertStatement .= ') VALUES (';
         foreach ( $ns2plusStructure[$table] as $fieldName => $fieldType ) {
-            if ( $fieldName != 'id' ) {
+            if ( $table != 'RoundInfo' && $fieldName != 'roundId' ) { // primary keys don't need values
                 $insertStatement .= ':' . $fieldName;
                 if ( $fieldName != $lastKey )
                     $insertStatement .= ',';

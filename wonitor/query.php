@@ -15,52 +15,6 @@
     file_put_contents( $logFile, 'GET ' . json_encode( $_GET ) . "\n", FILE_APPEND | LOCK_EX ) or die( 'Error: Unable to write file' );
     */
 
-    // all fields listed here are query-able
-    // changes in the sql structure should also enter here, value should not be null
-    $fieldTypes = array(
-        'id' => PDO::PARAM_INT,
-        'serverName' => PDO::PARAM_STR,
-        'serverIp' => PDO::PARAM_STR,
-        'serverPort' => PDO::PARAM_INT,
-        'serverId' => PDO::PARAM_STR,
-        'version' => PDO::PARAM_INT,
-        'modIds' => PDO::PARAM_STR,
-        'time' => PDO::PARAM_STR,
-        'map' => PDO::PARAM_STR,
-        'winner' => PDO::PARAM_INT,
-        'length' => PDO::PARAM_STR,
-        'isTournamentMode' => PDO::PARAM_BOOL,
-        'isRookieServer' => PDO::PARAM_BOOL,
-        'startPathDistance' => PDO::PARAM_STR,
-        'startHiveTech' => PDO::PARAM_STR,
-        'startLocation1' => PDO::PARAM_STR,
-        'startLocation2' => PDO::PARAM_STR,
-        'numPlayers1' => PDO::PARAM_INT,
-        'numPlayers2' => PDO::PARAM_INT,
-        'numPlayersRR' => PDO::PARAM_INT,
-        'numPlayersSpec' => PDO::PARAM_INT,
-        'numPlayers' => PDO::PARAM_INT,
-        'maxPlayers' => PDO::PARAM_INT,
-        'numRookies1' => PDO::PARAM_INT,
-        'numRookies2' => PDO::PARAM_INT,
-        'numRookiesRR' => PDO::PARAM_INT,
-        'numRookiesSpec' => PDO::PARAM_INT,
-        'numRookies' => PDO::PARAM_INT,
-        'skillTeam1' => PDO::PARAM_INT,
-        'skillTeam2' => PDO::PARAM_INT,
-        'averageSkill' => PDO::PARAM_STR,
-        'killsTeam1' => PDO::PARAM_INT,
-        'killsTeam2' => PDO::PARAM_INT,
-        'kills' => PDO::PARAM_INT,
-        'numRTs1' => PDO::PARAM_INT,
-        'numRTs2' => PDO::PARAM_INT,
-        'numRTs' => PDO::PARAM_INT,
-        'numHives' => PDO::PARAM_INT,
-        'numCCs' => PDO::PARAM_INT,
-        'numTechPointsCaptured' => PDO::PARAM_INT,
-        'biomassLevel' => PDO::PARAM_INT
-        );
-
     // simple statistics functions that are applied when key is added to the requested data column
     $statsTypes = array(
         '_avg' => 'AVG',
