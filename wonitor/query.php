@@ -15,7 +15,7 @@
     */
 
     // simple statistics functions that are applied when key is added to the requested data column
-    $statsTypes = array(
+    $statsMethodDefs = array(
         '_avg' => 'AVG',
         '_sum' => 'SUM',
         '_cnt' => 'COUNT',
@@ -33,7 +33,7 @@
 
 
     function queryDB( & $db ) {
-        global $wonitorStructure, $statsTypes, $constraintTypes;
+        global $wonitorStructure, $statsMethodDefs, $constraintTypes;
 
         // select data
         if ( !isset( $_GET['data'] ) ) exit(); // data field is required
@@ -78,13 +78,13 @@
             else {
                 /* i.e. data=length_sum, data=winner_avg, data=numPlayers_cnt */
                 $dataField = substr( $value, 0, -4 );
-                $dataStats = substr( $value, -4 );
+                $dataStatsMethod = substr( $value, -4 );
 
-                if ( !isset( $statsTypes[$dataStats] ) ) exit(); // exit here to indicate sth is wrong
+                if ( !isset( $statsMethodDefs[$dataStatsMethod] ) ) exit(); // exit here to indicate sth is wrong
                 if ( !isset( $wonitorStructure['rounds'][$dataField] ) ) exit(); // exit here to indicate sth is wrong
 
-                //              COUNT                    (  length      ) AS   length_cnt                                     ,   length
-                $dataFields[] = $statsTypes[$dataStats].'('.$dataField.') AS '.$dataField.$dataStats . ($dataStats=='_cnt' ? ', '.$dataField : ''); // no injection here because we tested the fields earlier
+                //              COUNT                               (  length      ) AS   length_cnt                                                 ,   length
+                $dataFields[] = $statsMethodDefs[$dataStatsMethod].'('.$dataField.') AS '.$dataField.$dataStatsMethod . ($dataStatsMethod=='_cnt' ? ', '.$dataField : ''); // no injection here because we tested the fields earlier
             }
         }
 
@@ -133,10 +133,24 @@
             if ( !isset( $constraintTypes[$constraintType] ) ) continue;
             if ( !isset( $wonitorStructure['rounds'][$constraintField] ) ) continue;
 
-            foreach ($constraintValues as $index => $constraintValue) {
-                $constraints[] = $constraintField . ' ' . $constraintTypes[$constraintType] . ' :'.$key.$index;
+            if ( $constraintType == '_is') {
+              // IS constraints are chained with OR
+              $temp = array();
+              foreach ($constraintValues as $index => $constraintValue) {
+                  $temp[] = $constraintField . ' ' . $constraintTypes[$constraintType] . ' :'.$key.($index+1);
+              }
+              if (count($temp) == 1) {
+                  $constraints[] = $temp[0];
+              }
+              else {
+                  $constraints[] = '( ' . join( $temp, ' OR ' ) . ' )';
+              }
             }
-
+            else {
+                foreach ($constraintValues as $index => $constraintValue) {
+                    $constraints[] = $constraintField . ' ' . $constraintTypes[$constraintType] . ' :'.$key.($index+1);
+                }
+            }
         }
         // TODO SELECT time FROM rounds WHERE time > datetime('now', '-2 day');
 
@@ -151,7 +165,7 @@
         }
         $statement = $db->prepare( $query );
         if ( isset( $_GET['showQuery']) ) {
-            echo $statement->queryString . "\n";
+            echo $statement->queryString . "<br />\n";
         }
 
         // bind values
@@ -165,7 +179,7 @@
             if ( !isset( $wonitorStructure['rounds'][$constraintField] ) ) continue;
 
             foreach ($constraintValues as $index => $constraintValue) {
-                $statement->bindValue( ':'.$key.$index, $constraintValue ); // NOTE this is safe because we check the key above
+                $statement->bindValue( ':'.$key.($index+1), $constraintValue ); // NOTE this is safe because we check the key above
             }
         }
 
