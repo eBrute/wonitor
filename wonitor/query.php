@@ -31,9 +31,14 @@
         '_ge' => '>='
         );
 
+    // options for the sql query (ODER BY)
+    $orderOptions = array(
+        'asc' => 'ASC',
+        'desc' => 'DESC'
+        );
 
     function queryDB( & $db, $structure, $table ) {
-        global $statsMethodDefs, $constraintTypes;
+        global $statsMethodDefs, $constraintTypes, $orderOptions;
         global $wonitorStructure, $ns2plusStructure;
 
         $isWonitor = $structure == $wonitorStructure;
@@ -99,7 +104,7 @@
         $data = join( $dataFields, ', ' );
 
         // grouping
-        $groupFields = array();
+        $groupBy = array();
         if ( isset( $_GET['group_by'] ) ) {
             $groups = explode( ',', $_GET['group_by']);
 
@@ -121,13 +126,12 @@
                 else {
                     $data .= ', ' . $group[0] . ' AS [group'.($index+1).']';
                 }
-                $groupFields[] = '[group'.($index+1).']';
+                $groupBy[] = '[group'.($index+1).']';
             }
         }
-        $groupBy = join( $groupFields , ', ' );
 
         // constraints
-        $constraints = [];
+        $constraints = array();
         foreach( $_GET as $key => $value ) {
             if ( strlen($key ) < 3 ) continue;
             $constraintField  = substr($key, 0, -3 );
@@ -140,15 +144,15 @@
 
             if ( $constraintType == '_is') {
               // IS constraints are chained with OR
-              $temp = array();
+              $subconstraint = array();
               foreach ($constraintValues as $index => $constraintValue) {
-                  $temp[] = $constraintField . ' ' . $constraintTypes[$constraintType] . ' :'.$key.($index+1);
+                  $subconstraint[] = $constraintField . ' ' . $constraintTypes[$constraintType] . ' :'.$key.($index+1);
               }
-              if (count($temp) == 1) {
-                  $constraints[] = $temp[0];
+              if (count($subconstraint) == 1) {
+                  $constraints[] = $subconstraint[0];
               }
               else {
-                  $constraints[] = '( ' . join( $temp, ' OR ' ) . ' )';
+                  $constraints[] = '( ' . join( $subconstraint, ' OR ' ) . ' )';
               }
             }
             else {
@@ -159,6 +163,25 @@
         }
         // TODO SELECT time FROM rounds WHERE time > datetime('now', '-2 day');
 
+
+        // ordering
+        $orderBy = array();
+        if ( isset( $_GET['order_by'] ) ) {
+            $orders = explode( ',', $_GET['order_by']);
+
+            foreach ( $orders as $index => $value ) {
+                if ( $value == '' ) {
+                    continue;
+                }
+
+                $order = explode( '_', $value);
+
+                if ( !isset( $structure[$table][$order[0]] ) ) continue;
+
+                $orderBy[] = $order[0] . (isset($order[1], $orderOptions[$order[1]]) ? ' ' . $orderOptions[$order[1]] : '');
+            }
+        }
+
         // build and prepare query
         $query = 'SELECT ' . $data;
         $query .= ' FROM ' . $table; // NOTE this is safe because we checked the table exists
@@ -166,7 +189,10 @@
             $query .= ' WHERE ' . join( $constraints, ' AND ' );
         }
         if ( $groupBy ) {
-            $query .= ' GROUP BY ' . $groupBy;
+            $query .= ' GROUP BY ' . join( $groupBy , ', ' );;
+        }
+        if ( $orderBy ) {
+            $query .= ' ORDER BY ' . join( $orderBy , ', ' );;
         }
         $statement = $db->prepare( $query );
         if ( isset( $_GET['showQuery']) ) {

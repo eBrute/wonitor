@@ -90,6 +90,10 @@ When the javascript is loaded afterwards, the appropriate chart will be added to
 
   For number fields, the grouped field can be appended by **_every_<num>** to round down the field towards the nearest multiple of <num> before grouping. I.e. *'query.php?data=count&group_by=numPlayers_every_10'* gives the number of rounds for player counts in between 0-9, 10-19, 20-29, etc., or *'query.php?data=count&group_by=length_every_60'* returns the number of rounds that lasted for 1 minute (60+ sec), 2 minutes (120+ sec), etc.
 
+* **order_by** contains a comma separated list of field names. Entries are sorted by those fields (in order). I.e. *'query.php?data=numPlayers,map&order_by=numPlayers,map'* orders the result by number of players first. Entries with the same number of players are then sorted by map name.
+
+  Sort direction can be specified for each field individually by appending either **_asc** or **_desc**. If none is given, ascending will be used. Example: *'query.php?data=numPlayers,map&order_by=numPlayers_asc,map_desc'*
+
 * constraints can be placed on any regular field by using the field name and a constraint operator [**is**(=),**ne**(!=),**gt**(>),**ge**(>=),**lt**(<),**le**(<=)], i.e.*'query.php?data=id&map_is=ns2_summit'*.
 
   All constraints can handle a comma-separated array of values, i.e. *'query.php?data=id&map_is=ns2_summit,ns2_veil'*. For the **is** constraint, entries are chained with a logical OR. I.e. the previous example selects every round where the map is either *ns2_summit* OR *ns2_veil*. All other constraints use the logical AND. I.e. *'query.php?data=id&map_ne=ns2_summit,ns2_veil'* selects all rounds where the map is not *ns2_summit* AND is not *ns2_veil*.
