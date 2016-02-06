@@ -33,7 +33,7 @@
 
 
     // all fields listed here are query-able
-    // changes in the sql structure should also enter here, value should not be null
+    // changes in the sql structure should also enter here, fieldnames should not include a _
     $wonitorStructure = array(
       'rounds' => array(
         'id' => 'INTEGER PRIMARY KEY',

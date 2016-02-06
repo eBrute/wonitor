@@ -135,7 +135,7 @@
         foreach( $_GET as $key => $value ) {
             if ( strlen($key ) < 3 ) continue;
             $constraintField  = substr($key, 0, -3 );
-            $constraintType = substr($key, -3 );
+            $constraintType   = substr($key, -3 );
             $constraintValues = explode( ',', $value);
 
             /* i.e. map_is=..., length_gt=..., numPlayers_ge=... */
@@ -161,7 +161,6 @@
                 }
             }
         }
-        // TODO SELECT time FROM rounds WHERE time > datetime('now', '-2 day');
 
 
         // ordering
@@ -170,11 +169,7 @@
             $orders = explode( ',', $_GET['order_by']);
 
             foreach ( $orders as $index => $value ) {
-                if ( $value == '' ) {
-                    continue;
-                }
-
-                $order = explode( '_', $value);
+                $order = explode( '_', $value); // NOTE we can't have fieldnames with _ because auf this
 
                 if ( !isset( $structure[$table][$order[0]] ) ) continue;
 
@@ -189,12 +184,13 @@
             $query .= ' WHERE ' . join( $constraints, ' AND ' );
         }
         if ( $groupBy ) {
-            $query .= ' GROUP BY ' . join( $groupBy , ', ' );;
+            $query .= ' GROUP BY ' . join( $groupBy , ', ' );
         }
         if ( $orderBy ) {
-            $query .= ' ORDER BY ' . join( $orderBy , ', ' );;
+            $query .= ' ORDER BY ' . join( $orderBy , ', ' );
         }
         $statement = $db->prepare( $query );
+
         if ( isset( $_GET['showQuery']) ) {
             echo $statement->queryString . "<br /><br />\n";
         }
@@ -261,6 +257,8 @@
 
     main();
 
+    // TODO SELECT time FROM rounds WHERE time > datetime('now', '-2 day');
+    // TODO make fieldnames and tables case insensitive
     // curl --request GET 'http://example.com/wonitor/query.php?data=length_avg&group_by=serverId&length_gt=500'
     // curl --request GET 'http://example.com/wonitor/query.php?data=teamWins&map_is=ns2_veil&group_by=serverId'
     // curl --request GET 'http://example.com/wonitor/query.php?data=winner&map_is=ns2_veil'
