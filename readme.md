@@ -63,8 +63,10 @@ There are some predefined charts on the example page. Creating others is easy th
 When the javascript is loaded afterwards, the appropriate chart will be added to the DIV. The chart will inherit certain properties such as width, height, font-size, etc.
 
 ## Query API
-**query.php** allows to query the database. The type of query is determined by the GET parameters, the result is returned in JSON format. The following parameters are supported:
-* **data** mandatory; contains a comma separated list of field names (see below for a list of fields). I.e. *'query.php?data=id,map,numPlayers'* returns all ids and their respective maps and player counts.
+**query.php** allows to query the database. The type of query is determined by the GET parameters, the result is returned in JSON format. The following parameters are supported (all optional):
+* **table** specifies which table to query. Defaults to **rounds** in the wonitor database. Other valid options are **RoundInfo**,**ServerInfo**,**Research**,**Buildings**,**MarineCommStats**,**PlayerRoundStats**,**PlayerStats**,**PlayerWeaponStats**,**PlayerClassStats**,**KillFeed**, all of which are tables in the NS2+ database. Example: *'query.php?table=KillFeed'*
+
+* **data** contains a comma separated list of field names (see below for a list of fields). I.e. *'query.php?data=id,map,numPlayers'* returns all ids and their respective maps and player counts.
 
   Some basic operations can be performed on regular fields (that are numbers) by appending the fieldname with one of the following operators:
   * **_avg** - averages the respective field
@@ -86,9 +88,13 @@ When the javascript is loaded afterwards, the appropriate chart will be added to
 
 * **group_by** contains a comma separated list of field names. Entries are grouped by those fields (in order). I.e. *'query.php?data=count&group_by=version,map'* lists the number of rounds on each map (as group2) for each version (as group1).
 
-  For number fields, the grouped field can be appended by **_every_<num>** to round down the field towards the nearest multiple of <num> before grouping. I.e. *'query.php?data=count&group_by=numPlayers_every_10'* gives the number of rounds for player counts in between 0-9, 10-19, 20-29, etc., or *'query.php?data=count&group_by=length_every_60'* returns the number of rounds that lastest for 1 minute (60+ sec), 2 minutes (120+ sec), etc.
+  For number fields, the grouped field can be appended by **_every_<num>** to round down the field towards the nearest multiple of <num> before grouping. I.e. *'query.php?data=count&group_by=numPlayers_every_10'* gives the number of rounds for player counts in between 0-9, 10-19, 20-29, etc., or *'query.php?data=count&group_by=length_every_60'* returns the number of rounds that lasted for 1 minute (60+ sec), 2 minutes (120+ sec), etc.
 
-* constraints can be placed on any regular field by using the field name and a constraint operator [**is**(=),**ne**(!=),**gt**(>),**ge**(>=),**lt**(<),**le**(<=)]. I.e. *'query.php?data=id&map_is=ns2_summit&length_gt=300&numPlayers_ge=10'* selects only those entries for which the map is summit, the round length exceeds 5 minutes and the player count is greater or equal ten.
+* constraints can be placed on any regular field by using the field name and a constraint operator [**is**(=),**ne**(!=),**gt**(>),**ge**(>=),**lt**(<),**le**(<=)], i.e.*'query.php?data=id&map_is=ns2_summit'*.
+
+  All constraints can handle a comma-separated array of values, i.e. *'query.php?data=id&map_is=ns2_summit,ns2_veil'*. For the **is** constraint, entries are chained with a logical OR. I.e. the previous example selects every round where the map is either *ns2_summit* OR *ns2_veil*. All other constraints use the logical AND. I.e. *'query.php?data=id&map_ne=ns2_summit,ns2_veil'* selects all rounds where the map is not *ns2_summit* AND is not *ns2_veil*.
+
+  Multiple constraints are chained together with a logical AND, too, i.e. *'query.php?data=id&map_is=ns2_summit&length_gt=300&numPlayers_ge=10'* selects only those entries for which the map is summit, the round length exceeds 5 minutes and the player count is greater or equal ten.
 
 * **showQuery** without parameters; reveals the underlying SQL query. I.e. *'query.php?data=count,map&group_by=map&length_ge=300&showQuery'* shows *'SELECT COUNT(1) AS count, map, map AS [group1] FROM rounds WHERE length >= :length_ge GROUP BY [group1]'*
 
@@ -142,6 +148,9 @@ numHives | number of hives at round end
 numCCs | number of command stations at round end
 numTechPointsCaptured | number of captured tech points at round end
 biomassLevel | biomass level at round end
+
+## Troubleshooting
+If something does not work as expected, try **troubleshooting.php**. It tests for some common errors and will give advice on how to fix them.
 
 ## Feedback
 Need something added? Head to <br />

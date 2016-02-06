@@ -32,13 +32,18 @@
         );
 
 
-    function queryDB( & $db ) {
-        global $wonitorStructure, $statsMethodDefs, $constraintTypes;
+    function queryDB( & $db, $structure, $table ) {
+        global $statsMethodDefs, $constraintTypes;
+        global $wonitorStructure, $ns2plusStructure;
+
+        $isWonitor = $structure == $wonitorStructure;
 
         // select data
-        if ( !isset( $_GET['data'] ) ) exit(); // data field is required
         $dataFields = array();
-        $dataRequests = explode( ',', $_GET['data']);
+        $dataRequests = ['all'];
+        if ( isset( $_GET['data'] ) ) {
+            $dataRequests = explode( ',', $_GET['data']);
+        }
 
         foreach( $dataRequests as $value ) {
             if ( $value == '' ) {
@@ -47,31 +52,31 @@
             elseif ( $value == 'all' ) {
                 $dataFields[] = '*';
             }
-            elseif ( $value == 'team1Wins' ) {
-                $dataFields[] = 'SUM( CASE WHEN winner=1 THEN 1 ELSE 0 END ) AS team1Wins';
-            }
-            elseif ( $value == 'team2Wins' ) {
-                $dataFields[] = 'SUM( CASE WHEN winner=2 THEN 1 ELSE 0 END ) AS team2Wins';
-            }
-            elseif ( $value == 'draws' ) {
-                $dataFields[] = 'SUM( CASE WHEN winner=0 THEN 1 ELSE 0 END ) AS draws';
-            }
-            elseif ( $value == 'teamWins' ) {
-                $dataFields[] = 'SUM( CASE WHEN winner=1 THEN 1 ELSE 0 END ) AS team1Wins, SUM( CASE WHEN winner=2 THEN 1 ELSE 0 END ) AS team2Wins, SUM( CASE WHEN winner=0 THEN 1 ELSE 0 END ) AS draws';
-            }
-            elseif ( $value == 'numRounds' ) {
-                $dataFields[] = 'COUNT(1) AS numRounds';
-            }
             elseif ( $value == 'count' ) {
                 $dataFields[] = 'COUNT(1) AS count';
             }
-            elseif ( $value == 'startLocations' ) {
+            elseif ( $isWonitor && $value == 'numRounds' ) {
+                $dataFields[] = 'COUNT(1) AS numRounds';
+            }
+            elseif ( $isWonitor && $value == 'team1Wins' ) {
+                $dataFields[] = 'SUM( CASE WHEN winner=1 THEN 1 ELSE 0 END ) AS team1Wins';
+            }
+            elseif ( $isWonitor && $value == 'team2Wins' ) {
+                $dataFields[] = 'SUM( CASE WHEN winner=2 THEN 1 ELSE 0 END ) AS team2Wins';
+            }
+            elseif ( $isWonitor && $value == 'draws' ) {
+                $dataFields[] = 'SUM( CASE WHEN winner=0 THEN 1 ELSE 0 END ) AS draws';
+            }
+            elseif ( $isWonitor && $value == 'teamWins' ) {
+                $dataFields[] = 'SUM( CASE WHEN winner=1 THEN 1 ELSE 0 END ) AS team1Wins, SUM( CASE WHEN winner=2 THEN 1 ELSE 0 END ) AS team2Wins, SUM( CASE WHEN winner=0 THEN 1 ELSE 0 END ) AS draws';
+            }
+            elseif ( $isWonitor && $value == 'startLocations' ) {
                 $dataFields[] = 'startLocation1, startLocation2';
             }
-            elseif ( $value == 'serverInfo' ) {
+            elseif ( $isWonitor && $value == 'serverInfo' ) {
                 $dataFields[] = 'serverName, serverIp, serverPort, serverId';
             }
-            elseif ( isset( $wonitorStructure['rounds'][$value] ) ) {
+            elseif ( isset( $structure[$table][$value] ) ) {
                 /* i.e. data=map */
                 $dataFields[] = $value;
             }
@@ -81,7 +86,7 @@
                 $dataStatsMethod = substr( $value, -4 );
 
                 if ( !isset( $statsMethodDefs[$dataStatsMethod] ) ) exit(); // exit here to indicate sth is wrong
-                if ( !isset( $wonitorStructure['rounds'][$dataField] ) ) exit(); // exit here to indicate sth is wrong
+                if ( !isset( $structure[$table][$dataField] ) ) exit(); // exit here to indicate sth is wrong
 
                 //              COUNT                               (  length      ) AS   length_cnt                                                 ,   length
                 $dataFields[] = $statsMethodDefs[$dataStatsMethod].'('.$dataField.') AS '.$dataField.$dataStatsMethod . ($dataStatsMethod=='_cnt' ? ', '.$dataField : ''); // no injection here because we tested the fields earlier
@@ -105,7 +110,7 @@
 
                 $group = explode( '_every_', $value);
 
-                if ( !isset( $wonitorStructure['rounds'][$group[0]] ) ) continue;
+                if ( !isset( $structure[$table][$group[0]] ) ) continue;
 
                 if ( isset( $group[1] ) ) {
                     $binsize = (float) $group[1];
@@ -131,7 +136,7 @@
 
             /* i.e. map_is=..., length_gt=..., numPlayers_ge=... */
             if ( !isset( $constraintTypes[$constraintType] ) ) continue;
-            if ( !isset( $wonitorStructure['rounds'][$constraintField] ) ) continue;
+            if ( !isset( $structure[$table][$constraintField] ) ) continue;
 
             if ( $constraintType == '_is') {
               // IS constraints are chained with OR
@@ -156,7 +161,7 @@
 
         // build and prepare query
         $query = 'SELECT ' . $data;
-        $query .= ' FROM rounds';
+        $query .= ' FROM ' . $table; // NOTE this is safe because we checked the table exists
         if ( $constraints ) {
             $query .= ' WHERE ' . join( $constraints, ' AND ' );
         }
@@ -165,7 +170,7 @@
         }
         $statement = $db->prepare( $query );
         if ( isset( $_GET['showQuery']) ) {
-            echo $statement->queryString . "<br />\n";
+            echo $statement->queryString . "<br /><br />\n";
         }
 
         // bind values
@@ -176,7 +181,7 @@
             $constraintValues = explode( ',', $value);
 
             if ( !isset( $constraintTypes[$constraintType] ) ) continue;
-            if ( !isset( $wonitorStructure['rounds'][$constraintField] ) ) continue;
+            if ( !isset( $structure[$table][$constraintField] ) ) continue;
 
             foreach ($constraintValues as $index => $constraintValue) {
                 $statement->bindValue( ':'.$key.($index+1), $constraintValue ); // NOTE this is safe because we check the key above
@@ -196,14 +201,35 @@
 
 
     function main() {
-        global $wonitorDb;
-        $db = openDB( $wonitorDb );
+        global $wonitorDb, $wonitorStructure;
+        global $ns2plusDb, $ns2plusStructure;
+
+        $table = 'rounds';
+        if ( isset($_GET['table']) ) {
+          $table = $_GET['table'];
+        }
+
+        $db = null;
+        $structure = null;
+        if ( isset($wonitorStructure[$table]) ) {
+            $db = openDB( $wonitorDb );
+            $structure = $wonitorStructure;
+        }
+        elseif( isset($ns2plusStructure[$table]) ) {
+            $db = openDB( $ns2plusDb );
+            $structure = $ns2plusStructure;
+        }
+        else {
+            exit();
+        }
+
         try {
-            queryDB( $db );
+            queryDB( $db, $structure, $table );
         }
         catch (PDOException $e) {
             echo $e->getMessage();
         }
+
         closeDB( $db );
     }
 
