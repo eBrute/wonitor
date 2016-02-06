@@ -9,7 +9,6 @@
 <body>
 <?php
   require_once 'dbUtil.php';
-  global $wonitorDb;
   $db = openDB( $wonitorDb );
   $query = 'SELECT serverId, serverName, COUNT(1) as rounds FROM rounds GROUP BY serverId ORDER BY count(1) DESC';
   $servers = $db->query( $query, PDO::FETCH_ASSOC )->fetchAll();
