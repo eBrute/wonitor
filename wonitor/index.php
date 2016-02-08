@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="shortcut icon" href="favicon.ico" type="image/icon">
   <link rel="stylesheet" href="css/wonitor.css">
 </head>
+
 <body>
 <?php
   require_once 'dbUtil.php';
@@ -98,4 +100,5 @@
   </div>
   <script>document.getElementById('jsCheck').remove();</script>
 </body>
+
 </html>
