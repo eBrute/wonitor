@@ -241,7 +241,7 @@
             $stmt->bindValue( ':lastTeam',           $pStats['lastTeam'],             PDO::PARAM_INT);
             $stmt->bindValue( ':hiveSkill',          $pStats['hiveSkill'],            PDO::PARAM_INT);
             $stmt->bindValue( ':isRookie',           $pStats['isRookie'],             PDO::PARAM_BOOL);
-            foreach (['1','2'] as $t) {
+            foreach (['1', '2'] as $t) {
                 $stmt->bindValue(':teamNumber',      $t,                              PDO::PARAM_INT);
                 $stmt->bindValue(':timePlayed',      $pStats[$t]['timePlayed'],       PDO::PARAM_STR);
                 $stmt->bindValue(':timeBuilding',    $pStats[$t]['timeBuilding'],     PDO::PARAM_STR);
@@ -297,7 +297,7 @@
         $stmt3 = $db->prepare($updateTeamStatement);
         $commanderTimes = array('1' => [-1 => -1], '2' => [-1 => -1]); //max wont work with empty arrays
         foreach ($data['PlayerStats'] as $player => $pStats) {
-            foreach (['1','2'] as $t) {
+            foreach (['1', '2'] as $t) {
               $commanderTimes[$t][$player] = $pStats[$t]['commanderTime'];
             }
         }
@@ -322,7 +322,7 @@
             $stmt2->bindValue(':commanderLosses',     $isLoserComm  ? 1 : 0,           PDO::PARAM_INT);
             $stmt2->bindValue(':lastSeen',            $data['RoundInfo']['roundDate'], PDO::PARAM_STR);
             $stmt1->execute();
-            foreach (['1','2'] as $t) {
+            foreach (['1', '2'] as $t) {
                 $stmt2->bindValue(":timePlayed$t",    $pStats[$t]['timePlayed'],       PDO::PARAM_STR);
                 $stmt3->bindValue(':timePlayed',      $pStats[$t]['timePlayed'],       PDO::PARAM_STR);
                 $stmt3->bindValue(':timeBuilding',    $pStats[$t]['timeBuilding'],     PDO::PARAM_STR);

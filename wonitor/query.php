@@ -28,13 +28,13 @@
         '_lt' => '<',
         '_le' => '<=',
         '_gt' => '>',
-        '_ge' => '>='
+        '_ge' => '>=',
         );
 
     // options for the sql query (ODER BY)
     $orderOptions = array(
         'asc' => 'ASC',
-        'desc' => 'DESC'
+        'desc' => 'DESC',
         );
 
     function queryDB( & $db, $structure, $table ) {
@@ -101,7 +101,7 @@
         if ( !$dataFields ) {
             exit(); // data field is required
         }
-        $data = join( $dataFields, ', ' );
+        $data = implode( ', ', $dataFields );
 
         // grouping
         $groupBy = array();
@@ -124,9 +124,9 @@
                     //$data .= ', ROUND(' . $group[0] . '/' . $binsize . ')*' . $binsize.' AS [group'.($index==0 ? '' : $index+1 ).']';
                 }
                 else {
-                    $data .= ', ' . $group[0] . ' AS [group'.($index+1).']';
+                    $data .= ', ' . $group[0] . ' AS [group'.($index + 1).']';
                 }
-                $groupBy[] = '[group'.($index+1).']';
+                $groupBy[] = '[group'.($index + 1).']';
             }
         }
 
@@ -152,7 +152,7 @@
                   $constraints[] = $subconstraint[0];
               }
               else {
-                  $constraints[] = '( ' . join( $subconstraint, ' OR ' ) . ' )';
+                  $constraints[] = '( ' . implode( ' OR ', $subconstraint ) . ' )';
               }
             }
             else {
@@ -181,13 +181,13 @@
         $query = 'SELECT ' . $data;
         $query .= ' FROM ' . $table; // NOTE this is safe because we checked the table exists
         if ( $constraints ) {
-            $query .= ' WHERE ' . join( $constraints, ' AND ' );
+            $query .= ' WHERE ' . implode( ' AND ', $constraints );
         }
         if ( $groupBy ) {
-            $query .= ' GROUP BY ' . join( $groupBy , ', ' );
+            $query .= ' GROUP BY ' . implode( ', ' , $groupBy );
         }
         if ( $orderBy ) {
-            $query .= ' ORDER BY ' . join( $orderBy , ', ' );
+            $query .= ' ORDER BY ' . implode( ', ', $orderBy );
         }
         $statement = $db->prepare( $query );
 
@@ -199,7 +199,7 @@
         foreach( $_GET as $key => $value ) { // NOTE same loop as above, possible optimization here
             if ( strlen($key ) < 3 ) continue;
             $constraintField  = substr($key, 0, -3 );
-            $constraintType = substr($key, -3 );
+            $constraintType   = substr($key, -3 );
             $constraintValues = explode( ',', $value);
 
             if ( !isset( $constraintTypes[$constraintType] ) ) continue;

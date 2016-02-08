@@ -76,8 +76,8 @@
         'numHives' => 'INTEGER',
         'numCCs' => 'INTEGER',
         'numTechPointsCaptured' => 'INTEGER',
-        'biomassLevel' => 'INTEGER'
-      )
+        'biomassLevel' => 'INTEGER',
+      ),
     );
 
 
@@ -106,13 +106,13 @@
             'modIds' => 'TEXT',
             'modNames' => 'TEXT',
             'rookieOnly' => 'INTEGER',
-            'buildNumber' => 'INTEGER'
+            'buildNumber' => 'INTEGER',
         ),
         'Research' => array(
             'roundId' => 'INTEGER',
             'gameTime' => 'REAL',
             'teamNumber' => 'INTEGER',
-            'researchId' => 'TEXT'
+            'researchId' => 'TEXT',
         ),
         'Buildings' => array(
             'roundId' => 'INTEGER',
@@ -121,7 +121,7 @@
             'techId' => 'TEXT',
             'destroyed' => 'INTEGER',
             'built' => 'INTEGER',
-            'recycled' => 'INTEGER'
+            'recycled' => 'INTEGER',
         ),
         'MarineCommStats' => array(
             'roundId' => 'INTEGER',
@@ -134,7 +134,7 @@
             'ammopackMisses' => 'INTEGER',
             'ammopackRefilled' => 'INTEGER',
             'catpackPicks' => 'INTEGER',
-            'catpackMisses' => 'INTEGER'
+            'catpackMisses' => 'INTEGER',
         ),
         'PlayerRoundStats' => array(
             'roundId' => 'INTEGER',
@@ -156,7 +156,7 @@
             'misses' => 'INTEGER',
             'playerDamage' => 'REAL',
             'structureDamage' => 'REAL',
-            'score' => 'INTEGER'
+            'score' => 'INTEGER',
         ),
         'PlayerStats' => array(
             'steamId' => 'INTEGER PRIMARY KEY',
@@ -183,7 +183,7 @@
             'playerDamage' => 'REAL DEFAULT 0',
             'structureDamage' => 'REAL DEFAULT 0',
             'score' => 'INTEGER DEFAULT 0',
-            'lastSeen' => 'TEXT'
+            'lastSeen' => 'TEXT',
         ),
         'PlayerWeaponStats' => array(
             'roundId' => 'INTEGER',
@@ -195,13 +195,13 @@
             'misses' => 'INTEGER',
             'playerDamage' => 'REAL',
             'structureDamage' => 'REAL',
-            'kills' => 'INTEGER'
+            'kills' => 'INTEGER',
         ),
         'PlayerClassStats' => array(
             'roundId' => 'INTEGER',
             'steamId' => 'INTEGER',
             'class' => 'TEXT',
-            'classTime' => 'REAL'
+            'classTime' => 'REAL',
         ),
         'KillFeed' => array(
             'roundId' => 'INTEGER',
@@ -216,6 +216,6 @@
             'killerSteamId' => 'INTEGER',
             'killerLocation' => 'TEXT',
             'killerPosition' => 'TEXT',
-        )
+        ),
     );
 ?>
