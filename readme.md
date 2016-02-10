@@ -166,15 +166,15 @@ The project includes minified version of plotly.js, d3.js and husl.js. The copyr
 
 https://github.com/husl-colors/husl <br />
 http://www.husl-colors.org/ <br />
-Copyright (c) 2015 Alexei Boronine
+© 2015 Alexei Boronine
 
 https://github.com/mbostock/d3 <br />
 http://d3js.org/ <br />
-Copyright (c) 2010-2016, Michael Bostock
+© 2010-2016, Michael Bostock
 
 https://github.com/plotly/plotly.js <br />
 https://plot.ly/javascript/ <br />
-Copyright (c) 2015 Plotly, Inc. <br />
+© 2015 Plotly, Inc. <br />
 Code released under the MIT license.
 
 Everything else is free to use as you see fit.
