@@ -1,12 +1,14 @@
 var colors = [];
 var teamColors = [];
 var serverColors = [];
-var huslTeamHues = [254.7, 18.4, 127.6]; //  => "#1369cb","#c03c0d","#0e7c0c"
-var huslServerHues = [344.6,270.5,225,127.6,288.5,254.7,18.4]; //  => "#cb0f7f","#6f45fa","#0f7490","#aa15e2","#0e7c0c","#1369cb","#c03c0d"
-var huslHues = [259.6,245.1,225,197.5,161.5,145.6,133.9,127.7,120.2,109.6,78.9,55.6,33.4,18.3,10.1,0,344.6,324.5,298.1,288.5,280.1,273.7,270.5,266.3]; // => #1d61e6,#186fab,#16748f,#15767a,#147861,#137a4f,#137b35,#127c12,#3a7912,#527512,#746c12,#896412,#a25713,#bf3d13,#d3132b,#cf155b,#c9167e,#c1189f,#b21bca,#a81ddf,#9922f6,#7f3ef6,#6f47f6,#5551f6
+var huslTeamHues = [254.7, 18.4, 127.6]; // => #1369cb,#c03c0d,#0e7c0c
+var huslServerHues = [344.6, 270.5, 225, 127.6, 288.5, 254.7, 18.4]; // => #cb0f7f,#6f45fa,#0f7490,#aa15e2,#0e7c0c,#1369cb,#c03c0d
+var huslHues = [259.6, 245.1, 225, 197.5, 161.5, 145.6, 133.9, 127.7,
+  120.2, 109.6, 78.9, 55.6, 33.4, 18.3, 10.1, 0, 344.6, 324.5, 298.1,
+  288.5, 280.1, 273.7, 270.5, 266.3]; // => #1d61e6,#186fab,#16748f,#15767a,#147861,#137a4f,#137b35,#127c12,#3a7912,#527512,#746c12,#896412,#a25713,#bf3d13,#d3132b,#cf155b,#c9167e,#c1189f,#b21bca,#a81ddf,#9922f6,#7f3ef6,#6f47f6,#5551f6
 var huslSat = 95;
 var huslLight = 45;
-var gridcolor = "#444444";
+var gridcolor = '#444444';
 
 var fields = {
   'numRounds': { isNum: true, isNotNative: true, name: '# Rounds' },
@@ -20,12 +22,12 @@ var fields = {
   'modIds': { isNum: false, name: 'ModIds' },
   'time': { isNum: false, name: 'Time' },
   'map': { isNum: false, name: 'Map' },
-  'winner': { isNum: false, name: 'Winner', legend : { 0: 'Draw', 1: 'Marines', 2: 'Aliens' } },
+  'winner': { isNum: false, name: 'Winner', legend: { 0: 'Draw', 1: 'Marines', 2: 'Aliens' } },
   'length': { isNum: true, isFloat: true, name: 'Round Length', unit: 's' },
-  'isTournamentMode': { isNum: false, name: 'Tournament Mode', legend : { 0: 'Disabled', 1: 'Enabled' } },
-  'isRookieServer': { isNum: false, name: 'Rookie Server', legend : { 0: 'Disabled', 1: 'Enabled' } },
+  'isTournamentMode': { isNum: false, name: 'Tournament Mode', legend: { 0: 'Disabled', 1: 'Enabled' } },
+  'isRookieServer': { isNum: false, name: 'Rookie Server', legend: { 0: 'Disabled', 1: 'Enabled' } },
   'startPathDistance': { isNum: true, isFloat: true, name: 'Start Distance', unit: 'm' },
-  'startHiveTech': { isNum: false, name: 'First Hive Tech', legend : { 'None':'None', 'CragHive':'Crag Hive', 'ShiftHive':'Shift Hive', 'ShadeHive':'Shade Hive' } },
+  'startHiveTech': { isNum: false, name: 'First Hive Tech', legend: { 'None': 'None', 'CragHive': 'Crag Hive', 'ShiftHive': 'Shift Hive', 'ShadeHive': 'Shade Hive' } },
   'startLocation1': { isNum: false, name: 'Marine Start Location' },
   'startLocation2': { isNum: false, name: 'Alien Start Location' },
   'numPlayers1': { isNum: true, name: '# Marine Players' },
@@ -54,13 +56,13 @@ var fields = {
   'numHives': { isNum: true, name: '# Remaining Hives' },
   'numCCs': { isNum: true, name: '# Remaining Command Stations' },
   'numTechPointsCaptured': { isNum: true, name: '# Captured Techpoints' },
-  'biomassLevel': { isNum: true, name: 'Biomass Level' },
-}
+  'biomassLevel': { isNum: true, name: 'Biomass Level' }
+};
 
 var serverData = {};
-var defaultTimeFormat = "Y-m-d H:i:s"; // as returned by sql in php notation
+var defaultTimeFormat = 'Y-m-d H:i:s'; // as returned by sql in php notation
 
-function OnServerDataRecieve(responseText) {
+function OnServerDataRecieve (responseText) {
   serverData = JSON.parse(responseText);
 
   // add servernames for serverids
@@ -81,8 +83,8 @@ function OnServerDataRecieve(responseText) {
     ReloadExamplesOnCLick();
     BuildConfigurator();
 
-    if (plotDivs.length == 1 && plotDivs[0].getAttribute("plotSpecs") == "" && xpath0('id("configurator")')) {
-      plotDivs[0].setAttribute("plotSpecs", window.location.hash);
+    if (plotDivs.length == 1 && plotDivs[0].getAttribute('plotSpecs') == '' && xpath0('id("configurator")')) {
+      plotDivs[0].setAttribute('plotSpecs', window.location.hash);
     }
   }
 
@@ -95,14 +97,14 @@ function OnServerDataRecieve(responseText) {
   }
 
   for (var i = 0; i < plotDivs.length; i++) {
-    plotDivs[i].style.width = widths[i] + "px";
-    plotDivs[i].style.height = heights[i] + "px";
+    plotDivs[i].style.width = widths[i] + 'px';
+    plotDivs[i].style.height = heights[i] + 'px';
     MakePlot(plotDivs[i], widths[i], heights[i]);
   }
 }
 
 
-function BuildConfigurator() {
+function BuildConfigurator () {
   var xAxisCheckbox = xpath0('id("xAxisCheckbox")');
   var yAxisCheckbox = xpath0('id("yAxisCheckbox")');
   var sAxisCheckbox = xpath0('id("sAxisCheckbox")');
@@ -115,20 +117,20 @@ function BuildConfigurator() {
 
   // add selectors
   for (var key in fields) {
-    d3.select('#xAxisSelector').append("option").text(fields[key].name).attr("value", key);
-    d3.select('#yAxisSelector').append("option").text(fields[key].name).attr("value", key);
+    d3.select('#xAxisSelector').append('option').text(fields[key].name).attr('value', key);
+    d3.select('#yAxisSelector').append('option').text(fields[key].name).attr('value', key);
     if (fields[key].isNum)
-      d3.select('#sAxisSelector').append("option").text(fields[key].name).attr("value", key);
-    d3.select('#tAxisSelector').append("option").text(fields[key].name).attr("value", key);
+      d3.select('#sAxisSelector').append('option').text(fields[key].name).attr('value', key);
+    d3.select('#tAxisSelector').append('option').text(fields[key].name).attr('value', key);
     if (fields[key].isNotNative) continue;
-    d3.select('#constraintsAdd').append("option").text(fields[key].name).attr("value", key);
+    d3.select('#constraintsAdd').append('option').text(fields[key].name).attr('value', key);
   }
 
   // add event listeners
-  function addCheckboxEventListener(checkbox, numOptions) {
-    checkbox.addEventListener('change', function() {
+  function addCheckboxEventListener (checkbox, numOptions) {
+    checkbox.addEventListener('change', function () {
       var axisRow = xpath0('id("' + this.id + '")/ancestor::tr');
-      axisRow.setClass("axisDisabled", !this.checked);
+      axisRow.setClass('axisDisabled', !this.checked);
     });
   }
 
@@ -137,17 +139,17 @@ function BuildConfigurator() {
   addCheckboxEventListener(sAxisCheckbox, 3);
   addCheckboxEventListener(tAxisCheckbox, 3);
 
-  function addSelectorEventListener(selector, numOptions) {
-    selector.addEventListener('change', function() {
+  function addSelectorEventListener (selector, numOptions) {
+    selector.addEventListener('change', function () {
       var field = this.value;
       var axisOptionsRows = xpath('id("' + this.id + '")/ancestor::tr/following-sibling::tr[position()<=' + numOptions + ']');
       var hideAccumulationOptions = !fields[field].isNum || (fields[field].isNotNative || false);
       var hideArithmeticOptions = !fields[field].isNum;
-      var hideTimeFormatOptions = field != "time";
+      var hideTimeFormatOptions = field != 'time';
       for (var i = 0; i < axisOptionsRows.length; i++) {
-        if (i == 0) axisOptionsRows[i].setClass("axisOptionHidden", hideAccumulationOptions);
-        if (i == 1) axisOptionsRows[i].setClass("axisOptionHidden", hideArithmeticOptions);
-        if (i == 2) axisOptionsRows[i].setClass("axisOptionHidden", hideTimeFormatOptions);
+        if (i == 0) axisOptionsRows[i].setClass('axisOptionHidden', hideAccumulationOptions);
+        if (i == 1) axisOptionsRows[i].setClass('axisOptionHidden', hideArithmeticOptions);
+        if (i == 2) axisOptionsRows[i].setClass('axisOptionHidden', hideTimeFormatOptions);
       }
     });
   }
@@ -158,25 +160,25 @@ function BuildConfigurator() {
   addSelectorEventListener(tAxisSelector, 3);
 
   var constraintsAdd = xpath0('id("constraintsAdd")');
-  constraintsAdd.addEventListener('click', function() {
+  constraintsAdd.addEventListener('click', function () {
     if (this.selectedIndex <= 0) return;
-    var field = this.value
+    var field = this.value;
     this.options[0].selected = true;
-    AddConstraintToTable(field + "_is");
+    AddConstraintToTable(field + '_is');
   });
 
   constraintsAdd.options[0].selected = true;
 
   var applyButton = xpath0('id("applyButton")');
-  applyButton.addEventListener('click', function() {
+  applyButton.addEventListener('click', function () {
     var newPlotSpecs = PlotConfigToString();
     var plotDiv = xpath0('id("plotDiv")');
-    window.location.href = "#" + newPlotSpecs;
-    plotDiv.setAttribute("plotSpecs", "#" + newPlotSpecs);
+    window.location.href = '#' + newPlotSpecs;
+    plotDiv.setAttribute('plotSpecs', '#' + newPlotSpecs);
     MakePlot(plotDiv);
   });
 
-  var timeFormatHelpText = "\
+  var timeFormatHelpText = '\
 j  Day of Month (1-31)\n\
 d  Day of Month (01-31)\n\
 S  Day Suffix (st,nd,rd,th)\n\
@@ -201,15 +203,15 @@ G  Hour (0-23)\n\
 H  Hour (00-23)\n\
 i  Minute (00-59)\n\
 s  Second (00-59)\
-";
+';
 
   var timeFormatInputs = xpath('//*[contains(@class,"timeFormatInput")]');
   for (var i = 0; i < timeFormatInputs.length; i++) {
-    var helper = document.createElement("span");
-    helper.textContent = "❓";
-    helper.className = "hoverinfo";
+    var helper = document.createElement('span');
+    helper.textContent = '❓';
+    helper.className = 'hoverinfo';
     helper.title = timeFormatHelpText;
-    helper.addEventListener('click', function() {
+    helper.addEventListener('click', function () {
       alert(timeFormatHelpText);
     });
     var timeFormatInput = timeFormatInputs[i];
@@ -220,14 +222,14 @@ s  Second (00-59)\
     }
   }
 
-  var textInfoHelpText = "label+value+percent+text,all,none"
+  var textInfoHelpText = 'label+value+percent+text,all,none';
   var textInfoInputs = xpath('//*[contains(@class,"textInfoInput")]');
   for (var i = 0; i < textInfoInputs.length; i++) {
-    var helper = document.createElement("span");
-    helper.textContent = "❓";
-    helper.className = "hoverinfo";
+    var helper = document.createElement('span');
+    helper.textContent = '❓';
+    helper.className = 'hoverinfo';
     helper.title = textInfoHelpText;
-    helper.addEventListener('click', function() {
+    helper.addEventListener('click', function () {
       alert(textInfoHelpText);
     });
     var textInfoInput = textInfoInputs[i];
@@ -240,24 +242,24 @@ s  Second (00-59)\
 }
 
 
-function MakePlot(plotDiv, optionalWidth, optionalHeight) {
-  var plotSpecs = GetPlotSpecsFromString(plotDiv.getAttribute("plotSpecs"));
+function MakePlot (plotDiv, optionalWidth, optionalHeight) {
+  var plotSpecs = GetPlotSpecsFromString(plotDiv.getAttribute('plotSpecs'));
 
   // set some default values;
-  plotSpecs["x"] = plotSpecs["x"] || "winner";
-  plotSpecs["y"] = plotSpecs["y"] || "count";
+  plotSpecs['x'] = plotSpecs['x'] || 'winner';
+  plotSpecs['y'] = plotSpecs['y'] || 'count';
   if (!plotDiv.id) {
     var i = 0;
     while (xpath0('id("plotDiv' + i + '")')) {
       i++;
     }
-    plotDiv.id = "plotDiv" + i;
+    plotDiv.id = 'plotDiv' + i;
   }
-  plotSpecs["plotDiv"] = plotDiv.id;
-  if (plotDiv.offsetWidth > 0)  plotSpecs["width"]  = plotDiv.offsetWidth;
-  if (plotDiv.offsetHeight > 0) plotSpecs["height"] = plotDiv.offsetHeight;
-  if (optionalWidth) plotSpecs["width"] = optionalWidth;
-  if (optionalHeight) plotSpecs["height"] = optionalHeight;
+  plotSpecs['plotDiv'] = plotDiv.id;
+  if (plotDiv.offsetWidth > 0)  plotSpecs['width']  = plotDiv.offsetWidth;
+  if (plotDiv.offsetHeight > 0) plotSpecs['height'] = plotDiv.offsetHeight;
+  if (optionalWidth) plotSpecs['width'] = optionalWidth;
+  if (optionalHeight) plotSpecs['height'] = optionalHeight;
 
   var configurator = xpath0('id("configurator")');
   if (configurator) {
@@ -269,9 +271,9 @@ function MakePlot(plotDiv, optionalWidth, optionalHeight) {
 }
 
 
-function SetPlotConfigData(plotSpecs) {
+function SetPlotConfigData (plotSpecs) {
 
-  function setAxisConfigData(plotSpecs, axis) {
+  function setAxisConfigData (plotSpecs, axis) {
     var axisCheckbox = xpath0('id("' + axis + 'AxisCheckbox")');
     axisCheckbox.checked = plotSpecs[axis] ? true : false
     axisCheckbox.dispatchEvent(new Event('change'));
@@ -282,43 +284,43 @@ function SetPlotConfigData(plotSpecs) {
     if (axisFieldOption) axisFieldOption.selected = true;
     axisFieldSelect.dispatchEvent(new Event('change'));
 
-    function getAccOperation(fieldName) {
-      if (!fieldName) return "";
-      if (fieldName.endsWith('_sum')) return "sum";
-      if (fieldName.endsWith('_avg')) return "avg";
-      if (fieldName.endsWith('_cnt')) return "";
-      if (plotSpecs[axis + "BinSize"] != null) return "every";
-      return "";
+    function getAccOperation (fieldName) {
+      if (!fieldName) return '';
+      if (fieldName.endsWith('_sum')) return 'sum';
+      if (fieldName.endsWith('_avg')) return 'avg';
+      if (fieldName.endsWith('_cnt')) return '';
+      if (plotSpecs[axis + 'BinSize'] != null) return 'every';
+      return '';
     }
 
-    var accOp = getAccOperation(plotSpecs[axis])
+    var accOp = getAccOperation(plotSpecs[axis]);
     var accInput = xpath0('id("' + axis + 'AxisCheckbox")/ancestor::tr/following-sibling::tr[position()=1]//input[@type="radio"][@value="' + accOp + '"]');
     if (accInput) accInput.checked = true;
 
     var binSizeInput = xpath0('id("' + axis + 'AxisCheckbox")/ancestor::tr/following-sibling::tr[position()=1]//input[@type="text"]');
-    if (binSizeInput) binSizeInput.value = plotSpecs[axis + "BinSize"] ? plotSpecs[axis + "BinSize"] : '';
+    if (binSizeInput) binSizeInput.value = plotSpecs[axis + 'BinSize'] ? plotSpecs[axis + 'BinSize'] : '';
 
     var scaleInputs = xpath('id("' + axis + 'AxisCheckbox")/ancestor::tr/following-sibling::tr[position()=2]//input[@type="text"]');
-    scaleInputs[0].value = plotSpecs[axis + "Scale"] ? plotSpecs[axis + "Scale"] : '';
-    scaleInputs[1].value = plotSpecs[axis + "ScaleBy"] ? plotSpecs[axis + "ScaleBy"] : '';
+    scaleInputs[0].value = plotSpecs[axis + 'Scale'] ? plotSpecs[axis + 'Scale'] : '';
+    scaleInputs[1].value = plotSpecs[axis + 'ScaleBy'] ? plotSpecs[axis + 'ScaleBy'] : '';
 
     var timeFormatInput = xpath0('id("' + axis + 'AxisCheckbox")/ancestor::tr/following-sibling::tr[position()=3]//input[@type="text"]');
-    timeFormatInput.value = plotSpecs[axis + "TimeFormat"] ? unescape(plotSpecs[axis + "TimeFormat"]) : defaultTimeFormat;
+    timeFormatInput.value = plotSpecs[axis + 'TimeFormat'] ? unescape(plotSpecs[axis + 'TimeFormat']) : defaultTimeFormat;
   }
 
-  setAxisConfigData(plotSpecs, "x");
-  setAxisConfigData(plotSpecs, "y");
-  setAxisConfigData(plotSpecs, "s");
-  setAxisConfigData(plotSpecs, "t");
+  setAxisConfigData(plotSpecs, 'x');
+  setAxisConfigData(plotSpecs, 'y');
+  setAxisConfigData(plotSpecs, 's');
+  setAxisConfigData(plotSpecs, 't');
 
   // advanced options
   var advancedOptions = xpath0('id("advOptions")/tbody');
   var lineNumber = 1;
 
   var plotTypeSelect = xpath0('./tr[position()=' + (lineNumber++) + ']//select', advancedOptions);
-  if (plotSpecs["plotType"]) {
+  if (plotSpecs['plotType']) {
     for (var i = 0; i < plotTypeSelect.options.length; i++) {
-      if (plotTypeSelect.options[i].value == plotSpecs["plotType"]) {
+      if (plotTypeSelect.options[i].value == plotSpecs['plotType']) {
         plotTypeSelect.options[i].selected = true;
         break;
       }
@@ -328,9 +330,9 @@ function SetPlotConfigData(plotSpecs) {
   }
 
   var ySortSelect = xpath0('./tr[position()=' + (lineNumber++) + ']//select', advancedOptions);
-  if (plotSpecs["ySort"]) {
+  if (plotSpecs['ySort']) {
     for (var i = 0; i < ySortSelect.options.length; i++) {
-      if (ySortSelect.options[i].value == plotSpecs["ySort"]) {
+      if (ySortSelect.options[i].value == plotSpecs['ySort']) {
         ySortSelect.options[i].selected = true;
         break;
       }
@@ -340,9 +342,9 @@ function SetPlotConfigData(plotSpecs) {
   }
 
   var tSortSelect = xpath0('./tr[position()=' + (lineNumber++) + ']//select', advancedOptions);
-  if (plotSpecs["tSort"]) {
+  if (plotSpecs['tSort']) {
     for (var i = 0; i < tSortSelect.options.length; i++) {
-      if (tSortSelect.options[i].value == plotSpecs["tSort"]) {
+      if (tSortSelect.options[i].value == plotSpecs['tSort']) {
         tSortSelect.options[i].selected = true;
         break;
       }
@@ -352,28 +354,28 @@ function SetPlotConfigData(plotSpecs) {
   }
 
   var autoRotateInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="checkbox"]', advancedOptions);
-  autoRotateInput.checked = plotSpecs["autoRotate"] ? plotSpecs["autoRotate"] : false;
+  autoRotateInput.checked = plotSpecs['autoRotate'] ? plotSpecs['autoRotate'] : false;
 
   var hideLegendInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="checkbox"]', advancedOptions);
-  hideLegendInput.checked = plotSpecs["hideLegend"] ? plotSpecs["hideLegend"] : false;
+  hideLegendInput.checked = plotSpecs['hideLegend'] ? plotSpecs['hideLegend'] : false;
 
   var tNormalizeInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="checkbox"]', advancedOptions);
-  tNormalizeInput.checked = plotSpecs["tNormalize"] ? plotSpecs["tNormalize"] : false;
+  tNormalizeInput.checked = plotSpecs['tNormalize'] ? plotSpecs['tNormalize'] : false;
 
   var scatterScaleInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="text"]', advancedOptions);
-  scatterScaleInput.value = plotSpecs["sizeRef"] ? plotSpecs["sizeRef"] : '';
+  scatterScaleInput.value = plotSpecs['sizeRef'] ? plotSpecs['sizeRef'] : '';
 
   var textInfoInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="text"]', advancedOptions);
-  textInfoInput.value = plotSpecs["textInfo"] ? unescape(plotSpecs["textInfo"]) : '';
+  textInfoInput.value = plotSpecs['textInfo'] ? unescape(plotSpecs['textInfo']) : '';
 
   var xLabelInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="text"]', advancedOptions);
-  xLabelInput.value = plotSpecs["xLabel"] ? unescape(plotSpecs["xLabel"]) : '';
+  xLabelInput.value = plotSpecs['xLabel'] ? unescape(plotSpecs['xLabel']) : '';
 
   var yLabelInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="text"]', advancedOptions);
-  yLabelInput.value = plotSpecs["yLabel"] ? unescape(plotSpecs["yLabel"]) : '';
+  yLabelInput.value = plotSpecs['yLabel'] ? unescape(plotSpecs['yLabel']) : '';
 
   var titleInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="text"]', advancedOptions);
-  titleInput.value = plotSpecs["title"] ? unescape(plotSpecs["title"]) : '';
+  titleInput.value = plotSpecs['title'] ? unescape(plotSpecs['title']) : '';
 
   // add constraints
   ClearConstraintTable();
@@ -384,7 +386,7 @@ function SetPlotConfigData(plotSpecs) {
 }
 
 
-function ClearConstraintTable() {
+function ClearConstraintTable () {
   var oldConstraints = xpath('id("constraintsTable")/tbody/tr');
   for (var i = 0; i < oldConstraints.length; i++) {
     oldConstraints[i].remove();
@@ -392,11 +394,11 @@ function ClearConstraintTable() {
 }
 
 
-function AddConstraintToTable(constraint, constraintValue) {
+function AddConstraintToTable (constraint, constraintValue) {
   var split = constraint.split('_');
   if (split.length < 2) return;
   var constraintField = split[split.length - 2];
-  var constraintOperator = split[split.length - 1] || "is";
+  var constraintOperator = split[split.length - 1] || 'is';
 
   // unhide constraints if we manually add the first one
   if (constraintValue == null && xpath('id("constraintsTable")/tbody/tr').length == 0) {
@@ -406,10 +408,10 @@ function AddConstraintToTable(constraint, constraintValue) {
   // add a new row
   var row = d3.select('#constraintsTable')
     .select('tbody')
-    .append("tr").attr("value", constraint);
-  row.append("td").attr("value", constraintField).text(fields[constraintField].name + (!!fields[constraintField].unit ? ' (in ' + fields[constraintField].unit + ')' : ''));
+    .append('tr').attr('value', constraint);
+  row.append('td').attr('value', constraintField).text(fields[constraintField].name + (!!fields[constraintField].unit ? ' (in ' + fields[constraintField].unit + ')' : ''));
 
-  function indexOfServerId(id) {
+  function indexOfServerId (id) {
     if (!serverData.servers) return -1;
     for (var i = 0; i < serverData.servers.length; i++) {
       if (serverData.servers[i].serverId == id)
@@ -418,7 +420,7 @@ function AddConstraintToTable(constraint, constraintValue) {
     return -1;
   }
 
-  function indexOfStartLocation(startLocation) {
+  function indexOfStartLocation (startLocation) {
     if (!serverData.startLocations) return [null, -1];
     for (var map in serverData.startLocations) {
       var startLocations = serverData.startLocations[map];
@@ -430,93 +432,82 @@ function AddConstraintToTable(constraint, constraintValue) {
     return [null, -1];
   }
 
-  if ((constraint == "map_is" || constraint == "map_ne") && (constraintValue == null || (serverData.maps && serverData.maps.indexOf(constraintValue) != -1))) {
-    var cell = row.append("td");
-    var select = cell.append("select");
-    select.append("option").attr("value", "is").text("=").property("selected", constraintOperator == 'is');
-    select.append("option").attr("value", "ne").text("≠").property("selected", constraintOperator == 'ne');
-    cell.append("span");
-    var cell = row.append("td");
-    var select = cell.append("select");
+  if ((constraint == 'map_is' || constraint == 'map_ne') && (constraintValue == null || (serverData.maps && serverData.maps.indexOf(constraintValue) != -1))) {
+    var cell = row.append('td');
+    var select = cell.append('select');
+    select.append('option').attr('value', 'is').text('=').property('selected', constraintOperator == 'is');
+    select.append('option').attr('value', 'ne').text('≠').property('selected', constraintOperator == 'ne');
+    cell.append('span');
+    var cell = row.append('td');
+    var select = cell.append('select');
     for (var i = 0; i < serverData.maps.length; i++) {
       var map = serverData.maps[i];
-      select.append("option").attr("value", map).text(map).property("selected", constraintValue == map);
+      select.append('option').attr('value', map).text(map).property('selected', constraintValue == map);
     }
-    cell.append("span");
-  } else if ((constraint == "startLocation1_is" || constraint == "startLocation1_ne" || constraint == "startLocation2_is" || constraint == "startLocation2_ne") && (constraintValue == null || indexOfStartLocation(constraintValue)[1] != -1)) {
-    var cell = row.append("td");
-    var select = cell.append("select");
-    select.append("option").attr("value", "is").text("=").property("selected", constraintOperator == 'is');
-    select.append("option").attr("value", "ne").text("≠").property("selected", constraintOperator == 'ne');
-    cell.append("span");
-    var cell = row.append("td");
-    var select = cell.append("select");
+    cell.append('span');
+  } else if ((constraint == 'startLocation1_is' || constraint == 'startLocation1_ne' || constraint == 'startLocation2_is' || constraint == 'startLocation2_ne') && (constraintValue == null || indexOfStartLocation(constraintValue)[1] != -1)) {
+    var cell = row.append('td');
+    var select = cell.append('select');
+    select.append('option').attr('value', 'is').text('=').property('selected', constraintOperator == 'is');
+    select.append('option').attr('value', 'ne').text('≠').property('selected', constraintOperator == 'ne');
+    cell.append('span');
+    var cell = row.append('td');
+    var select = cell.append('select');
     for (var map in serverData.startLocations) {
-      var optgroup = select.append("optgroup").attr("label", map);
+      var optgroup = select.append('optgroup').attr('label', map);
       for (var i = 0; i < serverData.startLocations[map].length; i++) {
         var startLocation = serverData.startLocations[map][i];
-        optgroup.append("option").attr("value", startLocation).text(startLocation).property("selected", constraintValue == startLocation);
+        optgroup.append('option').attr('value', startLocation).text(startLocation).property('selected', constraintValue == startLocation);
       }
     }
-    cell.append("span");
-  } else if (fields[constraintField] && fields[constraintField].legend && (constraintOperator == "is" || constraintOperator == "ne") && (constraintValue == null || fields[constraintField].legend[constraintValue] != null)) {
-    var cell = row.append("td");
-    var select = cell.append("select");
-    select.append("option").attr("value", "is").text("=").property("selected", constraintOperator == 'is');
-    select.append("option").attr("value", "ne").text("≠").property("selected", constraintOperator == 'ne');
-    var cell = row.append("td");
-    var select = cell.append("select");
+    cell.append('span');
+  } else if (fields[constraintField] && fields[constraintField].legend && (constraintOperator == 'is' || constraintOperator == 'ne') && (constraintValue == null || fields[constraintField].legend[constraintValue] != null)) {
+    var cell = row.append('td');
+    var select = cell.append('select');
+    select.append('option').attr('value', 'is').text('=').property('selected', constraintOperator == 'is');
+    select.append('option').attr('value', 'ne').text('≠').property('selected', constraintOperator == 'ne');
+    var cell = row.append('td');
+    var select = cell.append('select');
     for (var value in fields[constraintField].legend) {
       var name = fields[constraintField].legend[value];
-      select.append("option").attr("value", value).text(name).property("selected", constraintValue == value);
+      select.append('option').attr('value', value).text(name).property('selected', constraintValue == value);
     }
-    cell.append("span");
+    cell.append('span');
   } else {
-    var cell = row.append("td");
-    var select = cell.append("select");
-    select.append("option").attr("value", "gt").text(">").property("selected", constraintOperator == 'gt');
-    select.append("option").attr("value", "ge").text("≥").property("selected", constraintOperator == 'ge');
-    select.append("option").attr("value", "is").text("=").property("selected", constraintOperator == 'is');
-    select.append("option").attr("value", "ne").text("≠").property("selected", constraintOperator == 'ne');
-    select.append("option").attr("value", "le").text("≤").property("selected", constraintOperator == 'le');
-    select.append("option").attr("value", "lt").text("<").property("selected", constraintOperator == 'lt');
-    cell.append("span");
-    row.append("td").append("input").attr("type", "text").attr("size", "8").attr("value", constraintValue ? constraintValue : '')
+    var cell = row.append('td');
+    var select = cell.append('select');
+    select.append('option').attr('value', 'gt').text('>').property('selected', constraintOperator == 'gt');
+    select.append('option').attr('value', 'ge').text('≥').property('selected', constraintOperator == 'ge');
+    select.append('option').attr('value', 'is').text('=').property('selected', constraintOperator == 'is');
+    select.append('option').attr('value', 'ne').text('≠').property('selected', constraintOperator == 'ne');
+    select.append('option').attr('value', 'le').text('≤').property('selected', constraintOperator == 'le');
+    select.append('option').attr('value', 'lt').text('<').property('selected', constraintOperator == 'lt');
+    cell.append('span');
+    row.append('td').append('input').attr('type', 'text').attr('size', '8').attr('value', constraintValue ? constraintValue : '');
   }
 
-  var remover = row.append("td").append("button").classed("removeButton", true).text("⨯"); //TODO replace with 🗙 as soon as win/chrome supports it
-  remover.node().addEventListener('click', function() {
+  var remover = row.append('td').append('button').classed('removeButton', true).text('⨯'); // TODO replace with 🗙 as soon as win/chrome supports it
+  remover.node().addEventListener('click', function () {
     var row = xpath0('./ancestor::tr', this);
     row.remove();
   });
 }
 
 
-function GetPlotSpecsFromString(str) {
-  var arguments = {};
-  if (str.startsWith("#")) str = str.substr(1);
+function GetPlotSpecsFromString (str) {
+  var args = {};
+  if (str.startsWith('#')) str = str.substr(1);
   var pairs = str.split('&');
   for (var i = 0; i < pairs.length; i++) {
     var key = pairs[i].split('=')[0];
     var value = pairs[i].split('=')[1] || true;
-    arguments[key] = value;
+    args[key] = value;
   }
-  return arguments;
+  return args;
 }
 
 
-function GetAxisData(data, key) {
-  var result = {};
-  var pattern = new RegExp(key + "\d*");
-  for (var key in data) {
-    if (pattern.test(key))
-      result[key] = data[key];
-  }
-  return result;
-}
-
-
-function GetFieldIsAggregated(fieldName) {
+function GetFieldIsAggregated (fieldName) {
   if (!fieldName) return false;
   if (
     fieldName == 'count' ||
@@ -528,90 +519,88 @@ function GetFieldIsAggregated(fieldName) {
     fieldName.endsWith('_sum') ||
     fieldName.endsWith('_avg') ||
     fieldName.endsWith('_cnt')
-  )
-    return true;
-  else
-    return false;
+  ) return true;
+  else return false;
 }
 
 
-function IsKeyConstraint(key) {
-  return key.endsWith("_is") ||
-  key.endsWith("_ne") ||
-  key.endsWith("_gt") ||
-  key.endsWith("_ge") ||
-  key.endsWith("_lt") ||
-  key.endsWith("_le");
+function IsKeyConstraint (key) {
+  return key.endsWith('_is') ||
+  key.endsWith('_ne') ||
+  key.endsWith('_gt') ||
+  key.endsWith('_ge') ||
+  key.endsWith('_lt') ||
+  key.endsWith('_le');
 }
 
 
-function BuildQueryString(plotSpecs) {
+function BuildQueryString (plotSpecs) {
   var query = [];
-  var yIsAggregated = GetFieldIsAggregated(plotSpecs["y"]);
-  var xIsAggregated = GetFieldIsAggregated(plotSpecs["x"]);
-  var sIsAggregated = GetFieldIsAggregated(plotSpecs["s"]);
-  var yIsGrouped = plotSpecs["yBinSize"] ? true : false;
-  var xIsGrouped = plotSpecs["xBinSize"] ? true : false;
-  var tIsGrouped = plotSpecs["tBinSize"] ? true : false;
+  var yIsAggregated = GetFieldIsAggregated(plotSpecs['y']);
+  var xIsAggregated = GetFieldIsAggregated(plotSpecs['x']);
+  var sIsAggregated = GetFieldIsAggregated(plotSpecs['s']);
+  var yIsGrouped = plotSpecs['yBinSize'] ? true : false;
+  var xIsGrouped = plotSpecs['xBinSize'] ? true : false;
+  var tIsGrouped = plotSpecs['tBinSize'] ? true : false;
   var data = [];
   var groups = [];
   plotSpecs.groupIndices = {};
   for (var key in plotSpecs) {
-    if ( IsKeyConstraint(key) ) {
-      query.push( key + "=" + plotSpecs[key] );
+    if (IsKeyConstraint(key)) {
+      query.push(key + '=' + plotSpecs[key]);
     }
 
     if (/^[xyst]$/.test(key)) {
       data.push(plotSpecs[key]);
     }
 
-    if (key == "y") {
+    if (key == 'y') {
       if ((!yIsAggregated && sIsAggregated) || yIsGrouped) {
-        groups.push(plotSpecs[key] + (yIsGrouped && plotSpecs["yBinSize"] ? ("_every_" + plotSpecs["yBinSize"]) : ""));
+        groups.push(plotSpecs[key] + (yIsGrouped && plotSpecs['yBinSize'] ? ('_every_' + plotSpecs['yBinSize']) : ''));
         plotSpecs.groupIndices[key] = groups.length;
       }
     }
 
-    if (key == "x") {
+    if (key == 'x') {
       if ((!xIsAggregated && (yIsAggregated || yIsGrouped || sIsAggregated)) || xIsGrouped) {
-        groups.push(plotSpecs[key] + (xIsGrouped && plotSpecs["xBinSize"] ? ("_every_" + plotSpecs["xBinSize"]) : ""));
+        groups.push(plotSpecs[key] + (xIsGrouped && plotSpecs['xBinSize'] ? ('_every_' + plotSpecs['xBinSize']) : ''));
         plotSpecs.groupIndices[key] = groups.length;
       }
     }
 
-    if (key == "t") {
+    if (key == 't') {
       if (yIsAggregated || sIsAggregated || tIsGrouped) {
-        groups.push(plotSpecs[key] + (tIsGrouped && plotSpecs["tBinSize"] ? ("_every_" + plotSpecs["tBinSize"]) : ""));
+        groups.push(plotSpecs[key] + (tIsGrouped && plotSpecs['tBinSize'] ? ('_every_' + plotSpecs['tBinSize']) : ''));
         plotSpecs.groupIndices[key] = groups.length;
       }
     }
   }
 
-  query.push("data=" + data.join(','));
+  query.push('data=' + data.join(','));
   if (groups.length) {
-    query.push("group_by=" + groups.join(','));
+    query.push('group_by=' + groups.join(','));
   }
 
   return query.join('&');
 }
 
 
-function SendQuery(url, callback) {
+function SendQuery (url, callback) {
   var xhttp = new XMLHttpRequest();
   var argscopy = Array.prototype.slice.call(arguments, 1);
-  xhttp.onreadystatechange = function() {
+  xhttp.onreadystatechange = function () {
     if (xhttp.readyState == 4 && xhttp.status == 200) {
       argscopy[0] = xhttp.responseText;
       return callback.apply(this, argscopy);
     }
   };
-  console.log("Sending GET to " + url); // NOTE poor man's API Documentation 😉
-  xhttp.open("GET", url, true);
+  console.log('Sending GET to ' + url); // NOTE poor man's API Documentation 😉
+  xhttp.open('GET', url, true);
   xhttp.send();
 }
 
 
-function GetFieldName(field) {
+function GetFieldName (field) {
   if (!field) return null;
   var fieldName = field;
   if (
@@ -628,46 +617,47 @@ function GetFieldName(field) {
 }
 
 
-function GetFieldIsNum(field) {
+function GetFieldIsNum (field) {
   if (!field) return false;
   var fieldName = GetFieldName(field);
-  if (!fields[fieldName].isNum) return false
+  if (!fields[fieldName].isNum) return false;
   else return true;
 }
 
 
-function GetFullFieldName(field) {
+function GetFullFieldName (field) {
   if (!field) return '';
   var fieldName = GetFieldName(field);
   if (!fields[fieldName]) return field;
 
-  if (fields[fieldName].name)
+  if (fields[fieldName].name) {
     fieldName = fields[fieldName].name;
+  }
 
   var fieldMethod = '';
-  if ( field.endsWith('_sum') ) { fieldMethod=' Sum'; }
-  if ( field.endsWith('_avg') ) { fieldMethod=' Average'; }
-  if ( field.endsWith('_cnt') ) { fieldMethod=' Count'; }
+  if (field.endsWith('_sum')) { fieldMethod = ' Sum'; }
+  if (field.endsWith('_avg')) { fieldMethod = ' Average'; }
+  if (field.endsWith('_cnt')) { fieldMethod = ' Count'; }
 
   return fieldName + fieldMethod;
 }
 
 
-function CreatePlot(responseText, plotSpecs) {
+function CreatePlot (responseText, plotSpecs) {
   var queryData = JSON.parse(responseText);
 
-  var plotDiv = xpath0('id("' + plotSpecs["plotDiv"] + '")');
-  var fontSize = parseInt(window.getComputedStyle(plotDiv, null).getPropertyValue('font-size'));
+  var plotDiv = xpath0('id("' + plotSpecs['plotDiv'] + '")');
+  var fontSize = parseInt(window.getComputedStyle(plotDiv, null).getPropertyValue('font-size'), 10);
   var fontColor = window.getComputedStyle(plotDiv, null).getPropertyValue('color');
 
   var plotData = [];
   var plotLayout = GetPlotLayoutDefaults(fontSize, fontColor);
   var plotOptions = GetPlotOptionsDefault();
 
-  var tType = plotSpecs["t"];
-  var xType = plotSpecs["x"];
-  var yType = plotSpecs["y"];
-  var sType = plotSpecs["s"];
+  var tType = plotSpecs['t'];
+  var xType = plotSpecs['x'];
+  var yType = plotSpecs['y'];
+  var sType = plotSpecs['s'];
 
   if (!yType) return;
 
@@ -686,22 +676,22 @@ function CreatePlot(responseText, plotSpecs) {
   var yIsNum = GetFieldIsNum(yType);
   var sIsNum = GetFieldIsNum(sType);
 
-  var tIsGrouped = plotSpecs["tBinSize"] ? true : false;
+  var tIsGrouped = plotSpecs['tBinSize'] ? true : false;
   var sIsAggregated = GetFieldIsAggregated(sType);
   var yIsAggregated = GetFieldIsAggregated(yType);
-  var xIsGrouped = plotSpecs["xBinSize"] ? true : false;
+  var xIsGrouped = plotSpecs['xBinSize'] ? true : false;
 
-  if (plotSpecs.groupIndices["t"]) tSrcField = 'group' + plotSpecs.groupIndices["t"];
-  if (plotSpecs.groupIndices["x"]) xSrcField = 'group' + plotSpecs.groupIndices["x"];
-  if (plotSpecs.groupIndices["y"]) ySrcField = 'group' + plotSpecs.groupIndices["y"];
-  if (plotSpecs.groupIndices["s"]) sSrcField = 'group' + plotSpecs.groupIndices["s"];
+  if (plotSpecs.groupIndices['t']) tSrcField = 'group' + plotSpecs.groupIndices['t'];
+  if (plotSpecs.groupIndices['x']) xSrcField = 'group' + plotSpecs.groupIndices['x'];
+  if (plotSpecs.groupIndices['y']) ySrcField = 'group' + plotSpecs.groupIndices['y'];
+  if (plotSpecs.groupIndices['s']) sSrcField = 'group' + plotSpecs.groupIndices['s'];
 
   var xDataField = 'x';
   var yDataField = 'y';
   var plotType = 'bar';
   if (!yIsNum || (!yIsAggregated && xType != 'id') || (sType && sIsNum)) plotType = 'scatter';
-  if ((yType == 'count' && !tType) || (plotSpecs["pie"] && !tType)) plotType = 'pie';
-  if (plotSpecs["plotType"]) plotType = plotSpecs["plotType"];
+  if ((yType == 'count' && !tType) || (plotSpecs['pie'] && !tType)) plotType = 'pie';
+  if (plotSpecs['plotType']) plotType = plotSpecs['plotType'];
   if (plotType != 'pie' && plotType != 'scatter' && plotType != 'lines' && plotType != 'bar') return;
   if (plotType == 'pie') {
     xDataField = 'labels';
@@ -713,7 +703,7 @@ function CreatePlot(responseText, plotSpecs) {
   if (tType) {
     for (var i = 0; i < queryData.length; i++) {
       var tValue = queryData[i][tSrcField];
-      if (tType == "time" && plotSpecs["tTimeFormat"]) tValue = (new Date(tValue.replace(" ", "T"))).format(unescape(plotSpecs["tTimeFormat"]));
+      if (tType == 'time' && plotSpecs['tTimeFormat']) tValue = (new Date(tValue.replace(' ', 'T'))).format(unescape(plotSpecs['tTimeFormat']));
       if (traces.indexOf(tValue) == -1) {
         traces.push(tValue);
       }
@@ -727,17 +717,17 @@ function CreatePlot(responseText, plotSpecs) {
 
   // sort traces
   if (tType == 'winner') {
-    traces.sort(function(a, b) { // 1,2,0
+    traces.sort(function (a, b) { // 1,2,0
       if (a == 0) return 1;
       if (b == 0) return -1;
       return a - b;
     });
-  } else if (!plotSpecs["tSort"] || plotSpecs["tSort"] == 'asc') {
-    traces.sort(function(a, b) {
+  } else if (!plotSpecs['tSort'] || plotSpecs['tSort'] == 'asc') {
+    traces.sort(function (a, b) {
       return alphanumCaseInsensitiveCompare(a, b);
     });
-  } else if (plotSpecs["tSort"] == "desc") {
-    traces.sort(function(a, b) {
+  } else if (plotSpecs['tSort'] == 'desc') {
+    traces.sort(function (a, b) {
       return alphanumCaseInsensitiveCompare(b, a);
     });
   }
@@ -750,22 +740,22 @@ function CreatePlot(responseText, plotSpecs) {
         values: [],
         text: [],
         marker: {
-          colors: useTeamColors ? teamColors : useServerColors ? serverColors : colors.concat(colors), // double the amount of colors so we dont fall back to default color palette
+          colors: useTeamColors ? teamColors : useServerColors ? serverColors : colors.concat(colors) // double the amount of colors so we dont fall back to default color palette
         },
         textposition: 'inside',
-        textinfo: plotSpecs["textInfo"] ? plotSpecs["textInfo"] : 'all',
+        textinfo: plotSpecs['textInfo'] ? plotSpecs['textInfo'] : 'all',
         hoverinfo: 'label+value', // 'label+value+percent+text'
-        sort: false, //NOTE we sort manually to not mess up color order
+        sort: false, // NOTE we sort manually to not mess up color order
         pull: 0.01,
-        type: plotType,
+        type: plotType
       };
 
       var margins = [0, 0, 0, 0];
-      if (plotSpecs["margin"]) {
-        if (plotSpecs["margin"].split(',').length == 4) {
-          margins = plotSpecs["margin"].split(',');
+      if (plotSpecs['margin']) {
+        if (plotSpecs['margin'].split(',').length == 4) {
+          margins = plotSpecs['margin'].split(',');
         } else {
-          margins[0] = margins[1] = margins[2] = margins[3] = parseInt(plotSpecs["margin"]);
+          margins[0] = margins[1] = margins[2] = margins[3] = parseInt(plotSpecs['margin'], 10);
         }
       }
 
@@ -774,14 +764,14 @@ function CreatePlot(responseText, plotSpecs) {
         r: margins[1],
         b: margins[2],
         l: margins[3],
-        pad: plotSpecs["pad"] ? parseInt(plotSpecs["pad"]) : 5,
+        pad: plotSpecs['pad'] ? parseInt(plotSpecs['pad'], 10) : 5,
         autoexpand: true
       };
     } else {
       // BAR SCATTER
       var traceName = traces[i];
-      if (tIsNum && plotSpecs["tScale"])   traceName *= plotSpecs["tScale"];
-      if (tIsNum && plotSpecs["tScaleBy"]) traceName /= plotSpecs["tScaleBy"];
+      if (tIsNum && plotSpecs['tScale'])   traceName *= plotSpecs['tScale'];
+      if (tIsNum && plotSpecs['tScaleBy']) traceName /= plotSpecs['tScaleBy'];
       if (fields[tType] && fields[tType].legend && fields[tType].legend[traceName] != undefined) traceName = fields[tType].legend[traceName];
 
       plotData[i] = {
@@ -792,39 +782,39 @@ function CreatePlot(responseText, plotSpecs) {
         hoverinfo: 'x+y+text',
         type: plotType == 'lines' ? 'scatter' : plotType,
         marker: {
-          color: useTeamColors ? teamColors[i % teamColors.length] : useServerColors ? serverColors[i % serverColors.length] : colors[i % colors.length],
-        },
+          color: useTeamColors ? teamColors[i % teamColors.length] : useServerColors ? serverColors[i % serverColors.length] : colors[i % colors.length]
+        }
       };
 
       if (plotType == 'scatter' || plotType == 'lines') {
         plotData[i].mode = (plotType == 'lines' ? 'lines' : 'markers');
         if (sType) {
           plotData[i].marker.size = [];
-          plotData[i].marker.sizemode = "area";
+          plotData[i].marker.sizemode = 'area';
         }
         if (plotSpecs['sizeRef'])
           plotData[i].marker.sizeref = plotSpecs['sizeRef'];
-        plotData[i].hoverinfo = 'all'; //'x+y+z';
+        plotData[i].hoverinfo = 'all'; // 'x+y+z';
         if (plotType == 'lines') {
           plotData[i].line = {
-            shape: 'linear', //linear, spline, hvh
-            width: 4,
+            shape: 'linear', // linear, spline, hvh
+            width: 4
           };
           plotData[i].fill = 'tozeroy';
         }
       }
 
       var margins = [
-        plotSpecs["title"] ? fontSize * 4 : fontSize * 2, // top
-        0, //right
-        xIsNum ? fontSize * 4 : fontSize * 7, //bottom
-        yIsNum ? fontSize * 4 : fontSize * 9 //left
+        plotSpecs['title'] ? fontSize * 4 : fontSize * 2, // top
+        0, // right
+        xIsNum ? fontSize * 4 : fontSize * 7, // bottom
+        yIsNum ? fontSize * 4 : fontSize * 9 // left
       ];
-      if (plotSpecs["margin"]) {
-        if (plotSpecs["margin"].split(',').length == 4) {
-          margins = plotSpecs["margin"].split(',');
+      if (plotSpecs['margin']) {
+        if (plotSpecs['margin'].split(',').length == 4) {
+          margins = plotSpecs['margin'].split(',');
         } else {
-          margins[0] = margins[1] = margins[2] = margins[3] = parseInt(plotSpecs["margin"]);
+          margins[0] = margins[1] = margins[2] = margins[3] = parseInt(plotSpecs['margin'], 10);
         }
       }
 
@@ -833,28 +823,28 @@ function CreatePlot(responseText, plotSpecs) {
         r: margins[1],
         b: margins[2],
         l: margins[3],
-        pad: plotSpecs["pad"] ? parseInt(plotSpecs["pad"]) : 5,
+        pad: plotSpecs['pad'] ? parseInt(plotSpecs['pad'], 10) : 5,
         autoexpand: true
       };
 
       plotLayout.yaxis = {
-        title: plotSpecs["yLabel"] ? unescape(plotSpecs["yLabel"]) : GetFullFieldName(yType),
-        ticks: "inside",
+        title: plotSpecs['yLabel'] ? unescape(plotSpecs['yLabel']) : GetFullFieldName(yType),
+        ticks: 'inside',
         showticklabels: true,
-        tickmode: "auto",
+        tickmode: 'auto',
         tickfont: {size: Math.max(6, fontSize - 2)},
         showgrid: true,
-        gridcolor: gridcolor,
+        gridcolor: gridcolor
       };
 
       plotLayout.xaxis = {
-        title: plotSpecs["xLabel"] ? unescape(plotSpecs["xLabel"]) : GetFullFieldName(xType),
-        ticks: "inside",
+        title: plotSpecs['xLabel'] ? unescape(plotSpecs['xLabel']) : GetFullFieldName(xType),
+        ticks: 'inside',
         showticklabels: true,
-        tickmode: "auto",
+        tickmode: 'auto',
         tickfont: {size: Math.max(6, fontSize - 2)},
         showgrid: true,
-        gridcolor: gridcolor,
+        gridcolor: gridcolor
       };
 
       // always rotate text labels by 45° so margin-handling is more predictable (if we dont do this, they are either 0°, 45° or 90°)
@@ -871,34 +861,32 @@ function CreatePlot(responseText, plotSpecs) {
 
   // sort data
   if (plotType == 'pie' && xType != 'winner') {
-    queryData.sort(function(a, b) {
+    queryData.sort(function (a, b) {
       return alphanumCaseInsensitiveCompare(b[ySrcField], a[ySrcField]);
     });
   } else if (plotType == 'pie' && xType == 'winner') {
-    queryData.sort(function(a, b) { // 1,2,0
-      var aa = parseInt(a[xSrcField]);
-      var bb = parseInt(b[xSrcField]);
+    queryData.sort(function (a, b) { // 1,2,0
+      var aa = parseInt(a[xSrcField], 10);
+      var bb = parseInt(b[xSrcField], 10);
       if (aa == 0) return 1;
       if (bb == 0) return -1;
       return aa - bb;
     });
   } else { // plotType != 'pie'
-    if (plotSpecs["ySort"] == 'asc') {
-      queryData.sort(function(a, b) {
+    if (plotSpecs['ySort'] == 'asc') {
+      queryData.sort(function (a, b) {
         return alphanumCaseInsensitiveCompare(a[ySrcField], b[ySrcField]);
       });
-    } else if (plotSpecs["ySort"] == "desc") {
-      queryData.sort(function(a, b) {
+    } else if (plotSpecs['ySort'] == 'desc') {
+      queryData.sort(function (a, b) {
         return alphanumCaseInsensitiveCompare(b[ySrcField], a[ySrcField]);
       });
     } else {
-      queryData.sort(function(a, b) {
+      queryData.sort(function (a, b) {
         return alphanumCaseInsensitiveCompare(a[xSrcField], b[xSrcField]);
       });
     }
   }
-
-
 
   // add data to traces
   for (var i = 0; i < queryData.length; i++) {
@@ -908,7 +896,7 @@ function CreatePlot(responseText, plotSpecs) {
     var sValue = queryData[i][sSrcField];
 
     if (tType) {
-      if (tType == "time" && plotSpecs["tTimeFormat"]) tValue = (new Date(tValue.replace(" ", "T"))).format(unescape(plotSpecs["tTimeFormat"]));
+      if (tType == 'time' && plotSpecs['tTimeFormat']) tValue = (new Date(tValue.replace(' ', 'T'))).format(unescape(plotSpecs['tTimeFormat']));
     }
 
     // find trace
@@ -919,25 +907,25 @@ function CreatePlot(responseText, plotSpecs) {
 
     // scale and translate values
     if (tType) {
-      if (tIsNum && plotSpecs["tScale"]) tValue *= plotSpecs["tScale"];
-      if (tIsNum && plotSpecs["tScaleBy"]) tValue /= plotSpecs["tScaleBy"];
+      if (tIsNum && plotSpecs['tScale']) tValue *= plotSpecs['tScale'];
+      if (tIsNum && plotSpecs['tScaleBy']) tValue /= plotSpecs['tScaleBy'];
       if (fields[tType] && fields[tType].legend && fields[tType].legend[tValue] != undefined) tValue = fields[tType].legend[tValue];
     }
     if (xType) {
-      if (xIsNum && plotSpecs["xScale"]) xValue *= plotSpecs["xScale"];
-      if (xIsNum && plotSpecs["xScaleBy"]) xValue /= plotSpecs["xScaleBy"];
+      if (xIsNum && plotSpecs['xScale']) xValue *= plotSpecs['xScale'];
+      if (xIsNum && plotSpecs['xScaleBy']) xValue /= plotSpecs['xScaleBy'];
       if (fields[xType] && fields[xType].legend && fields[xType].legend[xValue] != undefined) xValue = fields[xType].legend[xValue];
-      if (plotSpecs["xTimeFormat"] && xType == "time") xValue = (new Date(xValue.replace(" ", "T"))).format(unescape(plotSpecs["xTimeFormat"]));
+      if (plotSpecs['xTimeFormat'] && xType == 'time') xValue = (new Date(xValue.replace(' ', 'T'))).format(unescape(plotSpecs['xTimeFormat']));
     }
     if (yType) {
-      if (yIsNum && plotSpecs["yScale"]) yValue *= plotSpecs["yScale"];
-      if (yIsNum && plotSpecs["yScaleBy"]) yValue /= plotSpecs["yScaleBy"];
+      if (yIsNum && plotSpecs['yScale']) yValue *= plotSpecs['yScale'];
+      if (yIsNum && plotSpecs['yScaleBy']) yValue /= plotSpecs['yScaleBy'];
       if (fields[yType] && fields[yType].legend && fields[yType].legend[yValue] != undefined) yValue = fields[yType].legend[yValue];
-      if (plotSpecs["yTimeFormat"] && yType == "time") yValue = (new Date(yValue.replace(" ", "T"))).format(unescape(plotSpecs["yTimeFormat"]));
+      if (plotSpecs['yTimeFormat'] && yType == 'time') yValue = (new Date(yValue.replace(' ', 'T'))).format(unescape(plotSpecs['yTimeFormat']));
     }
     if (sType) {
-      if (sIsNum && plotSpecs["sScale"]) sValue *= plotSpecs["sScale"];
-      if (sIsNum && plotSpecs["sScaleBy"]) sValue /= plotSpecs["sScaleBy"];
+      if (sIsNum && plotSpecs['sScale']) sValue *= plotSpecs['sScale'];
+      if (sIsNum && plotSpecs['sScaleBy']) sValue /= plotSpecs['sScaleBy'];
     }
 
     // add data to trace
@@ -947,16 +935,15 @@ function CreatePlot(responseText, plotSpecs) {
       plotData[trace].marker.size.push(sValue);
     }
     if (tValue != null && sValue == null) {
-      plotData[trace]["text"].push(tAxisName + (tIsGrouped ? " >" : " ") + tValue);
+      plotData[trace]['text'].push(tAxisName + (tIsGrouped ? ' >' : ' ') + tValue);
     }
     if (tValue != null && sValue != null) {
-      plotData[trace]["text"].push(sAxisName + " " + sValue);
+      plotData[trace]['text'].push(sAxisName + ' ' + sValue);
     }
     if (tValue == null && sValue == null) {
-      plotData[trace]["text"].push(xValue + (xIsGrouped ? "+" : ""));
+      plotData[trace]['text'].push(xValue + (xIsGrouped ? '+' : ''));
     }
-  } //for every trace
-
+  } // for every trace
 
   // normalize across traces
   if (plotSpecs['tNormalize'] && yIsNum && tType) {
@@ -972,12 +959,11 @@ function CreatePlot(responseText, plotSpecs) {
     for (var t = 0; t < plotData.length; t++) {
       plotData[t].text = [];
       for (var i = 0; i < plotData[t][xDataField].length; i++) {
-        plotData[t].text.push(plotData[t][yDataField][i] + " of " + sums[plotData[t][xDataField][i]]);
+        plotData[t].text.push(plotData[t][yDataField][i] + ' of ' + sums[plotData[t][xDataField][i]]);
         plotData[t][yDataField][i] = parseFloat(plotData[t][yDataField][i]) / sums[plotData[t][xDataField][i]];
       }
     }
   }
-
 
   // swap axes
   if (plotSpecs['autoRotate'] && plotType == 'bar' && plotData[0] && plotData[0][xDataField].length > 3) {
@@ -999,61 +985,61 @@ function CreatePlot(responseText, plotSpecs) {
 
   // show legend for traces
   if (tType) {
-    plotLayout.showlegend = plotSpecs["hideLegend"] ? !plotSpecs["hideLegend"] : true;
+    plotLayout.showlegend = plotSpecs['hideLegend'] ? !plotSpecs['hideLegend'] : true;
   }
 
-  if (plotSpecs["width"]) {
-    plotLayout.width = plotSpecs["width"];
+  if (plotSpecs['width']) {
+    plotLayout.width = plotSpecs['width'];
   }
 
-  if (plotSpecs["height"]) {
-    plotLayout.height = plotSpecs["height"];
+  if (plotSpecs['height']) {
+    plotLayout.height = plotSpecs['height'];
   }
 
-  if (plotSpecs["title"]) {
-    plotLayout.title = unescape(plotSpecs["title"]);
+  if (plotSpecs['title']) {
+    plotLayout.title = unescape(plotSpecs['title']);
   } else {
-    //TODO Auto Title
+    // TODO Auto Title
   }
 
-  //delete old plot
+  // delete old plot
   RemovePlot(plotDiv);
 
   // create new plot
-  Plotly.newPlot(plotSpecs["plotDiv"], plotData, plotLayout, plotOptions);
+  Plotly.newPlot(plotSpecs['plotDiv'], plotData, plotLayout, plotOptions);
 
   AddGradientDefinitionsToChart(plotDiv);
   SetColorGradientsForChart(plotDiv, useTeamColors, useServerColors);
 }
 
 
-function PlotConfigToString() {
+function PlotConfigToString () {
   var arr = [];
 
   // get axes
-  function getAxisConfigData(axis) {
+  function getAxisConfigData (axis) {
     var axisCheckbox = xpath0('id("' + axis + 'AxisCheckbox")');
-    if (!axisCheckbox.checked) return "";
+    if (!axisCheckbox.checked) return '';
     var axisFieldSelect = xpath0('id("' + axis + 'AxisSelector")');
     var axisField = axisFieldSelect.value;
 
     var useAccumulationOptions = fields[axisField].isNum && !fields[axisField].isNotNative;
     var useArithmeticOptions = fields[axisField].isNum;
-    var useTimeFormatOptions = axisField == "time";
+    var useTimeFormatOptions = axisField == 'time';
 
     if (useAccumulationOptions) {
       var accOptions = xpath('./ancestor::tr/following-sibling::tr[position()=1]//input[@type="radio"]', axisCheckbox);
       for (var i = 0; i < accOptions.length; i++) {
         if (accOptions[i].checked) {
           switch (accOptions[i].value) {
-            case "":    arr.push(axis + "=" + axisField); break;
-            case "sum": arr.push(axis + "=" + axisField + "_sum"); break;
-            case "avg": arr.push(axis + "=" + axisField + "_avg"); break;
-            case "every":
-              arr.push(axis + "=" + axisField);
+            case '':    arr.push(axis + '=' + axisField); break;
+            case 'sum': arr.push(axis + '=' + axisField + '_sum'); break;
+            case 'avg': arr.push(axis + '=' + axisField + '_avg'); break;
+            case 'every':
+              arr.push(axis + '=' + axisField);
               var binSize = xpath0('./ancestor::td//input[@type="text"]', accOptions[i]).value;
               if (binSize > 0) {
-                arr.push(axis + "BinSize=" + binSize);
+                arr.push(axis + 'BinSize=' + binSize);
               }
               break;
           }
@@ -1061,102 +1047,102 @@ function PlotConfigToString() {
         }
       }
     } else {
-      arr.push(axis + "=" + axisField);
+      arr.push(axis + '=' + axisField);
     }
 
     if (useArithmeticOptions) {
       var aritOptions = xpath('./ancestor::tr/following-sibling::tr[position()=2]//input[@type="text"]', axisCheckbox);
       for (var i = 0; i < aritOptions.length; i++) {
         if (aritOptions[i].value == '' || aritOptions[i].value == 0) continue;
-        if (i == 0) arr.push(axis + "Scale=" + aritOptions[i].value);
-        if (i == 1) arr.push(axis + "ScaleBy=" + aritOptions[i].value);
+        if (i == 0) arr.push(axis + 'Scale=' + aritOptions[i].value);
+        if (i == 1) arr.push(axis + 'ScaleBy=' + aritOptions[i].value);
       }
     }
 
     if (useTimeFormatOptions) {
       var timeFormatInput = xpath0('./ancestor::tr/following-sibling::tr[position()=3]//input[@type="text"]', axisCheckbox);
       if (timeFormatInput.value !== '' && timeFormatInput.value != defaultTimeFormat) {
-        arr.push(axis + "TimeFormat=" + timeFormatInput.value); // NOTE no escape() for now
+        arr.push(axis + 'TimeFormat=' + timeFormatInput.value); // NOTE no escape() for now
       }
     }
   }
 
-  getAxisConfigData("x");
-  getAxisConfigData("y");
-  getAxisConfigData("s");
-  getAxisConfigData("t");
+  getAxisConfigData('x');
+  getAxisConfigData('y');
+  getAxisConfigData('s');
+  getAxisConfigData('t');
 
   // get advanced config
   var advancedOptions = xpath0('id("advOptions")/tbody');
   var lineNumber = 1;
 
   var plotTypeSelect = xpath0('./tr[position()=' + (lineNumber++) + ']//select', advancedOptions);
-  if (plotTypeSelect.value != "") {
-    arr.push("plotType=" + plotTypeSelect.value);
+  if (plotTypeSelect.value != '') {
+    arr.push('plotType=' + plotTypeSelect.value);
   }
 
   var ySortSelect = xpath0('./tr[position()=' + (lineNumber++) + ']//select', advancedOptions);
-  if (ySortSelect.value != "none") {
-    arr.push("ySort=" + ySortSelect.value);
+  if (ySortSelect.value != 'none') {
+    arr.push('ySort=' + ySortSelect.value);
   }
 
   var tSortSelect = xpath0('./tr[position()=' + (lineNumber++) + ']//select', advancedOptions);
-  if (tSortSelect.value != "asc") {
-    arr.push("tSort=" + tSortSelect.value);
+  if (tSortSelect.value != 'asc') {
+    arr.push('tSort=' + tSortSelect.value);
   }
 
   var autoRotateInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="checkbox"]', advancedOptions);
   if (autoRotateInput.checked) {
-    arr.push("autoRotate");
+    arr.push('autoRotate');
   }
 
   var hideLegendInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="checkbox"]', advancedOptions);
   if (hideLegendInput.checked) {
-    arr.push("hideLegend");
+    arr.push('hideLegend');
   }
 
   var tNormalizeInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="checkbox"]', advancedOptions);
   if (tNormalizeInput.checked) {
-    arr.push("tNormalize");
+    arr.push('tNormalize');
   }
 
   var scatterScaleInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="text"]', advancedOptions);
   if (scatterScaleInput.value != '' && scatterScaleInput.value != 0) {
-    arr.push("sizeRef=" + scatterScaleInput.value);
+    arr.push('sizeRef=' + scatterScaleInput.value);
   }
 
   var textInfoInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="text"]', advancedOptions);
   if (textInfoInput.value != '' && textInfoInput.value != 'all') { //TODO only save if newPlotType == 'pie'
-    arr.push("textInfo=" + escape(textInfoInput.value));
+    arr.push('textInfo=' + escape(textInfoInput.value));
   }
 
   var xLabelInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="text"]', advancedOptions);
   if (xLabelInput.value != '') {
-    arr.push("xLabel=" + escape(xLabelInput.value));
+    arr.push('xLabel=' + escape(xLabelInput.value));
   }
 
   var yLabelInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="text"]', advancedOptions);
   if (yLabelInput.value != '') {
-    arr.push("yLabel=" + escape(yLabelInput.value));
+    arr.push('yLabel=' + escape(yLabelInput.value));
   }
 
   var titleInput = xpath0('./tr[position()=' + (lineNumber++) + ']//input[@type="text"]', advancedOptions);
   if (titleInput.value != '') {
-    arr.push("title=" + escape(titleInput.value));
+    arr.push('title=' + escape(titleInput.value));
   }
 
   // get constraints
   var constraintsRows = xpath('id("constraintsTable")/tbody/tr');
   for (var i = 0; i < constraintsRows.length; i++) {
-    var constraintField = xpath0('./td[1]', constraintsRows[i]).getAttribute("value");
-    var constraintType = "is";
+    var constraintField = xpath0('./td[1]', constraintsRows[i]).getAttribute('value');
+    var constraintType = 'is';
     var constraintTypeSelect = xpath0('./td[2]/select', constraintsRows[i]);
     if (constraintTypeSelect) {
       constraintType = constraintTypeSelect.value;
     }
     var constraintValue = xpath0('./td[3]/select|./td[3]/input', constraintsRows[i]).value;
     if (constraintValue != '') {
-      arr.push(constraintField + "_" + constraintType + "=" + constraintValue);
+      arr.push(constraintField + '_' + constraintType + '=' + constraintValue);
     }
   }
 
@@ -1164,36 +1150,36 @@ function PlotConfigToString() {
 }
 
 
-function GetPlotLayoutDefaults(fontSize, fontColor) {
+function GetPlotLayoutDefaults (fontSize, fontColor) {
   if (!fontSize) fontSize = 16;
-  if (!fontColor) fontColor = "white";
+  if (!fontColor) fontColor = 'white';
   return {
+    font: {
+      size: Math.max(8, fontSize),
+      color: fontColor
+    },
+    titlefont: {
+      size: Math.max(14, fontSize + 6),
+      color: fontColor
+    },
+    legend: {
       font: {
-          size: Math.max(8, fontSize),
-          color: fontColor
+        size: Math.max(8, fontSize),
+        color: fontColor
       },
-      titlefont: {
-          size: Math.max(14, fontSize+6),
-          color: fontColor
-      },
-      legend: {
-          font: {
-              size: Math.max(8, fontSize),
-              color: fontColor
-          },
-          traceorder: "normal"
-      },
-      separators : ". ",
-      autosize: true,
-      showlegend: false,
-      paper_bgcolor: "transparent",
-      plot_bgcolor: "transparent",
-      hidesources: true
+      traceorder: 'normal'
+    },
+    separators: '. ',
+    autosize: true,
+    showlegend: false,
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    hidesources: true
   };
 }
 
 
-function GetPlotOptionsDefault() {
+function GetPlotOptionsDefault () {
   return {
     displayModeBar: false,
     showLink: false
@@ -1201,35 +1187,35 @@ function GetPlotOptionsDefault() {
 }
 
 
-function RemovePlot(div) {
+function RemovePlot (div) {
   while (div.firstChild) {
     div.removeChild(div.firstChild);
   }
 }
 
 
-function AddVerticalLinearGradientDefinitionToChart(div, id, color1, color2, opacity1, opacity2) {
+function AddVerticalLinearGradientDefinitionToChart (div, id, color1, color2, opacity1, opacity2) {
   opacity1 = typeof opacity1 !== 'undefined' ? opacity1 : 1;
   opacity2 = typeof opacity2 !== 'undefined' ? opacity2 : 1;
 
-  var gradient = d3.select(div).selectAll('svg').select("defs")
-    .append("svg:linearGradient")
-    .attr("x1", "0")
-    .attr("y1", "0")
-    .attr("x2", "1")
-    .attr("y2", "1")
-    .attr("id", id);
-  gradient.append("svg:stop")
-    .attr("offset", "0%")
-    .attr("stop-color", color1)
-    .attr("stop-opacity", 1);
-  gradient.append("svg:stop")
-    .attr("offset", "100%")
-    .attr("stop-color", color2)
-    .attr("stop-opacity", 1);
+  var gradient = d3.select(div).selectAll('svg').select('defs')
+    .append('svg:linearGradient')
+    .attr('x1', '0')
+    .attr('y1', '0')
+    .attr('x2', '1')
+    .attr('y2', '1')
+    .attr('id', id);
+  gradient.append('svg:stop')
+    .attr('offset', '0%')
+    .attr('stop-color', color1)
+    .attr('stop-opacity', 1);
+  gradient.append('svg:stop')
+    .attr('offset', '100%')
+    .attr('stop-color', color2)
+    .attr('stop-opacity', 1);
 }
 
-function createColors() {
+function createColors () {
   // HUSL obtained from http://www.husl-colors.org/
   for (var i = 0; i < huslHues.length; i++) {
     colors[i % huslHues.length] = HUSL.toHex(huslHues[i], huslSat, huslLight);
@@ -1245,130 +1231,130 @@ function createColors() {
 }
 
 
-function AddGradientDefinitionsToChart(div) {
-  function clamp(val) {
+function AddGradientDefinitionsToChart (div) {
+  function clamp (val) {
     return Math.max(0, Math.min(100, val));
   }
 
-  function darker(color) {
+  function darker (color) {
     var colvals = HUSL.fromHex(color);
     return HUSL.toHex(colvals[0], colvals[1], clamp(colvals[2] - 25));
   }
 
-  function lighter(color) {
+  function lighter (color) {
     var colvals = HUSL.fromHex(color);
     return HUSL.toHex(colvals[0], colvals[1], clamp(colvals[2] + 10));
   }
 
   for (var i = 0; i < colors.length; i++) {
-    AddVerticalLinearGradientDefinitionToChart(div, "gradient" + (i + 1), lighter(colors[i]), darker(colors[i]));
+    AddVerticalLinearGradientDefinitionToChart(div, 'gradient' + (i + 1), lighter(colors[i]), darker(colors[i]));
   }
 
   for (var i = 0; i < teamColors.length; i++) {
-    AddVerticalLinearGradientDefinitionToChart(div, "gradientTeam" + (i + 1), lighter(teamColors[i]), darker(teamColors[i]));
+    AddVerticalLinearGradientDefinitionToChart(div, 'gradientTeam' + (i + 1), lighter(teamColors[i]), darker(teamColors[i]));
   }
 
   for (var i = 0; i < serverColors.length; i++) {
-    AddVerticalLinearGradientDefinitionToChart(div, "gradientServer" + (i + 1), lighter(serverColors[i]), darker(serverColors[i]));
+    AddVerticalLinearGradientDefinitionToChart(div, 'gradientServer' + (i + 1), lighter(serverColors[i]), darker(serverColors[i]));
   }
 
-  // AddVerticalLinearGradientDefinitionToChart(div, "gradientGold",  "hsl( 29,88%,60%)", "hsl( 29,88%,25%)");
+  // AddVerticalLinearGradientDefinitionToChart(div, 'gradientGold',  'hsl( 29,88%,60%)', 'hsl( 29,88%,25%)');
 }
 
 
-function SetColorGradientsForChart(div, useTeamColors, useServerColors) {
+function SetColorGradientsForChart (div, useTeamColors, useServerColors) {
   var num = colors.length;
   for (var i = 1; i <= colors.length; i++) {
-    d3.select(div).selectAll(".slice:nth-of-type(" + num + "n+" + i + ")").select("path").style("fill", "url(#gradient" + i + ")"); //slices
-    d3.select(div).selectAll(".trace:nth-of-type(" + num + "n+" + i + ")").select(".points").selectAll("path").style("fill", "url(#gradient" + i + ")"); //traces
-    d3.select(div).selectAll(".traces:nth-of-type(" + num + "n+" + i + ")").selectAll(".legendsymbols").select("g").select("path").style("fill", "url(#gradient" + i + ")"); //legend
+    d3.select(div).selectAll('.slice:nth-of-type(' + num + 'n+' + i + ')').select('path').style('fill', 'url(#gradient' + i + ')'); // slices
+    d3.select(div).selectAll('.trace:nth-of-type(' + num + 'n+' + i + ')').select('.points').selectAll('path').style('fill', 'url(#gradient' + i + ')'); // traces
+    d3.select(div).selectAll('.traces:nth-of-type(' + num + 'n+' + i + ')').selectAll('.legendsymbols').select('g').select('path').style('fill', 'url(#gradient' + i + ')'); // legend
   }
 
   if (useTeamColors) {
     for (var i = 1; i <= serverColors.length; i++) {
-      d3.select(div).selectAll(".slice:nth-of-type(" + i + ")").select("path").style("fill", "url(#gradientTeam" + i + ")"); //slices
-      d3.select(div).selectAll(".trace:nth-of-type(" + i + ")").select(".points").selectAll("path").style("fill", "url(#gradientTeam" + i + ")"); //traces
-      d3.select(div).selectAll(".traces:nth-of-type(" + i + ")").selectAll(".legendsymbols").select("g").select("path").style("fill", "url(#gradientTeam" + i + ")"); //legend
+      d3.select(div).selectAll('.slice:nth-of-type(' + i + ')').select('path').style('fill', 'url(#gradientTeam' + i + ')'); // slices
+      d3.select(div).selectAll('.trace:nth-of-type(' + i + ')').select('.points').selectAll('path').style('fill', 'url(#gradientTeam' + i + ')'); // traces
+      d3.select(div).selectAll('.traces:nth-of-type(' + i + ')').selectAll('.legendsymbols').select('g').select('path').style('fill', 'url(#gradientTeam' + i + ')'); // legend
     }
   }
 
   if (useServerColors) {
     for (var i = 1; i <= serverColors.length; i++) {
-      d3.select(div).selectAll(".slice:nth-of-type(" + i + ")").select("path").style("fill", "url(#gradientServer" + i + ")"); //slices
-      d3.select(div).selectAll(".trace:nth-of-type(" + i + ")").select(".points").selectAll("path").style("fill", "url(#gradientServer" + i + ")"); //traces
-      d3.select(div).selectAll(".traces:nth-of-type(" + i + ")").selectAll(".legendsymbols").select("g").select("path").style("fill", "url(#gradientServer" + i + ")"); //legend
+      d3.select(div).selectAll('.slice:nth-of-type(' + i + ')').select('path').style('fill', 'url(#gradientServer' + i + ')'); // slices
+      d3.select(div).selectAll('.trace:nth-of-type(' + i + ')').select('.points').selectAll('path').style('fill', 'url(#gradientServer' + i + ')'); // traces
+      d3.select(div).selectAll('.traces:nth-of-type(' + i + ')').selectAll('.legendsymbols').select('g').select('path').style('fill', 'url(#gradientServer' + i + ')'); // legend
     }
   }
 }
 
 
-function ReloadExamplesOnCLick() {
+function ReloadExamplesOnCLick () {
   var links = xpath('//aside[contains(@class,"aside-examples")]//li/a');
   for (var i = 0; i < links.length; i++) {
-    links[i].addEventListener('click', function() {
+    links[i].addEventListener('click', function () {
       var plotDiv = xpath0('id("plotDiv")');
       window.location.href = this.href;
-      plotDiv.setAttribute("plotSpecs", window.location.hash);
+      plotDiv.setAttribute('plotSpecs', window.location.hash);
       MakePlot(plotDiv);
     });
   }
 }
 
 
-HTMLElement.prototype.setClass = function(className, addClass) {
+HTMLElement.prototype.setClass = function (className, addClass) {
   if (addClass == null) addClass = true;
   var classes = this.className;
-  var pattern = new RegExp("\\b" + className + "\\b");
+  var pattern = new RegExp('\\b' + className + '\\b');
   if (pattern.test(classes)) {
     if (!addClass) {
-      this.className = classes.replace(pattern, "").replace(/ +/, " ").replace(/ $/, "").replace(/^ /, "");
+      this.className = classes.replace(pattern, '').replace(/ +/, ' ').replace(/ $/, '').replace(/^ /, '');
     }
   } else {
     if (addClass) {
-      this.className += " " + className;
+      this.className += ' ' + className;
     }
   }
 };
 
 
-Date.prototype.getMonthName = function() {
+Date.prototype.getMonthName = function () {
   var month_names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   return month_names[this.getMonth()];
 };
-Date.prototype.getMonthAbbr = function() {
+Date.prototype.getMonthAbbr = function () {
   var month_abbrs = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   return month_abbrs[this.getMonth()];
 };
-Date.prototype.getDayFull = function() {
+Date.prototype.getDayFull = function () {
   var days_full = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   return days_full[this.getDay()];
 };
-Date.prototype.getDayAbbr = function() {
+Date.prototype.getDayAbbr = function () {
   var days_abbr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
   return days_abbr[this.getDay()];
 };
-Date.prototype.getDayOfYear = function() {
+Date.prototype.getDayOfYear = function () {
   var onejan = new Date(this.getFullYear(), 0, 1);
   return Math.ceil((this - onejan) / 86400000);
 };
-Date.prototype.getDaySuffix = function() {
+Date.prototype.getDaySuffix = function () {
   var d = this.getDate();
-  var sfx = ["th", "st", "nd", "rd"];
+  var sfx = ['th', 'st', 'nd', 'rd'];
   var val = d % 100;
   return (sfx[(val - 20) % 10] || sfx[val] || sfx[0]);
 };
-Date.prototype.getWeekOfYear = function() {
+Date.prototype.getWeekOfYear = function () {
   var onejan = new Date(this.getFullYear(), 0, 1);
   return Math.ceil((((this - onejan) / 86400000) + onejan.getDay() + 1) / 7);
 };
-Date.prototype.isLeapYear = function() {
+Date.prototype.isLeapYear = function () {
   var yr = this.getFullYear();
   if (parseInt(yr) % 400 == 0) return true;
   if (parseInt(yr) % 100 == 0) return false;
   if (parseInt(yr) % 4 == 0) return true;
   return false;
 };
-Date.prototype.getMonthDayCount = function() {
+Date.prototype.getMonthDayCount = function () {
   var month_day_counts = [31, this.isLeapYear() ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   return month_day_counts[this.getMonth()];
 };
@@ -1379,36 +1365,36 @@ Date.prototype.format = function(dateFormat) {
   var minutes = this.getMinutes();
   var seconds = this.getSeconds();
 
-  var date_string = "";
-  dateFormat = dateFormat.split("");
+  var date_string = '';
+  dateFormat = dateFormat.split('');
   for (var i = 0; i < dateFormat.length; i++) {
     var f = dateFormat[i];
     var s;
     switch (f) {
-      case "d": s = date < 10 ? '0'+date : date; break;
-      case "D": s = this.getDayAbbr(); break;
-      case "j": s = this.getDate(); break;
-      case "l": s = this.getDayFull(); break;
-      case "S": s = this.getDaySuffix(); break;
-      case "w": s = this.getDay(); break;
-      case "z": s = this.getDayOfYear(); break;
-      case "W": s = this.getWeekOfYear(); break;
-      case "F": s = this.getMonthName(); break;
-      case "m": s = ('0'+(month+1)).substr(-2); break;
-      case "M": s = this.getMonthAbbr(); break;
-      case "n": s = (month+1); break;
-      case "t": s = this.getMonthDayCount(); break;
-      case "L": s = this.isLeapYear() ? '1' : '0'; break;
-      case "Y": s = this.getFullYear(); break;
-      case "y": s = (this.getFullYear()+'').substr(-2); break;
-      case "a": s = hours > 12 ? 'pm' : 'am'; break;
-      case "A": s = hours > 12 ? 'PM' : 'AM'; break;
-      case "G": s = hours; break;
-      case "H": s = ('0' + hours).substr(-2); break;
-      case "g": s = hours % 12 > 0 ? hours % 12 : 12; break;
-      case "h": s = ('0' + (hours % 12 > 0 ?  + hours % 12 : 12)).substr(-2); break;
-      case "i": s = ('0'+minutes).substr(-2); break;
-      case "s": s = ('0'+seconds).substr(-2); break;
+      case 'd': s = date < 10 ? '0' + date : date; break;
+      case 'D': s = this.getDayAbbr(); break;
+      case 'j': s = this.getDate(); break;
+      case 'l': s = this.getDayFull(); break;
+      case 'S': s = this.getDaySuffix(); break;
+      case 'w': s = this.getDay(); break;
+      case 'z': s = this.getDayOfYear(); break;
+      case 'W': s = this.getWeekOfYear(); break;
+      case 'F': s = this.getMonthName(); break;
+      case 'm': s = ('0' + (month + 1)).substr(-2); break;
+      case 'M': s = this.getMonthAbbr(); break;
+      case 'n': s = (month + 1); break;
+      case 't': s = this.getMonthDayCount(); break;
+      case 'L': s = this.isLeapYear() ? '1' : '0'; break;
+      case 'Y': s = this.getFullYear(); break;
+      case 'y': s = (this.getFullYear() + '').substr(-2); break;
+      case 'a': s = hours > 12 ? 'pm' : 'am'; break;
+      case 'A': s = hours > 12 ? 'PM' : 'AM'; break;
+      case 'G': s = hours; break;
+      case 'H': s = ('0' + hours).substr(-2); break;
+      case 'g': s = hours % 12 > 0 ? hours % 12 : 12; break;
+      case 'h': s = ('0' + (hours % 12 > 0 ? hours % 12 : 12)).substr(-2); break;
+      case 'i': s = ('0' + minutes).substr(-2); break;
+      case 's': s = ('0' + seconds).substr(-2); break;
       default: s = f;
     }
     date_string += s;
@@ -1418,15 +1404,18 @@ Date.prototype.format = function(dateFormat) {
 
 
 // taken from http://www.davekoelle.com/files/alphanum.js
-function alphanumCaseInsensitiveCompare(a, b) {
-  function chunkify(t) {
-    var tz = new Array();
-    var x = 0, y = -1, n = null, i, j;
+function alphanumCaseInsensitiveCompare (a, b) {
+  function chunkify (t) {
+    var tz = [];
+    var x = 0;
+    var y = -1;
+    var n = null;
+    var i, j;
 
     while (i = (j = t.charAt(x++)).charCodeAt(0)) {
       var m = ((i >= 48 && i <= 57) || i == 46);
       if (m !== n) {
-        tz[++y] = "";
+        tz[++y] = '';
         n = m;
       }
       tz[y] += j;
@@ -1437,7 +1426,7 @@ function alphanumCaseInsensitiveCompare(a, b) {
   var aa = chunkify(a.toLowerCase());
   var bb = chunkify(b.toLowerCase());
 
-  for (x = 0; aa[x] && bb[x]; x++) {
+  for (var x = 0; aa[x] && bb[x]; x++) {
     if (aa[x] !== bb[x]) {
       var c = Number(aa[x]), d = Number(bb[x]);
       if (c == aa[x] && d == bb[x]) {
@@ -1449,7 +1438,7 @@ function alphanumCaseInsensitiveCompare(a, b) {
 }
 
 
-function xpath(p, context) {
+function xpath (p, context) {
   if (!context) context = document;
   var i, arr = [], xpr = document.evaluate(p, context, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
   for (i = 0; item = xpr.snapshotItem(i); i++)
@@ -1458,13 +1447,13 @@ function xpath(p, context) {
 }
 
 
-function xpath0(p, context) {
+function xpath0 (p, context) {
   if (!context) context = document;
   var xpr = document.evaluate(p, context, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
   return xpr.snapshotItem(0);
 }
 
-function Init() {
+function Init () {
   SendQuery('getInfo.php', OnServerDataRecieve);
 }
 
