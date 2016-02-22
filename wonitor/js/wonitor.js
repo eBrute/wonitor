@@ -431,7 +431,7 @@ function AddConstraintToTable(constraint, constraintValue) {
   }
 
   var cell, select, i, map;
-  if ((constraint == 'map_is' || constraint == 'map_ne') && (!constraintValue || serverData.maps && serverData.maps.indexOf(constraintValue) != -1)) {
+  if ((constraint == 'map_is' || constraint == 'map_ne') && (!constraintValue || serverData.maps && serverData.maps.indexOf(constraintValue) != -1 || constraintValue === '@official')) {
     cell = row.append('td');
     select = cell.append('select');
     select.append('option').attr('value', 'is').text('=').property('selected', constraintOperator == 'is');
@@ -444,7 +444,7 @@ function AddConstraintToTable(constraint, constraintValue) {
       map = serverData.maps[i];
       select.append('option').attr('value', map).text(map).property('selected', constraintValue == map);
     }
-    select.append('option').attr('value', '@official').text('@official').property('selected', constraintValue == map);
+    select.append('option').attr('value', '@official').text('@official').property('selected', constraintValue === '@official');
     cell.append('span');
   } else if ((constraint == 'startLocation1_is' || constraint == 'startLocation1_ne' || constraint == 'startLocation2_is' || constraint == 'startLocation2_ne') && (!constraintValue || indexOfStartLocation(constraintValue)[1] != -1)) {
     cell = row.append('td');
