@@ -37,8 +37,20 @@
         'desc' => 'DESC',
         );
 
+    $specialTables = array(
+       'NamedKillFeed' => 'SELECT temp.*, Playerstats.playerName as [killerName] FROM (
+          SELECT KillFeed.*, Playerstats.playerName as [victimName] FROM KillFeed
+          LEFT JOIN PlayerStats ON KillFeed.victimSteamId = PlayerStats.steamId) AS temp
+          LEFT JOIN PlayerStats ON temp.killerSteamId = PlayerStats.steamId'
+        );
+
+    $ns2plusStructure['NamedKillFeed'] = $ns2plusStructure['KillFeed'];
+    $ns2plusStructure['NamedKillFeed']['victimName'] = 'TEXT';
+    $ns2plusStructure['NamedKillFeed']['killerName'] = 'TEXT';
+
+
     function queryDB( & $db, $structure, $table ) {
-        global $statsMethodDefs, $constraintTypes, $orderOptions;
+        global $statsMethodDefs, $constraintTypes, $orderOptions, $specialTables;
         global $wonitorStructure, $ns2plusStructure;
 
         $isWonitor = $structure == $wonitorStructure;
@@ -113,7 +125,7 @@
                     continue;
                 }
 
-                $group = explode( '_every_', $value);
+                $group = explode( '_every_', $value );
 
                 if ( !isset( $structure[$table][$group[0]] ) ) continue;
 
@@ -136,7 +148,7 @@
             if ( strlen($key ) < 3 ) continue;
             $constraintField  = substr($key, 0, -3 );
             $constraintType   = substr($key, -3 );
-            $constraintValues = explode( ',', $value);
+            $constraintValues = explode( ',', $value );
 
             /* i.e. map_is=..., length_gt=..., numPlayers_ge=... */
             if ( !isset( $constraintTypes[$constraintType] ) ) continue;
@@ -179,7 +191,12 @@
 
         // build and prepare query
         $query = 'SELECT ' . $data;
-        $query .= ' FROM ' . $table; // NOTE this is safe because we checked the table exists
+        if ( isset( $specialTables[$table]) ) {
+            $query .= ' FROM (' . $specialTables[$table] . ') AS ' . $table . ' '; // NOTE this is safe because we checked the table exists
+        }
+        else {
+            $query .= ' FROM ' . $table; // NOTE this is safe because we checked the table exists
+        }
         if ( $constraints ) {
             $query .= ' WHERE ' . implode( ' AND ', $constraints );
         }
@@ -189,11 +206,12 @@
         if ( $orderBy ) {
             $query .= ' ORDER BY ' . implode( ', ', $orderBy );
         }
-        $statement = $db->prepare( $query );
 
         if ( isset( $_GET['showQuery']) ) {
-            echo $statement->queryString . "<br /><br />\n";
+            echo $query . "<br /><br />\n";
         }
+
+        $statement = $db->prepare( $query );
 
         // bind values
         foreach( $_GET as $key => $value ) { // NOTE same loop as above, possible optimization here
@@ -214,7 +232,20 @@
         $statement->setFetchMode( PDO::FETCH_ASSOC );
         $statement->execute();
 
-        $result = $statement->fetchAll();
+        $result = [];
+        $fetch = isset($_GET['fetch']) ? $_GET['fetch'] : 'all';
+        switch ( $fetch ) {
+            case "first":
+                $result = $statement->fetch() || null;
+                break;
+            case "last":
+                $result = $statement->fetchAll();
+                $result = count($result)>1 ? $result[count($result)-1] : null;
+                break;
+            default:
+            case "all":
+                $result = $statement->fetchAll();
+        }
 
         // print results
         echo json_encode( $result ) . "\n";
@@ -258,6 +289,8 @@
     main();
 
     // TODO SELECT time FROM rounds WHERE time > datetime('now', '-2 day');
+    // timediff_gt=-2_day,-10_month , timediff_is
+    // TODO map_is=@official
     // TODO make fieldnames and tables case insensitive
     // curl --request GET 'http://example.com/wonitor/query.php?data=length_avg&group_by=serverId&length_gt=500'
     // curl --request GET 'http://example.com/wonitor/query.php?data=teamWins&map_is=ns2_veil&group_by=serverId'
