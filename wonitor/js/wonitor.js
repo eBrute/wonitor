@@ -279,7 +279,7 @@ function SetPlotConfigData(plotSpecs) {
 
   function setAxisConfigData(axis) {
     var axisCheckbox = xpath0('id("' + axis + 'AxisCheckbox")');
-    axisCheckbox.checked = plotSpecs[axis] !== null;
+    axisCheckbox.checked = plotSpecs[axis] != null;
     axisCheckbox.dispatchEvent(new Event('change'));
 
     var axisField = GetFieldName(plotSpecs[axis]);
@@ -293,7 +293,7 @@ function SetPlotConfigData(plotSpecs) {
       if (fieldName.endsWith('_sum')) return 'sum';
       if (fieldName.endsWith('_avg')) return 'avg';
       if (fieldName.endsWith('_cnt')) return '';
-      if (plotSpecs[axis + 'BinSize'] !== null) return 'every';
+      if (plotSpecs[axis + 'BinSize'] != null) return 'every';
       return '';
     }
 
@@ -386,6 +386,7 @@ function SetPlotConfigData(plotSpecs) {
   ClearConstraintTable();
   for (var key in plotSpecs) {
     if (!IsKeyConstraint(key)) continue;
+    // TODO split(value, ','); for each:
     AddConstraintToTable(key, plotSpecs[key]);
   }
 }
@@ -406,7 +407,7 @@ function AddConstraintToTable(constraint, constraintValue) {
   var constraintOperator = split[split.length - 1] || 'is';
 
   // unhide constraints if we manually add the first one
-  if (constraintValue === null && xpath('id("constraintsTable")/tbody/tr').length == 0) {
+  if (!constraintValue && xpath('id("constraintsTable")/tbody/tr').length == 0) {
     xpath0('id("constToggle")').checked = false;
   }
 
@@ -430,7 +431,7 @@ function AddConstraintToTable(constraint, constraintValue) {
   }
 
   var cell, select, i, map;
-  if ((constraint == 'map_is' || constraint == 'map_ne') && (constraintValue === null || serverData.maps && serverData.maps.indexOf(constraintValue) != -1)) {
+  if ((constraint == 'map_is' || constraint == 'map_ne') && (!constraintValue || serverData.maps && serverData.maps.indexOf(constraintValue) != -1)) {
     cell = row.append('td');
     select = cell.append('select');
     select.append('option').attr('value', 'is').text('=').property('selected', constraintOperator == 'is');
@@ -444,7 +445,7 @@ function AddConstraintToTable(constraint, constraintValue) {
       select.append('option').attr('value', map).text(map).property('selected', constraintValue == map);
     }
     cell.append('span');
-  } else if ((constraint == 'startLocation1_is' || constraint == 'startLocation1_ne' || constraint == 'startLocation2_is' || constraint == 'startLocation2_ne') && (constraintValue === null || indexOfStartLocation(constraintValue)[1] != -1)) {
+  } else if ((constraint == 'startLocation1_is' || constraint == 'startLocation1_ne' || constraint == 'startLocation2_is' || constraint == 'startLocation2_ne') && (!constraintValue || indexOfStartLocation(constraintValue)[1] != -1)) {
     cell = row.append('td');
     select = cell.append('select');
     select.append('option').attr('value', 'is').text('=').property('selected', constraintOperator == 'is');
@@ -461,7 +462,7 @@ function AddConstraintToTable(constraint, constraintValue) {
       }
     }
     cell.append('span');
-  } else if (fields[constraintField] && fields[constraintField].legend && (constraintOperator == 'is' || constraintOperator == 'ne') && (constraintValue === null || fields[constraintField].legend[constraintValue] !== null)) {
+  } else if (fields[constraintField] && fields[constraintField].legend && (constraintOperator == 'is' || constraintOperator == 'ne') && (!constraintValue || fields[constraintField].legend[constraintValue] != null)) {
     cell = row.append('td');
     select = cell.append('select');
     select.append('option').attr('value', 'is').text('=').property('selected', constraintOperator == 'is');
@@ -540,9 +541,9 @@ function BuildQueryString(plotSpecs) {
   var yIsAggregated = GetFieldIsAggregated(plotSpecs['y']);
   var xIsAggregated = GetFieldIsAggregated(plotSpecs['x']);
   var sIsAggregated = GetFieldIsAggregated(plotSpecs['s']);
-  var yIsGrouped = plotSpecs['yBinSize'] !== null;
-  var xIsGrouped = plotSpecs['xBinSize'] !== null;
-  var tIsGrouped = plotSpecs['tBinSize'] !== null;
+  var yIsGrouped = plotSpecs['yBinSize'] != null;
+  var xIsGrouped = plotSpecs['xBinSize'] != null;
+  var tIsGrouped = plotSpecs['tBinSize'] != null;
   var data = [];
   var groups = [];
   plotSpecs.groupIndices = {};
@@ -677,10 +678,10 @@ function CreatePlot(responseText, plotSpecs) {
   var yIsNum = GetFieldIsNum(yType);
   var sIsNum = GetFieldIsNum(sType);
 
-  var tIsGrouped = plotSpecs['tBinSize'] !== null;
+  var tIsGrouped = plotSpecs['tBinSize'] != null;
   var sIsAggregated = GetFieldIsAggregated(sType);
   var yIsAggregated = GetFieldIsAggregated(yType);
-  var xIsGrouped = plotSpecs['xBinSize'] !== null;
+  var xIsGrouped = plotSpecs['xBinSize'] != null;
 
   if (plotSpecs.groupIndices['t']) tSrcField = 'group' + plotSpecs.groupIndices['t'];
   if (plotSpecs.groupIndices['x']) xSrcField = 'group' + plotSpecs.groupIndices['x'];
@@ -906,7 +907,7 @@ function CreatePlot(responseText, plotSpecs) {
 
     // find trace
     var trace = 0;
-    if (tValue !== null) {
+    if (tValue) {
       trace = traces.indexOf(tValue);
     }
 
@@ -939,13 +940,13 @@ function CreatePlot(responseText, plotSpecs) {
     if (sType && sIsNum && plotData[trace].marker.size) {
       plotData[trace].marker.size.push(sValue);
     }
-    if (tValue !== null && sValue === null) {
+    if (tValue && !sValue) {
       plotData[trace]['text'].push(tAxisName + (tIsGrouped ? ' >' : ' ') + tValue);
     }
-    if (tValue !== null && sValue !== null) {
+    if (tValue && sValue) {
       plotData[trace]['text'].push(sAxisName + ' ' + sValue);
     }
-    if (tValue === null && sValue === null) {
+    if (tValue && !sValue) {
       plotData[trace]['text'].push(xValue + (xIsGrouped ? '+' : ''));
     }
   } // for every trace
@@ -1142,6 +1143,7 @@ function PlotConfigToString() {
   // get constraints
   var constraintsRows = xpath('id("constraintsTable")/tbody/tr');
   for (i = 0; i < constraintsRows.length; i++) {
+    // TODO map: constraintField + '_' + constraintType : constraintValue, append(, constraintValue)
     var constraintField = xpath0('./td[1]', constraintsRows[i]).getAttribute('value');
     var constraintType = 'is';
     var constraintTypeSelect = xpath0('./td[2]/select', constraintsRows[i]);
@@ -1313,7 +1315,7 @@ function ReloadExamplesOnCLick() {
 
 
 HTMLElement.prototype.setClass = function(className, addClass) {
-  if (addClass === null) addClass = true;
+  if (!addClass) addClass = true;
   var classes = this.className;
   var pattern = new RegExp('\\b' + className + '\\b');
   if (pattern.test(classes)) {
