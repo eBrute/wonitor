@@ -444,6 +444,7 @@ function AddConstraintToTable(constraint, constraintValue) {
       map = serverData.maps[i];
       select.append('option').attr('value', map).text(map).property('selected', constraintValue == map);
     }
+    select.append('option').attr('value', '@official').text('@official').property('selected', constraintValue == map);
     cell.append('span');
   } else if ((constraint == 'startLocation1_is' || constraint == 'startLocation1_ne' || constraint == 'startLocation2_is' || constraint == 'startLocation2_ne') && (!constraintValue || indexOfStartLocation(constraintValue)[1] != -1)) {
     cell = row.append('td');
