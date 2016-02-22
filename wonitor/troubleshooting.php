@@ -17,7 +17,7 @@
 
 
     // PHP
-    info('PHP version ' . phpversion() . ' running as user ' . `whoami`);
+    info('PHP version ' . phpversion() . ' running as user ' . `whoami` . '.');
 
 
     // config.php
@@ -25,7 +25,7 @@
         error('<b>config.php</b> does not exist. Create it by copying <b>config.php.new</b>, and configure it by consulting the readme file.');
     }
     else {
-        info('config.php found');
+        info('config.php found.');
     }
 
     require_once 'config.php';
@@ -54,14 +54,14 @@
         error('<b>dbUtil.php</b> does not exist.');
     }
     else {
-        info('dbUtil.php found');
+        info('dbUtil.php found.');
     }
     require_once 'dbUtil.php';
 
 
     // data
     if (file_exists('./data')) {
-        info('Data directory exists. (./data)');
+        info('Data directory exists (./data).');
     }
     else {
         if (!mkdir('./data', 0755, true)) {
@@ -69,24 +69,38 @@
         }
     }
 
-    file_put_contents('./data/temp', $isodate, FILE_APPEND | LOCK_EX) or error('Unable to write into data directory. Check permissions. User <b>' . `whoami` . '</b> should have write access.');
-    unlink('./data/temp');
+    if (is_writable('./data')) {
+        info('Data directory is writable.');
+    }
+    else {
+        error('Data directory is not writable. Check permissions. User <b>' . `whoami` . '</b> should have write access.');
+    }
+
+    //file_put_contents('./data/temp', $isodate, FILE_APPEND | LOCK_EX) or error('Unable to write into data directory. Check permissions. User <b>' . `whoami` . '</b> should have write access.');
+    //unlink('./data/temp');
 
     // rounds.sqlite3
     if (!file_exists('./data/rounds.sqlite3')) {
         warning('No wonitor database found (./data/rounds.sqlite3). It will be created as soon as the first round stats are recieved.');
     }
     else {
-        info('Wonitor database found (./data/rounds.sqlite3)');
+        info('Wonitor database found (./data/rounds.sqlite3).');
         try {
             $db = openDB( $wonitorDb );
             $query = 'SELECT COUNT(1) as numentries FROM rounds';
             $numentries = $db->query( $query, PDO::FETCH_NUM )->fetchAll(PDO::FETCH_COLUMN, 0)[0];
             closeDB( $db );
-            info('Database query successful. ' . $numentries . ' entries on record.');
+            info('Wonitor database query successful. ' . $numentries . ' entries on record.');
         }
         catch (PDOException $e) {
             warning($e->getMessage());
+        }
+
+        if (is_writable('./data/rounds.sqlite3')) {
+            info('Wonitor database is writable.');
+        }
+        else {
+            error('Wonitor database is not writable. Check permissions. User <b>' . `whoami` . '</b> should have write access.');
         }
     }
 
@@ -96,16 +110,23 @@
         info('No NS2+ database found (./data/ns2plus.sqlite3). It will be created as soon as the first round stats are recieved. But only if the game server is running ns2+ and is configured to send it.');
     }
     else {
-        info('NS2+ database found (./data/rounds.sqlite3)');
+        info('NS2+ database found (./data/ns2plus.sqlite3).');
         try {
             $db = openDB( $ns2plusDb );
             $query = 'SELECT COUNT(1) as numentries FROM RoundInfo';
             $numentries = $db->query( $query, PDO::FETCH_NUM )->fetchAll(PDO::FETCH_COLUMN, 0)[0];
             closeDB( $db );
-            info('Database query successful. ' . $numentries . ' entries on record.');
+            info('NS2+ database query successful. ' . $numentries . ' entries on record.');
         }
         catch (PDOException $e) {
             warning($e->getMessage());
+        }
+
+        if (is_writable('./data/ns2plus.sqlite3'))  {
+            info('NS2+ database database is writable.');
+        }
+        else {
+            error('NS2+ database is not writable. Check permissions. User <b>' . `whoami` . '</b> should have write access.');
         }
     }
 ?>
