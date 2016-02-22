@@ -148,6 +148,10 @@
             if ( strlen($key ) < 3 ) continue;
             $constraintField  = substr($key, 0, -3 );
             $constraintType   = substr($key, -3 );
+            if (($constraintField == 'map' || $constraintField == 'mapName') && strpos($value, '@official') !== false) {
+                $officialMaps ='ns2_derelict,ns2_docking,ns2_kodiak,ns2_refinery,ns2_tram,ns2_biodome,ns2_descent,ns2_eclipse,ns2_mineshaft,ns2_summit,ns2_veil';
+                $value = str_replace('@official', $officialMaps, $value);
+            }
             $constraintValues = explode( ',', $value );
 
             /* i.e. map_is=..., length_gt=..., numPlayers_ge=... */
@@ -173,7 +177,6 @@
                 }
             }
         }
-
 
         // ordering
         $orderBy = array();
@@ -218,6 +221,10 @@
             if ( strlen($key ) < 3 ) continue;
             $constraintField  = substr($key, 0, -3 );
             $constraintType   = substr($key, -3 );
+            if (($constraintField == 'map' || $constraintField == 'mapName') && strpos($value, '@official') !== false) {
+                $officialMaps ='ns2_derelict,ns2_docking,ns2_kodiak,ns2_refinery,ns2_tram,ns2_biodome,ns2_descent,ns2_eclipse,ns2_mineshaft,ns2_summit,ns2_veil';
+                $value = str_replace('@official', $officialMaps, $value);
+            }
             $constraintValues = explode( ',', $value);
 
             if ( !isset( $constraintTypes[$constraintType] ) ) continue;
