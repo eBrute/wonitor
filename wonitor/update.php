@@ -378,23 +378,27 @@
         if ( !array_key_exists( 'KillFeed', $data ) ) return; // KillFeed is optional
         $insertStatement = buildInsertQueryStatement($ns2plusStructure, 'KillFeed');
         $stmt = $db->prepare($insertStatement);
-        $stmt->bindValue(':roundId',                 $roundId,           PDO::PARAM_INT);
+        $stmt->bindValue(':roundId',                      $roundId,              PDO::PARAM_INT);
         foreach ($data['KillFeed'] as $killEvent) {
-            $victimLocation = intval($killEvent[3]);
-            $killerLocation = intval($killEvent[9]);
-            $victimLocationStr = $data['Locations'][$victimLocation-1];
-            $killerLocationStr = $data['Locations'][$killerLocation-1];
-            $stmt->bindValue(':gameTime',            $killEvent[0],      PDO::PARAM_STR);
-            $stmt->bindValue(':victimClass',         $killEvent[1],      PDO::PARAM_STR);
-            $stmt->bindValue(':victimSteamId',       $killEvent[2],      PDO::PARAM_INT);
-            $stmt->bindValue(':victimLocation',      $victimLocationStr, PDO::PARAM_STR);
-            $stmt->bindValue(':victimPosition',      $killEvent[4],      PDO::PARAM_STR);
-            $stmt->bindValue(':killerWeapon',        $killEvent[5],      PDO::PARAM_STR);
-            $stmt->bindValue(':killerTeamNumber',    $killEvent[6],      PDO::PARAM_INT);
-            $stmt->bindValue(':killerClass',         $killEvent[7],      PDO::PARAM_STR);
-            $stmt->bindValue(':killerSteamId',       $killEvent[8],      PDO::PARAM_INT);
-            $stmt->bindValue(':killerLocation',      $killerLocationStr, PDO::PARAM_STR);
-            $stmt->bindValue(':killerPosition',      $killEvent[10],     PDO::PARAM_STR);
+            $l = count($killEvent);
+            $stmt->bindValue(':gameTime',                 $killEvent[0],         PDO::PARAM_STR);
+            $stmt->bindValue(':victimClass',              $killEvent[1],         PDO::PARAM_STR);
+            $stmt->bindValue(':victimSteamId',            $killEvent[2],         PDO::PARAM_INT);
+            $victimLocation = $data['Locations'][intval($killEvent[3])-1];
+            $stmt->bindValue(':victimLocation',           $victimLocation,       PDO::PARAM_STR);
+            $stmt->bindValue(':victimPosition',           $killEvent[4],         PDO::PARAM_STR);
+            $stmt->bindValue(':killerWeapon',             $killEvent[5],         PDO::PARAM_STR);
+            $stmt->bindValue(':killerTeamNumber',         $killEvent[6],         PDO::PARAM_INT);
+            $stmt->bindValue(':killerClass',    $l > 7 ?  $killEvent[7] : null,  PDO::PARAM_STR);  // NOTE undefined offset 7
+            $stmt->bindValue(':killerSteamId',  $l > 8 ?  $killEvent[8] : null,  PDO::PARAM_INT);  // NOTE undefined offset 8
+            $killerLocation = $l > 9 ? $data['Locations'][intval($killEvent[9])-1] : null; // NOTE undefined offset -1
+            $stmt->bindValue(':killerLocation',           $killerLocation,       PDO::PARAM_STR);
+            $stmt->bindValue(':killerPosition', $l > 10 ? $killEvent[10] : null, PDO::PARAM_STR);  // NOTE undefined offset 10
+
+            $doerLocation = $l > 11 ? $data['Locations'][intval($killEvent[11])-1] : null; // NOTE undefined offset -1
+            $stmt->bindValue(':doerLocation',             $doerLocation,         PDO::PARAM_STR);
+            $stmt->bindValue(':doerPosition',   $l > 12 ? $killEvent[12] : null, PDO::PARAM_STR);  // NOTE undefined offset 10
+
             $stmt->execute();
         }
     }

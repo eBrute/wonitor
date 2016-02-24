@@ -191,7 +191,7 @@
             'weapon' => 'TEXT',
             'teamNumber' => 'INTEGER',
             'hits' => 'INTEGER',
-            'onosHits' => 'INTEGER', //NOTE will be zero if teamNumber==2
+            'onosHits' => 'INTEGER', // NOTE will be zero if teamNumber==2
             'misses' => 'INTEGER',
             'playerDamage' => 'REAL',
             'structureDamage' => 'REAL',
@@ -216,6 +216,8 @@
             'killerSteamId' => 'INTEGER',
             'killerLocation' => 'TEXT',
             'killerPosition' => 'TEXT',
+            'doerLocation' => 'TEXT',
+            'doerPosition' => 'TEXT',
         ),
     );
 ?>
