@@ -942,13 +942,13 @@ function CreatePlot(responseText, plotSpecs) {
       plotData[trace].marker.size.push(sValue);
     }
     if (tValue && !sValue) {
-      plotData[trace]['text'].push(tAxisName + (tIsGrouped ? ' >' : ' ') + tValue);
+      plotData[trace].text.push(tAxisName + (tIsGrouped ? ' >' : ' ') + tValue);
     }
     if (tValue && sValue) {
-      plotData[trace]['text'].push(sAxisName + ' ' + sValue);
+      plotData[trace].text.push(sAxisName + ' ' + sValue);
     }
-    if (tValue && !sValue) {
-      plotData[trace]['text'].push(xValue + (xIsGrouped ? '+' : ''));
+    if (!tValue && !sValue) {
+      plotData[trace].text.push(xValue + (xIsGrouped ? '+' : ''));
     }
   } // for every trace
 
@@ -974,13 +974,14 @@ function CreatePlot(responseText, plotSpecs) {
 
   // swap axes
   if (plotSpecs['autoRotate'] && plotType == 'bar' && plotData[0] && plotData[0][xDataField].length > 3) {
+    var tmp;
     for (t = 0; t < plotData.length; t++) {
-      var tmp = plotData[t][xDataField];
+      tmp = plotData[t][xDataField];
       plotData[t][xDataField] = plotData[t][yDataField];
       plotData[t][yDataField] = tmp;
       plotData[t].orientation = 'h';
     }
-    var tmp = plotLayout.xaxis;
+    tmp = plotLayout.xaxis;
     plotLayout.xaxis = plotLayout.yaxis;
     plotLayout.yaxis = tmp;
   }
