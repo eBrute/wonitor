@@ -386,8 +386,10 @@ function SetPlotConfigData(plotSpecs) {
   ClearConstraintTable();
   for (var key in plotSpecs) {
     if (!IsKeyConstraint(key)) continue;
-    // TODO split(value, ','); for each:
-    AddConstraintToTable(key, plotSpecs[key]);
+    var subconstraints = plotSpecs[key].split(',');
+    for (var subconstraint in subconstraints) {
+      AddConstraintToTable(key, subconstraints[subconstraint]);
+    }
   }
 }
 
@@ -485,6 +487,8 @@ function AddConstraintToTable(constraint, constraintValue) {
     select.append('option').attr('value', 'ne').text('≠').property('selected', constraintOperator == 'ne');
     select.append('option').attr('value', 'le').text('≤').property('selected', constraintOperator == 'le');
     select.append('option').attr('value', 'lt').text('<').property('selected', constraintOperator == 'lt');
+    select.append('option').attr('value', 'mt').text('∼').property('selected', constraintOperator == 'mt');
+    select.append('option').attr('value', 'nm').text('≁').property('selected', constraintOperator == 'nm');
     cell.append('span');
     row.append('td').append('input').attr('type', 'text').attr('size', '8').attr('value', constraintValue ? constraintValue : '');
   }
@@ -533,7 +537,10 @@ function IsKeyConstraint(key) {
   key.endsWith('_gt') ||
   key.endsWith('_ge') ||
   key.endsWith('_lt') ||
-  key.endsWith('_le');
+  key.endsWith('_le') ||
+  key.endsWith('_le') ||
+  key.endsWith('_mt') ||
+  key.endsWith('_nm');
 }
 
 
@@ -1146,18 +1153,24 @@ function PlotConfigToString() {
 
   // get constraints
   var constraintsRows = xpath('id("constraintsTable")/tbody/tr');
+  var constraints = [];
   for (i = 0; i < constraintsRows.length; i++) {
-    // TODO map: constraintField + '_' + constraintType : constraintValue, append(, constraintValue)
     var constraintField = xpath0('./td[1]', constraintsRows[i]).getAttribute('value');
     var constraintType = 'is';
     var constraintTypeSelect = xpath0('./td[2]/select', constraintsRows[i]);
     if (constraintTypeSelect) {
       constraintType = constraintTypeSelect.value;
     }
+    var constraintName = constraintField + '_' + constraintType;
     var constraintValue = xpath0('./td[3]/select|./td[3]/input', constraintsRows[i]).value;
     if (constraintValue != '') {
-      arr.push(constraintField + '_' + constraintType + '=' + constraintValue);
+      if (!constraints[constraintName]) constraints[constraintName] = [];
+      constraints[constraintName].push(constraintValue);
     }
+  }
+
+  for (var constraint in constraints) {
+    arr.push(constraint + '=' + constraints[constraint].join(','));
   }
 
   return arr.join('&');
