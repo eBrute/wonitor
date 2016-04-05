@@ -29,6 +29,12 @@
         '_le' => '<=',
         '_gt' => '>',
         '_ge' => '>=',
+        '_lk' => 'LIKE',
+        '_nl' => 'NOT LIKE',
+        '_mt' => 'GLOB',
+        '_nm' => 'NOT GLOB',
+        '_re' => 'REGEXP',
+        '_nr' => 'NOT REGEXP',
         );
 
     // options for the sql query (ODER BY)
