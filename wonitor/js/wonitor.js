@@ -1333,7 +1333,7 @@ function ReloadExamplesOnCLick() {
 
 
 HTMLElement.prototype.setClass = function(className, addClass) {
-  if (!addClass) addClass = true;
+  if (addClass === null) addClass = true;
   var classes = this.className;
   var pattern = new RegExp('\\b' + className + '\\b');
   if (pattern.test(classes)) {
