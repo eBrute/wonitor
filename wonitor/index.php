@@ -19,55 +19,56 @@
   if (count($servers)>1) {
     $query = 'SELECT COUNT(1) as rounds, CAST(AVG(averageSkill) as INT) as averageSkill FROM rounds ORDER BY count(1) DESC';
     $allServers = $db->query( $query, PDO::FETCH_ASSOC )->fetch();
-    $allServers["serverName"] = "All Servers";
+    $allServers['serverName'] = 'All Servers';
     $servers[] = $allServers;
   }
   closeDB( $db );
   foreach ($servers as $server) {
-    $serverConstraint = isset($server["serverId"]) ? "&serverId_is=".$server["serverId"] : "";
+    $serverConstraint = isset($server['serverId']) ? '&serverId_is='.$server['serverId'] : '';
+    $constraints = $serverConstraint . '&map_mt=ns2_*' . '&numPlayers_gt=6';
 ?>
-  <h2><?php echo $server["serverName"];?> <span>(<?php echo $server["rounds"];?> rounds on record, average skill per round: <?php echo $server["averageSkill"];?>)</span></h2>
+  <h2><?php echo $server['serverName'];?> <span>(<?php echo $server['rounds'];?> rounds on record, average skill per round: <?php echo $server['averageSkill'];?>)</span></h2>
   <div class="container">
     <div class="panel col1">
       <span>Team Balance</span>
       <font size="2">
-      <div plotSpecs="#x=winner&y=count&numPlayers_gt=4<?php echo $serverConstraint;?>"></div>
+      <div plotSpecs="#x=winner&y=count<?php echo $constraints;?>"></div>
       </font>
     </div>
     <div class="panel col1">
       <span>Map Ranking (Rounds)</span>
       <font size="1">
-      <div plotSpecs="#x=map&y=numRounds&plotType=pie&textInfo=text<?php echo $serverConstraint;?>"></div>
+      <div plotSpecs="#x=map&y=numRounds&plotType=pie&textInfo=text<?php echo $constraints;?>"></div>
       </font>
     </div>
     <div class="panel col1">
       <span>Map Ranking (Hours)</span>
       <font size="1">
-      <div plotSpecs="#x=map&y=length_sum&yScaleBy=3600&plotType=pie&yLabel=Round Length Sum in Hours&textInfo=text<?php echo $serverConstraint;?>"></div>
+      <div plotSpecs="#x=map&y=length_sum&yScaleBy=3600&plotType=pie&yLabel=Round Length Sum in Hours&textInfo=text<?php echo $constraints;?>"></div>
       </font>
     </div>
     <div class="panel col3">
       <span>Team Balance by Map</span>
       <font size="1">
-      <div plotSpecs="#x=map&y=count&t=winner&tNormalize&yLabel=Win Ratio&numPlayers_gt=4<?php echo $serverConstraint;?>"></div>
+      <div plotSpecs="#x=map&y=count&t=winner&tNormalize&yLabel=Win Ratio<?php echo $constraints;?>"></div>
       </font>
     </div>
     <div class="panel col2">
       <span>Game Lengths Distribution</span>
       <font size="1">
-      <div plotSpecs="#x=length&xBinSize=60&xScaleBy=60&y=numRounds&xLabel=Round Length in Minutes&numPlayers_gt=4<?php echo $serverConstraint;?>"></div>
+      <div plotSpecs="#x=length&xBinSize=60&xScaleBy=60&y=numRounds&xLabel=Round Length in Minutes<?php echo $constraints;?>"></div>
       </font>
     </div>
     <div class="panel col3">
       <span>Game Lengths by Map</span>
       <font size="1">
-      <div plotSpecs="#x=length&xBinSize=60&xScaleBy=60&y=map&s=count&t=map&sizeRef=0.12&xLabel=Round Length in Minutes&tSort=none&hideLegend&numPlayers_gt=4<?php echo $serverConstraint;?>"></div>
+      <div plotSpecs="#x=length&xBinSize=60&xScaleBy=60&y=map&s=count&t=map&sizeRef=0.12&xLabel=Round Length in Minutes&tSort=none&hideLegend<?php echo $constraints;?>"></div>
       </font>
     </div>
     <div class="panel col3">
       <span>Winner by Start Location</span>
       <font size="1">
-      <div plotSpecs="#x=startLocation1&y=startLocation2&s=count&sizeRef=0.2&t=winner&numPlayers_gt=4<?php echo $serverConstraint;?>"></div>
+      <div plotSpecs="#x=startLocation1&y=startLocation2&s=count&sizeRef=0.2&t=winner<?php echo $constraints;?>"></div>
       </font>
     </div>
   </div>
