@@ -24,6 +24,8 @@ var fields = {
   'time': { isNum: false, name: 'Time' },
   'map': { isNum: false, name: 'Map' },
   'winner': { isNum: false, name: 'Winner', legend: { 0: 'Draw', 1: 'Marines', 2: 'Aliens' } },
+  'winDiff': { isNum: true, isNotNative: true, name: 'Win Difference' },
+  'relWinDiff': { isNum: true, isNotNative: true, name: 'Relative Win Difference' },
   'length': { isNum: true, isFloat: true, name: 'Round Length', unit: 's' },
   'isTournamentMode': { isNum: false, name: 'Tournament Mode', legend: { 0: 'Disabled', 1: 'Enabled' } },
   'isRookieServer': { isNum: false, name: 'Rookie Server', legend: { 0: 'Disabled', 1: 'Enabled' } },
@@ -48,6 +50,9 @@ var fields = {
   'team1Wins': { isNum: true, isNotNative: true, name: '# Marine Wins' },
   'team2Wins': { isNum: true, isNotNative: true, name: '# Alien Wins' },
   'draws': { isNum: true, isNotNative: true, name: '# Draws' },
+  'relTeam1Wins': { isNum: true, isNotNative: true, name: '% Marine Wins' },
+  'relTeam2Wins': { isNum: true, isNotNative: true, name: '% Alien Wins' },
+  'relDraws': { isNum: true, isNotNative: true, name: '% Draws' },
   'killsTeam1': { isNum: true, name: '# Marine Kills' },
   'killsTeam2': { isNum: true, name: '# Alien Kills' },
   'kills': { isNum: true, name: '# Kills' },
@@ -524,6 +529,12 @@ function GetFieldIsAggregated(fieldName) {
     fieldName == 'team2Wins' ||
     fieldName == 'draws' ||
     fieldName == 'teamWins' ||
+    fieldName == 'winDiff' ||
+    fieldName == 'relTeam1Wins' ||
+    fieldName == 'relTeam2Wins' ||
+    fieldName == 'relDraws' ||
+    fieldName == 'relTeamWins' ||
+    fieldName == 'relWinDiff' ||
     fieldName.endsWith('_sum') ||
     fieldName.endsWith('_avg') ||
     fieldName.endsWith('_cnt')
@@ -949,12 +960,15 @@ function CreatePlot(responseText, plotSpecs) {
     plotData[trace][yDataField].push(yValue);
     plotData[trace][xDataField].push(xValue);
     if (sType && sIsNum && plotData[trace].marker.size) {
-      plotData[trace].marker.size.push(sValue);
+      plotData[trace].marker.size.push(Math.abs(sValue));
     }
     if (tValue && !sValue) {
       plotData[trace].text.push(tAxisName + (tIsGrouped ? ' >' : ' ') + tValue);
     }
     if (tValue && sValue) {
+      plotData[trace].text.push(sAxisName + ' ' + sValue);
+    }
+    if (!tValue && sValue) {
       plotData[trace].text.push(sAxisName + ' ' + sValue);
     }
     if (!tValue && !sValue) {

@@ -93,6 +93,24 @@
             elseif ( $isWonitor && $value == 'teamWins' ) {
                 $dataFields[] = 'SUM( CASE WHEN winner=1 THEN 1 ELSE 0 END ) AS team1Wins, SUM( CASE WHEN winner=2 THEN 1 ELSE 0 END ) AS team2Wins, SUM( CASE WHEN winner=0 THEN 1 ELSE 0 END ) AS draws';
             }
+            elseif ( $isWonitor && $value == 'relTeam1Wins' ) {
+                $dataFields[] = 'SUM( CASE WHEN winner=1 THEN 1 ELSE 0 END ) * 1. / COUNT(1) AS relTeam1Wins';
+            }
+            elseif ( $isWonitor && $value == 'relTeam2Wins' ) {
+                $dataFields[] = 'SUM( CASE WHEN winner=2 THEN 1 ELSE 0 END ) * 1. / COUNT(1) AS relTeam2Wins';
+            }
+            elseif ( $isWonitor && $value == 'relDraws' ) {
+                $dataFields[] = 'SUM( CASE WHEN winner=0 THEN 1 ELSE 0 END ) * 1. / COUNT(1) AS relDraws';
+            }
+            elseif ( $isWonitor && $value == 'relTeamWins' ) {
+                $dataFields[] = 'SUM( CASE WHEN winner=1 THEN 1 ELSE 0 END ) * 1. / COUNT(1) AS relTeam1Wins, SUM( CASE WHEN winner=2 THEN 1 ELSE 0 END ) * 1. / COUNT(1) AS relTeam2Wins, SUM( CASE WHEN winner=0 THEN 1 ELSE 0 END ) * 1. / COUNT(1) AS relDraws';
+            }
+            elseif ( $isWonitor && $value == 'winDiff' ) {
+                $dataFields[] = 'SUM( CASE WHEN winner=1 THEN 1 WHEN winner=2 THEN -1 ELSE 0 END ) AS winDiff';
+            }
+            elseif ( $isWonitor && $value == 'relWinDiff' ) {
+                $dataFields[] = 'SUM( CASE WHEN winner=1 THEN 1 WHEN winner=2 THEN -1 ELSE 0 END ) * 1. / COUNT(1) AS relWinDiff';
+            }
             elseif ( $isWonitor && $value == 'startLocations' ) {
                 $dataFields[] = 'startLocation1, startLocation2';
             }
