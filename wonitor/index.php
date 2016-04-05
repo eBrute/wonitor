@@ -13,17 +13,20 @@
 <?php
   require_once 'dbUtil.php';
   $db = openDB( $wonitorDb );
-  $query = 'SELECT serverId, serverName, COUNT(1) as rounds FROM rounds GROUP BY serverId ORDER BY count(1) DESC';
+  $query = 'SELECT serverId, serverName, COUNT(1) as rounds, CAST(AVG(averageSkill) as INT) as averageSkill FROM rounds GROUP BY serverId ORDER BY count(1) DESC';
   $servers = $db->query( $query, PDO::FETCH_ASSOC )->fetchAll();
-  closeDB( $db );
   // add total stats
   if (count($servers)>1) {
-    $servers[] = array("serverName"=>"All Servers", "rounds" => array_sum( array_map( function($server) { return $server["rounds"]; }, $servers) ));
+    $query = 'SELECT COUNT(1) as rounds, CAST(AVG(averageSkill) as INT) as averageSkill FROM rounds ORDER BY count(1) DESC';
+    $allServers = $db->query( $query, PDO::FETCH_ASSOC )->fetch();
+    $allServers["serverName"] = "All Servers";
+    $servers[] = $allServers;
   }
+  closeDB( $db );
   foreach ($servers as $server) {
     $serverConstraint = isset($server["serverId"]) ? "&serverId_is=".$server["serverId"] : "";
 ?>
-  <h2><?php echo $server["serverName"];?> <span>(<?php echo $server["rounds"];?> rounds on record)</span></h2>
+  <h2><?php echo $server["serverName"];?> <span>(<?php echo $server["rounds"];?> rounds on record, average skill per round: <?php echo $server["averageSkill"];?>)</span></h2>
   <div class="container">
     <div class="panel col1">
       <span>Team Balance</span>
@@ -58,13 +61,13 @@
     <div class="panel col3">
       <span>Game Lengths by Map</span>
       <font size="1">
-      <div plotSpecs="#x=length&xBinSize=60&xScaleBy=60&y=map&s=count&t=map&sizeRef=0.05&xLabel=Round Length in Minutes&tSort=none&hideLegend&numPlayers_gt=4<?php echo $serverConstraint;?>"></div>
+      <div plotSpecs="#x=length&xBinSize=60&xScaleBy=60&y=map&s=count&t=map&sizeRef=0.12&xLabel=Round Length in Minutes&tSort=none&hideLegend&numPlayers_gt=4<?php echo $serverConstraint;?>"></div>
       </font>
     </div>
     <div class="panel col3">
       <span>Winner by Start Location</span>
       <font size="1">
-      <div plotSpecs="#x=startLocation1&y=startLocation2&s=count&sizeRef=0.08&t=winner&numPlayers_gt=4<?php echo $serverConstraint;?>"></div>
+      <div plotSpecs="#x=startLocation1&y=startLocation2&s=count&sizeRef=0.2&t=winner&numPlayers_gt=4<?php echo $serverConstraint;?>"></div>
       </font>
     </div>
   </div>

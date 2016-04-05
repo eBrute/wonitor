@@ -163,12 +163,12 @@
               // IS constraints are chained with OR
               $subconstraint = array();
               foreach ($constraintValues as $index => $constraintValue) {
-                  //                 mapName                  =                                     :map_is1
+                  //                 numPlayers               >=                                     :numPlayers_ge1
                   $subconstraint[] = $constraintField . ' ' . $constraintTypes[$constraintType] . ' :'.$key.($index+1);
               }
 
               if (count($subconstraint) == 1) {
-                  // no ugly brackets of only one constraint
+                  // no ugly brackets in query for a single constraint
                   $constraints[] = $subconstraint[0];
               }
               else {
