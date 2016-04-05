@@ -855,8 +855,10 @@ function CreatePlot(responseText, plotSpecs) {
       };
 
       // always rotate text labels by 45° so margin-handling is more predictable (if we dont do this, they are either 0°, 45° or 90°)
+      // always label all bars, even if it is ugly
       if (!xIsNum) {
         plotLayout.xaxis.tickangle = 45;
+        plotLayout.xaxis.tickmode = 'linear';
       }
 
       if (plotType == 'bar') {
