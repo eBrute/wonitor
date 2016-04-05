@@ -127,6 +127,7 @@ function BuildConfigurator() {
     d3.select('#tAxisSelector').append('option').text(fields[key].name).attr('value', key);
     if (fields[key].isNotNative) continue;
     d3.select('#constraintsAdd').append('option').text(fields[key].name).attr('value', key);
+    // TODO make GLOB matching available for all fields
   }
 
   // add event listeners
@@ -1371,7 +1372,7 @@ Date.prototype.getDaySuffix = function() {
   var d = this.getDate();
   var sfx = ['th', 'st', 'nd', 'rd'];
   var val = d % 100;
-  return (sfx[(val - 20) % 10] || sfx[val] || sfx[0]);
+  return sfx[(val - 20) % 10] || sfx[val] || sfx[0];
 };
 Date.prototype.getWeekOfYear = function() {
   var onejan = new Date(this.getFullYear(), 0, 1);
