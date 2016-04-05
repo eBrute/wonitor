@@ -144,6 +144,7 @@
 
         // constraints
         $constraints = array();
+        $bindings = array();
         foreach( $_GET as $key => $value ) {
             if ( strlen($key ) < 3 ) continue;
             $constraintField  = substr($key, 0, -3 );
@@ -162,9 +163,12 @@
               // IS constraints are chained with OR
               $subconstraint = array();
               foreach ($constraintValues as $index => $constraintValue) {
+                  //                 mapName                  =                                     :map_is1
                   $subconstraint[] = $constraintField . ' ' . $constraintTypes[$constraintType] . ' :'.$key.($index+1);
               }
+
               if (count($subconstraint) == 1) {
+                  // no ugly brackets of only one constraint
                   $constraints[] = $subconstraint[0];
               }
               else {
@@ -175,6 +179,10 @@
                 foreach ($constraintValues as $index => $constraintValue) {
                     $constraints[] = $constraintField . ' ' . $constraintTypes[$constraintType] . ' :'.$key.($index+1);
                 }
+            }
+
+            foreach ($constraintValues as $index => $constraintValue) {
+                $bindings[] = array("key" => ':'.$key.($index+1), "value" => $constraintValue);
             }
         }
 
@@ -217,22 +225,8 @@
         $statement = $db->prepare( $query );
 
         // bind values
-        foreach( $_GET as $key => $value ) { // NOTE same loop as above, possible optimization here
-            if ( strlen($key ) < 3 ) continue;
-            $constraintField  = substr($key, 0, -3 );
-            $constraintType   = substr($key, -3 );
-            if (($constraintField == 'map' || $constraintField == 'mapName') && strpos($value, '@official') !== false) {
-                $officialMaps ='ns2_derelict,ns2_docking,ns2_kodiak,ns2_refinery,ns2_tram,ns2_biodome,ns2_descent,ns2_eclipse,ns2_mineshaft,ns2_summit,ns2_veil';
-                $value = str_replace('@official', $officialMaps, $value);
-            }
-            $constraintValues = explode( ',', $value);
-
-            if ( !isset( $constraintTypes[$constraintType] ) ) continue;
-            if ( !isset( $structure[$table][$constraintField] ) ) continue;
-
-            foreach ($constraintValues as $index => $constraintValue) {
-                $statement->bindValue( ':'.$key.($index+1), $constraintValue ); // NOTE this is safe because we check the key above
-            }
+        foreach( $bindings as $binding) {
+          $statement->bindValue( $binding["key"], $binding["value"] ); // NOTE this is safe because we check the key above
         }
 
         // query db
