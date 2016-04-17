@@ -13,7 +13,7 @@
      * WARNING logs are public and might reveal your pre-hashed serverId, use for debugging only
      * logfile will be deleted when $logging is set to false
      */
-    $logging = true;
+    $logging = false;
 
     /* shows white-listed serverIds and their corresponding hash
      * use for debugging only
