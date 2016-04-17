@@ -877,7 +877,9 @@ function CreatePlot(responseText, plotSpecs) {
       // always label all bars, even if it is ugly
       if (!xIsNum) {
         plotLayout.xaxis.tickangle = 45;
-        plotLayout.xaxis.tickmode = 'linear';
+        if (xType != 'time')  {
+          plotLayout.xaxis.tickmode = 'linear';
+        }
       }
 
       if (plotType == 'bar') {
