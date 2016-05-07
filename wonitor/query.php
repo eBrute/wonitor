@@ -81,12 +81,10 @@
     $wonitorStructure = array_merge_recursive($wonitorStructure, $specialWonitorFields);
 
     $specialNs2plusFields = array(
-        'NamedKillFeed' => array(
-            $ns2plusStructure['KillFeed'],
-            'victimName' => '',
-            'killerName' => '',
-        ),
+        'NamedKillFeed' => $ns2plusStructure['KillFeed'],
     );
+    $specialNs2plusFields['NamedKillFeed']['victimName'] = '';
+    $specialNs2plusFields['NamedKillFeed']['killerName'] = '';
     $ns2plusStructure = array_merge_recursive($ns2plusStructure, $specialNs2plusFields);
 
     $shortNames = array(
