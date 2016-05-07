@@ -46,6 +46,7 @@ var fields = {
   'numRookies': { isNum: true, name: '# Rookies' },
   'skillTeam1': { isNum: true, name: 'Marines Skill' },
   'skillTeam2': { isNum: true, name: 'Aliens Skill' },
+  'skillDiff': { isNum: true, name: 'Team Skill Difference' },
   'averageSkill': { isNum: true, isFloat: true, name: 'Average Skill' },
   'team1Wins': { isNum: true, isNotNative: true, name: '# Marine Wins' },
   'team2Wins': { isNum: true, isNotNative: true, name: '# Alien Wins' },
