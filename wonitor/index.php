@@ -13,11 +13,20 @@
 <?php
   require_once 'dbUtil.php';
   $db = openDB( $wonitorDb );
-  $query = 'SELECT serverId, serverName, COUNT(1) as rounds, CAST(AVG(averageSkill) as INT) as averageSkill FROM rounds GROUP BY serverId ORDER BY count(1) DESC';
-  $servers = $db->query( $query, PDO::FETCH_ASSOC )->fetchAll();
+  if (isset($_GET['serverId'])) {
+    $query = 'SELECT serverId, serverName, COUNT(1) as rounds, CAST(AVG(averageSkill) as INT) as averageSkill FROM rounds WHERE serverId = :serverId';
+    $statement = $db->prepare($query);
+    $statement->bindValue(':serverId', $_GET['serverId']);
+    $statement->setFetchMode(PDO::FETCH_ASSOC);
+    $statement->execute();
+    $servers = $statement->fetchAll();
+  } else {
+    $query = 'SELECT serverId, serverName, COUNT(1) as rounds, CAST(AVG(averageSkill) as INT) as averageSkill FROM rounds GROUP BY serverId ORDER BY count(1) DESC';
+    $servers = $db->query( $query, PDO::FETCH_ASSOC )->fetchAll();
+  }
   // add total stats
   if (count($servers)>1) {
-    $query = 'SELECT COUNT(1) as rounds, CAST(AVG(averageSkill) as INT) as averageSkill FROM rounds ORDER BY count(1) DESC';
+    $query = 'SELECT COUNT(1) as rounds, CAST(AVG(averageSkill) as INT) as averageSkill FROM rounds';
     $allServers = $db->query( $query, PDO::FETCH_ASSOC )->fetch();
     $allServers['serverName'] = 'All Servers';
     $servers[] = $allServers;
@@ -25,9 +34,20 @@
   closeDB( $db );
   foreach ($servers as $server) {
     $serverConstraint = isset($server['serverId']) ? '&serverId_is='.$server['serverId'] : '';
-    $constraints = $serverConstraint . '&map_mt=ns2_*' . '&numPlayers_gt=6';
+    $constraints = $serverConstraint;
+    if (preg_match('/[Ss]iege/', $server['serverName'])) {
+      $constraints .= '&map_mt=sg_*' . '&numPlayers_gt=4';
+    } else {
+      $constraints .= '&map_mt=ns2_*' . '&numPlayers_gt=6';
+    }
 ?>
-  <h2><?php echo $server['serverName'];?> <span>(<?php echo $server['rounds'];?> rounds on record, average skill per round: <?php echo $server['averageSkill'];?>)</span></h2>
+  <h2><?php
+    if(isset($server['serverId']))
+      echo '<a href="./index.php?serverId='.$server['serverId'].'" target="_self">';
+      echo $server['serverName'];
+   if(isset($server['serverId']))
+     echo '</a>';
+   ?> <span>(<?php echo $server['rounds'];?> rounds on record, average skill per round: <?php echo $server['averageSkill'];?>)</span></h2>
   <div class="container">
     <div class="panel col1">
       <span>Team Balance</span>
@@ -76,6 +96,9 @@
   } // foreach server
 ?>
   <footer>
+    <?php if(isset($server['serverId'])) { ?>
+    <a class="bigLink" href=".">Show All Servers</a>
+    <?php } ?>
     <a class="bigLink" href="configurator.html">Make your own</a>
   </footer>
   <script src="js/d3.min.js" charset="utf-8"></script>
