@@ -123,7 +123,7 @@
         $stmt->bindValue(':numRookies',           $data['numRookies'],        PDO::PARAM_INT);
         $stmt->bindValue(':skillTeam1',           $data['skillTeam1'],        PDO::PARAM_INT);
         $stmt->bindValue(':skillTeam2',           $data['skillTeam2'],        PDO::PARAM_INT);
-        $stmt->bindValue(':averageSkill',         $data['averageSkill'],      PDO::PARAM_STR);
+        $stmt->bindValue(':averageSkill',         $data['averageSkill'],      PDO::PARAM_STR); // TODO check negative skills
         $stmt->bindValue(':killsTeam1',           $data['killsTeam1'],        PDO::PARAM_INT);
         $stmt->bindValue(':killsTeam2',           $data['killsTeam2'],        PDO::PARAM_INT);
         $stmt->bindValue(':kills',                $data['kills'],             PDO::PARAM_INT);

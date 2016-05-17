@@ -1,0 +1,371 @@
+* {
+  margin:0;
+  padding:0;
+  color: #cdcdcd;
+}
+
+:focus {outline:none;}
+::-moz-focus-inner {border:0;}
+::-webkit-focus-inner {border:0;}
+
+h1, h2, h3, h4 {
+  color: white;
+}
+
+ul {
+  padding-left: 20px;
+}
+
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  /*height: 100%;*/
+  width: 100%;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  background: linear-gradient(to bottom, #262b33 0%,#3f4754 100%);
+  background-attachment: fixed;
+  background-size: 100% auto;
+}
+
+.header {
+  height: 20px;
+  width:100%;
+}
+
+.middle {
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: stretch;
+  justify-content: space-between;
+}
+
+.footer {
+  height: 20px;
+  width: 100%;
+}
+
+.mainpanel {
+  order: 1;
+  flex: 4 auto;
+  margin: 10px;
+  background: rgba(0, 0, 0, 0.1);
+  border-width: 0px;
+  border-radius: 20px 20px 20px 20px;
+  overflow: hidden;
+}
+
+.aside-config {
+  height: auto;
+  order: 2;
+  flex: 1 auto;
+  background: rgba(0, 0, 0, 0.2);
+  border-width: 0px;
+  border-radius: 8px 0px 0px 8px;
+  padding: 20px 0px 0px 20px;
+}
+
+#controls {
+  font-family: Verdana, 'Lucida Sans Unicode', sans-serif;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 24px 24px 24px 24px;
+  width: 100%;
+  align-items: center;
+  height: auto;
+}
+
+#gameTimeSlider {
+  width: 65%;
+  background: transparent;
+}
+
+.controlElement {
+  color: inherit;
+  font-size: 22px;
+}
+.controlElement:hover {
+  color: white;
+  text-shadow: 0px 0px 3px #aaaaaa;
+  cursor:pointer;
+}
+.controlElement:active {
+  color: white;
+  text-shadow: 0px 0px 3px #aaaaaa;
+}
+
+#killsOverlay {
+  position: absolute;
+  z-index: 3;
+  cursor: crosshair;
+}
+
+#heatMapOverlay {
+  position: absolute;
+  z-index: 2;
+}
+
+#killsTooltip {
+  position: absolute;
+  z-index: 4;
+  opacity: 0;
+  pointer-events: none;
+  cursor: crosshair;
+}
+
+#killsTooltipLine {
+  border: 1px solid #D52311;
+  height: 0px;
+  width: 10px;
+}
+
+#killsTooltipBlip {
+}
+
+#killsTooltipMessage {
+  position: absolute;
+  white-space: nowrap;
+  background: rgba(80, 80, 80, 0.8);
+  border: 1px rgba(255, 255, 255, 0.8) solid;
+  padding: 4px;
+}
+
+#killsTooltipMessage span {
+  display: inline-block;
+}
+
+
+#mapcontainer {
+  position: relative;
+}
+
+#map {
+  position: relative;
+}
+
+#map img {
+  /*max-width:780px;*/
+  /*max-height:780px;*/
+  max-width:85vw;
+  /*max-height:90vh;*/
+  display:block;
+  margin:auto;
+  cursor: crosshair;
+}
+
+.helpText {
+  height: 22px;
+  margin-left: 15px;
+  margin-top: 10px;
+  vertical-align: middle;
+}
+
+h2 ~ h3 { padding-left: 10px;}
+
+.aside-config h3 + div {
+  padding-left: 15px;
+  border-spacing: 4px;
+  border-collapse: separate;
+}
+
+input, select, button, textarea, .hoverinfo {
+  vertical-align: middle;
+  background-color: #353B40;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #CDCDCD;
+  border: none;
+  border-radius: 4px;
+  outline:none;
+}
+
+.radioGroup {
+  display: none;
+}
+
+.radioGroup:not(:checked) + label:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.radioGroup:checked + label {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.radioGroup:not(:checked) + label {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.radioGroup + label {
+  border-radius: 0px 0px 0px 0px;
+  padding: 0px 1px;
+}
+
+.radioGroup:first-of-type + label {
+  border-radius: 4px 0px 0px 4px;
+}
+
+.radioGroup:last-of-type + label {
+  border-radius: 0px 4px 4px 0px;
+}
+
+input:not(:disabled):hover, select:not(:disabled):hover, button:not(:disabled):hover, textarea:not(:disabled):hover {
+  background-color: #4D5359;
+}
+
+input:not(:disabled):active, select:not(:disabled):active, button:not(:disabled):active, textarea:not(:disabled):active {
+  background-color: #696F75;
+}
+
+input[type="text"] {
+  padding-left: 0.3em;
+  padding-right: 0.2em;
+}
+
+select {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  padding-left: 0.1em;
+  padding-right: 1.0em;
+}
+
+select + span {
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+}
+
+select + span:after {
+  pointer-events: none;
+  position: absolute;
+  content: "▾";
+  font-size: 0.6em;
+  height: 1em;
+  margin-top: -0.6em;
+  right: 0.5em;
+  color: #CDCDCD;
+}
+
+button {
+  padding: 0.2em 0.3em 0.2em 0.3em;
+}
+
+.addButton {
+  padding-right: 0.1em;
+  width: 2.5em;
+}
+
+.addButton .selectHead {
+  display: none;
+}
+
+.removeButton {
+  padding: 0.1em 0.1em 0.2em 0.1em;
+  height: 1.3em;
+  width: 1.3em;
+  line-height: 1em;
+  text-align: center;
+}
+
+.hoverinfo {
+  padding: 0.1em 0.2em 0.1em 0.2em;
+  margin-left: 0.2em;
+  font-size: 12px;
+}
+
+label input[type=radio],
+label input[type=checkbox] {
+  display: none;
+}
+
+label input[type=radio] + span,
+label input[type=checkbox] + span {
+  width: 0.8em;
+  height: 0.8em;
+  margin-right: .25em;
+  padding: .125em;
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+label input[type=radio] + span {
+  border-radius: 100%;
+}
+
+label input[type=checkbox] + span {
+  border-radius: 25%;
+}
+
+label input[type=radio]:not(:disabled) + span:hover,
+label input[type=checkbox]:not(:disabled) + span:hover {
+  background-color: #4D5359;
+  cursor: pointer;
+}
+
+label input[type=radio]:disabled + span,
+label input[type=checkbox]:disabled + span {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+label input[type=radio]:checked + span::after {
+  width: .5em;
+  height: .5em;
+  margin-left: 0.18em;
+  margin-bottom: 0.6em;
+  display: inline-block;
+  vertical-align: middle;
+  content: " ";
+  background-color: #CDCDCD;
+  border-radius: 100%;
+}
+
+label input[type=checkbox]:checked + span::after {
+  display: inline-block;
+  text-align: center;
+  vertical-align: top;
+  content: "\2714";
+  color: #CDCDCD;
+  line-height: 1em;
+}
+
+label input[type=radio]:disabled:checked + span::after {
+  background-color: #8C8C8C;
+}
+
+label input[type=checkbox]:disabled:checked + span::after {
+  color: #8C8C8C;
+}
+
+input[type=radio]:disabled + span,
+input[type=checkbox]:disabled + span {
+  background: rgba(0, 0, 0, 0.5);
+  color: #8C8C8C;
+}
+
+.generalInfo {
+  color: #444444;
+  font-size: 10px;
+}
+
+media all and (max-width: 550px) { /* 550px or less */
+  .mainpanel         { order: 1; width: auto; flex: 1 100%;
+      margin: 0;
+      border-radius: 0px;
+  }
+  .aside-config { order: 2; width: auto; flex: 1 100%;
+      border-radius: 0px;
+  }
+  .middle {
+    align-content: flex-start;
+    width: auto;
+  }
+  .footer { height: 0px; }
+  #map img {
+    max-width:90vw;
+    max-height:90vh;
+  }
+}

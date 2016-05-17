@@ -162,7 +162,7 @@ http://forums.unknownworlds.com/discussion/139786/wonitor-server-side-statistics
 New versions will be announced there as well.
 
 ## License Information
-The project includes minified version of plotly.js, d3.js and husl.js. The copyright lies with their respective owners.
+The project includes minified version of plotly.js, d3.js, husl.js and heatmap.js. The copyright lies with their respective owners.
 
 https://github.com/husl-colors/husl <br />
 http://www.husl-colors.org/ <br />
@@ -176,5 +176,10 @@ https://github.com/plotly/plotly.js <br />
 https://plot.ly/javascript/ <br />
 © 2015 Plotly, Inc. <br />
 Code released under the MIT license.
+
+https://github.com/pa7/heatmap.js <br />
+https://www.patrick-wied.at/static/heatmapjs/ <br />
+© 2014, Patrick Wied
+
 
 Everything else is free to use as you see fit.
