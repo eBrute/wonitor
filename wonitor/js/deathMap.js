@@ -85,6 +85,7 @@ function drawKillFeed() {
       }
       addMinimapBlip(d3.select(this), d.victimClass, getColorFilterForBlipIcon(d.victimClass), d.victimPosition, angle);
     })
+    .on('click', showTooltip)
     .on('mouseenter', showTooltip)
     .on('mouseleave', hideTooltip);
 }
