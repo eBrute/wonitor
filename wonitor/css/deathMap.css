@@ -117,6 +117,10 @@ body {
   cursor: crosshair;
 }
 
+#killsTooltip .deathIcon {
+  vertical-align: sub;
+}
+
 #killsTooltipLine {
   border: 1px solid #D52311;
   height: 0px;
