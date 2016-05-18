@@ -19,7 +19,7 @@ var deathIconSize = 16;
 var playerPlaying = false;
 var playerSpeed = 1;
 var heatMap = null;
-var heatMapSettings = {
+var heatMapConfig = {
   value: 4,
   max: 10,
   radius: 14,
@@ -28,6 +28,7 @@ var heatMapSettings = {
   height: 1000
 };
 var lastSliderPos = 0;
+
 
 function updateKillFeed(responseText) {
   var queryData = JSON.parse(responseText);
@@ -104,8 +105,8 @@ function repaintKillFeed() {
   var kills = d3.select('#killsOverlay')
     .selectAll('div');
 
-  kills
-    .each(function(d) {
+  kills.each(
+    function(d) {
       d3.select(this)
         .style({
           display: d.gameTime <= currentTime ? 'block' : 'none',
@@ -580,13 +581,13 @@ function CoordinatesToHeatMap(coordsString) {
     z: Number(coordsSplit[2])
   };
 
-  var x = (coords.z - mapExtents.origin.z) / (mapExtents.scale.z / 2) * heatMapSettings.width + heatMapSettings.width / 2;
-  var y = -(coords.x - mapExtents.origin.x) / (mapExtents.scale.x / 2) * heatMapSettings.height + heatMapSettings.height / 2;
+  var x = (coords.z - mapExtents.origin.z) / (mapExtents.scale.z / 2) * heatMapConfig.width + heatMapConfig.width / 2;
+  var y = -(coords.x - mapExtents.origin.x) / (mapExtents.scale.x / 2) * heatMapConfig.height + heatMapConfig.height / 2;
 
   return {
     x: x,
     y: y,
-    value: heatMapSettings.value
+    value: heatMapConfig.value
   };
 }
 
@@ -618,7 +619,7 @@ function saveMapExtents(minimapExtentsString) {
 
 function resetHeatMap() {
   heatMap.setData({
-    max: heatMapSettings.max,
+    max: heatMapConfig.max,
     data: []
   });
 
@@ -879,14 +880,14 @@ function main() {
       }
     });
 
-  heatMapSettings.container = d3.selectAll('#heatMapContainer')
+  heatMapConfig.container = d3.select('#heatMapContainer')
     .style({
-      width: heatMapSettings.width + 'px',
-      height: heatMapSettings.height + 'px'
+      width: heatMapConfig.width + 'px',
+      height: heatMapConfig.height + 'px'
     })
     .node();
 
-  heatMap = h337.create(heatMapSettings);
+  heatMap = h337.create(heatMapConfig);
 
   resetHeatMap();
 
