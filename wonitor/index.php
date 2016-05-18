@@ -113,13 +113,13 @@
   <script src="js/wonitor.js" charset="utf-8"></script>
   <script>
     var panels = xpath('//div[contains(@class,"panel")]');
-    for (var i=0; i<panels.length; i++) {
+    for (var i = 0; i < panels.length; i++) {
       var headline = xpath0('./span', panels[i]);
       var plotdiv  = xpath0('.//div[@plotSpecs or @plotspecs]', panels[i]);
       var configLink = document.createElement('a');
-      configLink.className = "configLink";
-      configLink.href = "configurator.html"+plotdiv.getAttribute("plotSpecs");
-      configLink.textContent = "⚙";
+      configLink.className = 'configLink';
+      configLink.href = 'configurator.html' + plotdiv.getAttribute('plotSpecs');
+      configLink.textContent = '⚙';
       panels[i].insertBefore(configLink, headline.nextSibling);
     }
   </script>

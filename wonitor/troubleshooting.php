@@ -12,7 +12,7 @@
       echo 'Warning: ' . $string. '<br \>';
     }
     function error($string) {
-        die('Error: ' . $string);
+      die('Error: ' . $string);
     }
 
 
