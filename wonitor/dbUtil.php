@@ -30,7 +30,10 @@
             echo $e->getMessage();
         }
     }
-
+    
+    function databaseExists(& $dbDef) {
+        return file_exists( explode( ':', $dbDef[0] )[1] );
+    }
 
     // all fields listed here are query-able
     // changes in the sql structure should also enter here, fieldnames should not include a _

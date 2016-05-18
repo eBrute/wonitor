@@ -99,7 +99,13 @@
     <?php if(isset($server['serverId'])) { ?>
     <a class="bigLink" href=".">Show All Servers</a>
     <?php } ?>
-    <a class="bigLink" href="configurator.html">Make your own</a>
+    <a class="bigLink" href="configurator.html">Make Your Own</a>
+    <?php if (file_exists('./data/ns2plus.sqlite3')) { ?>
+    <a class="bigLink" href="deathMap.php">Death Map</a>
+    <?php } ?>
+    <?php if (dataBaseExists($ns2plusDb)) { ?>
+    <a class="bigLink" href="deathMap.php">Death Map</a>
+    <?php } ?>
   </footer>
   <script src="js/d3.min.js" charset="utf-8"></script>
   <script src="js/plotly.min.js" charset="utf-8"></script>
