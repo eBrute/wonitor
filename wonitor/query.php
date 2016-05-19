@@ -56,11 +56,14 @@
         );
 
     // empty all fields
-    foreach ([&$wonitorStructure, &$ns2plusStructure] as &$structure) {
-        foreach ($structure as &$table) {
-            foreach ($table as &$field) {
-                $field = '';
-            }
+    foreach ($wonitorStructure as &$table) {
+        foreach ($table as &$field) {
+            $field = '';
+        }
+    }
+    foreach ($ns2plusStructure as &$table) {
+        foreach ($table as &$field) {
+            $field = '';
         }
     }
 
