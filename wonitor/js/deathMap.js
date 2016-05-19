@@ -345,7 +345,7 @@ function calculateTooltipPosition(killerCoords, victimCoords) {
 
 
 function isSuicide(d) {
-  return d.killerSteamId == d.victimSteamId && d.killerSteamId != 0;
+  return d.killerClass == 'DeathTrigger' || d.killerSteamId == d.victimSteamId && d.killerSteamId != 0;
 }
 
 
@@ -452,7 +452,7 @@ function getDeathIconPos(weapon) {
     'ClusterGrenade', 'GasGrenade', 'PulseGrenade', 'Stab', 'WhipBomb', 'Metabolize', 'Crush', 'PowerSurge'
   ];
   var index = deathMessageIcons.indexOf(weapon);
-  return index >= 0 ? index : 0;
+  return index >= 0 ? index : 0;  // i.e. 'DeathTrigger'
 }
 
 
