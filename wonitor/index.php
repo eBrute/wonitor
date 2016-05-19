@@ -100,9 +100,6 @@
     <a class="bigLink" href=".">Show All Servers</a>
     <?php } ?>
     <a class="bigLink" href="configurator.html">Make Your Own</a>
-    <?php if (file_exists('./data/ns2plus.sqlite3')) { ?>
-    <a class="bigLink" href="deathMap.php">Death Map</a>
-    <?php } ?>
     <?php if (dataBaseExists($ns2plusDb)) { ?>
     <a class="bigLink" href="deathMap.php">Death Map</a>
     <?php } ?>
