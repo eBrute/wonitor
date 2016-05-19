@@ -123,7 +123,7 @@
         $stmt->bindValue(':numRookies',           $data['numRookies'],        PDO::PARAM_INT);
         $stmt->bindValue(':skillTeam1',           $data['skillTeam1'],        PDO::PARAM_INT);
         $stmt->bindValue(':skillTeam2',           $data['skillTeam2'],        PDO::PARAM_INT);
-        $stmt->bindValue(':averageSkill',         $data['averageSkill'],      PDO::PARAM_STR); // TODO check negative skills
+        $stmt->bindValue(':averageSkill', floatval($data['averageSkill']) > 0 ? $data['averageSkill'] : 0, PDO::PARAM_STR); // NOTE for 0 players NS2 reports nan (lua) -> null (json) -> NULL (php) -> -2147483648.0 (sql)
         $stmt->bindValue(':killsTeam1',           $data['killsTeam1'],        PDO::PARAM_INT);
         $stmt->bindValue(':killsTeam2',           $data['killsTeam2'],        PDO::PARAM_INT);
         $stmt->bindValue(':kills',                $data['kills'],             PDO::PARAM_INT);
@@ -380,24 +380,23 @@
         $stmt = $db->prepare($insertStatement);
         $stmt->bindValue(':roundId',                      $roundId,              PDO::PARAM_INT);
         foreach ($data['KillFeed'] as $killEvent) {
-            $l = count($killEvent);
             $stmt->bindValue(':gameTime',                 $killEvent[0],         PDO::PARAM_STR);
             $stmt->bindValue(':victimClass',              $killEvent[1],         PDO::PARAM_STR);
             $stmt->bindValue(':victimSteamId',            $killEvent[2],         PDO::PARAM_INT);
-            $victimLocation = $data['Locations'][intval($killEvent[3])-1];
+            $victimLocation = isset($killEvent[3]) ? $data['Locations'][intval($killEvent[3])-1] : null;
             $stmt->bindValue(':victimLocation',           $victimLocation,       PDO::PARAM_STR);
             $stmt->bindValue(':victimPosition',           $killEvent[4],         PDO::PARAM_STR);
             $stmt->bindValue(':killerWeapon',             $killEvent[5],         PDO::PARAM_STR);
             $stmt->bindValue(':killerTeamNumber',         $killEvent[6],         PDO::PARAM_INT);
-            $stmt->bindValue(':killerClass',    $l > 7 ?  $killEvent[7] : null,  PDO::PARAM_STR);  // NOTE undefined offset 7
-            $stmt->bindValue(':killerSteamId',  $l > 8 ?  $killEvent[8] : null,  PDO::PARAM_INT);  // NOTE undefined offset 8
-            $killerLocation = $l > 9 ? $data['Locations'][intval($killEvent[9])-1] : null; // NOTE undefined offset -1
+            $stmt->bindValue(':killerClass',        isset($killEvent[7]) ? $killEvent[7] : null,   PDO::PARAM_STR);
+            $stmt->bindValue(':killerSteamId',      isset($killEvent[8]) ? $killEvent[8] : null,   PDO::PARAM_INT);
+            $killerLocation = isset($killEvent[9]) ? $data['Locations'][intval($killEvent[9])-1] : null;
             $stmt->bindValue(':killerLocation',           $killerLocation,       PDO::PARAM_STR);
-            $stmt->bindValue(':killerPosition', $l > 10 ? $killEvent[10] : null, PDO::PARAM_STR);  // NOTE undefined offset 10
+            $stmt->bindValue(':killerPosition',     isset($killEvent[10]) ? $killEvent[10] : null, PDO::PARAM_STR);
 
-            $doerLocation = $l > 11 ? $data['Locations'][intval($killEvent[11])-1] : null; // NOTE undefined offset -1
+            $doerLocation = isset($killEvent[11]) ? $data['Locations'][intval($killEvent[11])-1] : null;
             $stmt->bindValue(':doerLocation',             $doerLocation,         PDO::PARAM_STR);
-            $stmt->bindValue(':doerPosition',   $l > 12 ? $killEvent[12] : null, PDO::PARAM_STR);  // NOTE undefined offset 10
+            $stmt->bindValue(':doerPosition',       isset($killEvent[12]) ? $killEvent[12] : null, PDO::PARAM_STR);
 
             $stmt->execute();
         }
