@@ -107,6 +107,8 @@ body {
 #heatMapOverlay {
   position: absolute;
   z-index: 2;
+  width: 0;
+  height: 0;
 }
 
 #killsTooltip {
@@ -115,6 +117,8 @@ body {
   opacity: 0;
   pointer-events: none;
   cursor: crosshair;
+  width: 0;
+  height: 0;
 }
 
 #killsTooltip .deathIcon {
