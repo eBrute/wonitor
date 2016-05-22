@@ -12,7 +12,8 @@ var mapExtents = {
   scale: {
     x: 0,
     y: 0,
-    z: 0
+    z: 0,
+    xzMax: 0
   }
 };
 var deathIconSize = 16;
@@ -24,8 +25,8 @@ var heatMapConfig = {
   max: 10,
   radius: 14,
   opacity: 0.4,
-  width: 1000,
-  height: 1000
+  width: 1024,
+  height: 1024
 };
 var lastSliderPos = 0;
 
@@ -452,7 +453,7 @@ function getDeathIconPos(weapon) {
     'ClusterGrenade', 'GasGrenade', 'PulseGrenade', 'Stab', 'WhipBomb', 'Metabolize', 'Crush', 'PowerSurge'
   ];
   var index = deathMessageIcons.indexOf(weapon);
-  return index >= 0 ? index : 0;  // i.e. 'DeathTrigger'
+  return index >= 0 ? index : 0; // i.e. 'DeathTrigger'
 }
 
 
@@ -567,8 +568,8 @@ function CoordinatesToMap(coordsString) {
   var mapLeft = map.offsetLeft;
   var mapTop = map.offsetTop;
 
-  var x = (coords.z - mapExtents.origin.z) / (mapExtents.scale.z / 2) * mapWidth + mapWidth / 2 + mapLeft;
-  var y = -(coords.x - mapExtents.origin.x) / (mapExtents.scale.x / 2) * mapHeight + mapHeight / 2 + mapTop;
+  var x = (coords.z - mapExtents.origin.z) / mapExtents.scale.xzMax * mapWidth + mapWidth / 2 + mapLeft;
+  var y = -(coords.x - mapExtents.origin.x) / mapExtents.scale.xzMax * mapHeight + mapHeight / 2 + mapTop;
 
   return [x, y];
 }
@@ -582,8 +583,8 @@ function CoordinatesToHeatMap(coordsString) {
     z: Number(coordsSplit[2])
   };
 
-  var x = (coords.z - mapExtents.origin.z) / (mapExtents.scale.z / 2) * heatMapConfig.width + heatMapConfig.width / 2;
-  var y = -(coords.x - mapExtents.origin.x) / (mapExtents.scale.x / 2) * heatMapConfig.height + heatMapConfig.height / 2;
+  var x = (coords.z - mapExtents.origin.z) / mapExtents.scale.xzMax * heatMapConfig.width + heatMapConfig.width / 2;
+  var y = -(coords.x - mapExtents.origin.x) / mapExtents.scale.xzMax * heatMapConfig.height + heatMapConfig.height / 2;
 
   return {
     x: x,
@@ -615,6 +616,7 @@ function saveMapExtents(minimapExtentsString) {
   mapExtents.scale.x = Number(scaleTemp[0]);
   mapExtents.scale.y = Number(scaleTemp[1]);
   mapExtents.scale.z = Number(scaleTemp[2]);
+  mapExtents.scale.xzMax = Math.max(mapExtents.scale.x / 2, mapExtents.scale.z / 2);
 }
 
 
