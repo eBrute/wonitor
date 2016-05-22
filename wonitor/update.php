@@ -243,20 +243,20 @@
             $stmt->bindValue( ':isRookie',           $pStats['isRookie'],             PDO::PARAM_BOOL);
             foreach (['1', '2'] as $t) {
                 $stmt->bindValue(':teamNumber',      $t,                              PDO::PARAM_INT);
-                $stmt->bindValue(':timePlayed',      $pStats[$t]['timePlayed'],       PDO::PARAM_STR);
-                $stmt->bindValue(':timeBuilding',    $pStats[$t]['timeBuilding'],     PDO::PARAM_STR);
-                $stmt->bindValue(':commanderTime',   $pStats[$t]['commanderTime'],    PDO::PARAM_STR);
-                $stmt->bindValue(':kills',           $pStats[$t]['kills'],            PDO::PARAM_INT);
-                $stmt->bindValue(':deaths',          $pStats[$t]['deaths'],           PDO::PARAM_INT);
-                $stmt->bindValue(':assists',         $pStats[$t]['assists'],          PDO::PARAM_INT);
-                $stmt->bindValue(':killstreak',      $pStats[$t]['killstreak'],       PDO::PARAM_INT);
-                $stmt->bindValue(':hits',            $pStats[$t]['hits'],             PDO::PARAM_INT);
-                $stmt->bindValue(':onosHits',        $pStats[$t]['onosHits'],         PDO::PARAM_INT);
-                $stmt->bindValue(':misses',          $pStats[$t]['misses'],           PDO::PARAM_INT);
-                $stmt->bindValue(':playerDamage',    $pStats[$t]['playerDamage'],     PDO::PARAM_STR);
-                $stmt->bindValue(':structureDamage', $pStats[$t]['structureDamage'],  PDO::PARAM_STR);
-                $stmt->bindValue(':score',           $pStats[$t]['score'],            PDO::PARAM_INT);
-                if ($pStats[$t]['timePlayed'] != 0) {
+                $stmt->bindValue(':timePlayed',      $pStats[$t][0],                  PDO::PARAM_STR);
+                $stmt->bindValue(':timeBuilding',    $pStats[$t][1],                  PDO::PARAM_STR);
+                $stmt->bindValue(':commanderTime',   $pStats[$t][2],                  PDO::PARAM_STR);
+                $stmt->bindValue(':kills',           $pStats[$t][3],                  PDO::PARAM_INT);
+                $stmt->bindValue(':assists',         $pStats[$t][4],                  PDO::PARAM_INT);
+                $stmt->bindValue(':deaths',          $pStats[$t][5],                  PDO::PARAM_INT);
+                $stmt->bindValue(':killstreak',      $pStats[$t][6],                  PDO::PARAM_INT);
+                $stmt->bindValue(':hits',            $pStats[$t][7],                  PDO::PARAM_INT);
+                $stmt->bindValue(':onosHits',        $pStats[$t][8],                  PDO::PARAM_INT);
+                $stmt->bindValue(':misses',          $pStats[$t][9],                  PDO::PARAM_INT);
+                $stmt->bindValue(':playerDamage',    $pStats[$t][10],                 PDO::PARAM_STR);
+                $stmt->bindValue(':structureDamage', $pStats[$t][11],                 PDO::PARAM_STR);
+                $stmt->bindValue(':score',           $pStats[$t][12],                 PDO::PARAM_INT);
+                if ($pStats[$t][0] != 0) { // timePlayed != 0
                     $stmt->execute();
                 }
             }
@@ -298,7 +298,7 @@
         $commanderTimes = array('1' => [-1 => -1], '2' => [-1 => -1]); //max wont work with empty arrays
         foreach ($data['PlayerStats'] as $player => $pStats) {
             foreach (['1', '2'] as $t) {
-              $commanderTimes[$t][$player] = $pStats[$t]['commanderTime'];
+              $commanderTimes[$t][$player] = $pStats[$t][2];
             }
         }
         $marineComm = array_search(max($commanderTimes['1']), $commanderTimes['1']);
@@ -323,20 +323,20 @@
             $stmt2->bindValue(':lastSeen',            $data['RoundInfo']['roundDate'], PDO::PARAM_STR);
             $stmt1->execute();
             foreach (['1', '2'] as $t) {
-                $stmt2->bindValue(":timePlayed$t",    $pStats[$t]['timePlayed'],       PDO::PARAM_STR);
-                $stmt3->bindValue(':timePlayed',      $pStats[$t]['timePlayed'],       PDO::PARAM_STR);
-                $stmt3->bindValue(':timeBuilding',    $pStats[$t]['timeBuilding'],     PDO::PARAM_STR);
-                $stmt3->bindValue(':commanderTime',   $pStats[$t]['commanderTime'],    PDO::PARAM_STR);
-                $stmt3->bindValue(':kills',           $pStats[$t]['kills'],            PDO::PARAM_INT);
-                $stmt3->bindValue(':deaths',          $pStats[$t]['deaths'],           PDO::PARAM_INT);
-                $stmt3->bindValue(':assists',         $pStats[$t]['assists'],          PDO::PARAM_INT);
-                $stmt3->bindValue(':killstreak',      $pStats[$t]['killstreak'],       PDO::PARAM_INT);
-                $stmt3->bindValue(':hits',            $pStats[$t]['hits'],             PDO::PARAM_INT);
-                $stmt3->bindValue(':onosHits',        $pStats[$t]['onosHits'],         PDO::PARAM_INT);
-                $stmt3->bindValue(':misses',          $pStats[$t]['misses'],           PDO::PARAM_INT);
-                $stmt3->bindValue(':playerDamage',    $pStats[$t]['playerDamage'],     PDO::PARAM_STR);
-                $stmt3->bindValue(':structureDamage', $pStats[$t]['structureDamage'],  PDO::PARAM_STR);
-                $stmt3->bindValue(':score',           $pStats[$t]['score'],            PDO::PARAM_INT);
+                $stmt2->bindValue(":timePlayed$t",    $pStats[$t][0],                  PDO::PARAM_STR);
+                $stmt3->bindValue(':timePlayed',      $pStats[$t][0],                  PDO::PARAM_STR);
+                $stmt3->bindValue(':timeBuilding',    $pStats[$t][1],                  PDO::PARAM_STR);
+                $stmt3->bindValue(':commanderTime',   $pStats[$t][2],                  PDO::PARAM_STR);
+                $stmt3->bindValue(':kills',           $pStats[$t][3],                  PDO::PARAM_INT);
+                $stmt3->bindValue(':assists',         $pStats[$t][4],                  PDO::PARAM_INT);
+                $stmt3->bindValue(':deaths',          $pStats[$t][5],                  PDO::PARAM_INT);
+                $stmt3->bindValue(':killstreak',      $pStats[$t][6],                  PDO::PARAM_INT);
+                $stmt3->bindValue(':hits',            $pStats[$t][7],                  PDO::PARAM_INT);
+                $stmt3->bindValue(':onosHits',        $pStats[$t][8],                  PDO::PARAM_INT);
+                $stmt3->bindValue(':misses',          $pStats[$t][9],                  PDO::PARAM_INT);
+                $stmt3->bindValue(':playerDamage',    $pStats[$t][10],                 PDO::PARAM_STR);
+                $stmt3->bindValue(':structureDamage', $pStats[$t][11],                 PDO::PARAM_STR);
+                $stmt3->bindValue(':score',           $pStats[$t][12],                 PDO::PARAM_INT);
                 $stmt3->execute();
             }
             $stmt2->execute();
@@ -350,13 +350,13 @@
             $stmt->bindValue(':steamId',             $player,                    PDO::PARAM_INT);
             foreach ($pStats['weapons'] as $weapon => $wStats) {
                 $stmt->bindValue(':weapon',          $weapon,                    PDO::PARAM_STR);
-                $stmt->bindValue(':teamNumber',      $wStats['teamNumber'],      PDO::PARAM_INT);
-                $stmt->bindValue(':hits',            $wStats['hits'],            PDO::PARAM_INT);
-                $stmt->bindValue(':onosHits',        $wStats['onosHits'],        PDO::PARAM_INT);
-                $stmt->bindValue(':misses',          $wStats['misses'],          PDO::PARAM_INT);
-                $stmt->bindValue(':playerDamage',    $wStats['playerDamage'],    PDO::PARAM_STR);
-                $stmt->bindValue(':structureDamage', $wStats['structureDamage'], PDO::PARAM_STR);
-                $stmt->bindValue(':kills',           $wStats['kills'],           PDO::PARAM_INT);
+                $stmt->bindValue(':teamNumber',      $wStats[0],                 PDO::PARAM_INT);
+                $stmt->bindValue(':hits',            $wStats[1],                 PDO::PARAM_INT);
+                $stmt->bindValue(':onosHits',        $wStats[2],                 PDO::PARAM_INT);
+                $stmt->bindValue(':misses',          $wStats[3],                 PDO::PARAM_INT);
+                $stmt->bindValue(':playerDamage',    $wStats[4],                 PDO::PARAM_STR);
+                $stmt->bindValue(':structureDamage', $wStats[5],                 PDO::PARAM_STR);
+                $stmt->bindValue(':kills',           $wStats[6],                 PDO::PARAM_INT);
                 $stmt->execute();
             }
         }
@@ -368,8 +368,8 @@
         foreach ($data['PlayerStats'] as $player => $pStats) {
             $stmt->bindValue(':steamId',             $player,                    PDO::PARAM_INT);
             foreach ($pStats['status'] as $cStats) {
-                $stmt->bindValue(':class',           $cStats['statusId'],        PDO::PARAM_STR);
-                $stmt->bindValue(':classTime',       $cStats['classTime'],       PDO::PARAM_STR);
+                $stmt->bindValue(':class',           $cStats[0],                 PDO::PARAM_STR);
+                $stmt->bindValue(':classTime',       $cStats[1],                 PDO::PARAM_STR);
                 $stmt->execute();
             }
         }
