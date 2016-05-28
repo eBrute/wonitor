@@ -14,6 +14,7 @@
         file_put_contents($logFile, $isodate . ' ',                      FILE_APPEND | LOCK_EX) or die('Error: Unable to write file');
         file_put_contents($logFile, 'POST ' . json_encode($_POST) . ' ', FILE_APPEND | LOCK_EX) or die('Error: Unable to write file');
         file_put_contents($logFile, 'GET '  . json_encode($_GET) . "\n", FILE_APPEND | LOCK_EX) or die('Error: Unable to write file');
+        // file_put_contents($logFile, 'SERVER '  . json_encode($_SERVER) . "\n", FILE_APPEND | LOCK_EX) or die('Error: Unable to write file');
     }
     else {
         if (file_exists($logFile)) {
