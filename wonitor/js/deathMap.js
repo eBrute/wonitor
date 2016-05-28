@@ -401,6 +401,7 @@ function getBlipIconPos(className) {
     case 'Shotgun':
     case 'Flamethrower':
     case 'GrenadeLauncher':
+    case 'HeavyMachineGun':
       return [1, 0];
     case 'Exo':
       return [1, 1];
@@ -450,7 +451,7 @@ function getDeathIconPos(weapon) {
     'Minigun', 'Vortex', 'LerkBite', 'Umbra',
     'Xenocide', 'Blink', 'Leap', 'Stomp',
     'Consumed', 'GL', 'Recycled', 'Babbler', 'Railgun', 'BabblerAbility', 'GorgeTunnel', 'BoneShield',
-    'ClusterGrenade', 'GasGrenade', 'PulseGrenade', 'Stab', 'WhipBomb', 'Metabolize', 'Crush', 'PowerSurge'
+    'ClusterGrenade', 'GasGrenade', 'PulseGrenade', 'Stab', 'WhipBomb', 'Metabolize', 'Crush', 'PowerSurge', 'HeavyMachineGun'
   ];
   var index = deathMessageIcons.indexOf(weapon);
   return index >= 0 ? index : 0; // i.e. 'DeathTrigger'
@@ -922,3 +923,4 @@ function main() {
 main();
 // TODO BUG PulseGrenades have wrong killerTeamNumber (sometimes)
 // TODO CHECK lerkbite poison is active entity?
+// TODO HMG
