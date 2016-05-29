@@ -3,7 +3,7 @@
     ini_set('display_errors', '1');
 
     /* white-list
-     * all requests that do not contain on of these serverIds will be rejected
+     * all requests that do not contain one of these serverIds will be rejected
      * case sensitive, comma separated
      * I.e. $serverIdWhiteList = ['MyServer','MyOtherServer','someRandomString'];
      */
