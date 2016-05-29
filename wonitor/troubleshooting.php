@@ -80,7 +80,7 @@ else {
 //unlink('./data/temp');
 
 // rounds.sqlite3
-if (!file_exists('./data/rounds.sqlite3')) {
+if (!databaseExists( $wonitorDb )) {
     warning('No wonitor database found (./data/rounds.sqlite3). It will be created as soon as the first round stats are recieved.');
 }
 else {
@@ -119,7 +119,7 @@ else {
 
 
 // ns2plus.sqlite3
-if (!file_exists('./data/ns2plus.sqlite3')) {
+if (!databaseExists( $ns2plusDb )) {
     info('No NS2+ database found (./data/ns2plus.sqlite3). It will be created as soon as the first round stats are recieved. But only if the game server is running ns2+ and is configured to send it.');
 }
 else {

@@ -17,7 +17,7 @@ function error($string) {
 }
 
 // rounds.sqlite3
-if (file_exists('./data/rounds.sqlite3')) {
+if (databaseExists( $wonitorDb )) {
     try {
         $db = openDB( $wonitorDb );
         $query = 'SELECT COUNT(1) as count FROM rounds WHERE averageSkill<0';
