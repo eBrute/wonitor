@@ -5,14 +5,18 @@ ini_set('error_reporting', E_ALL);
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', 1);
 
+$warningsCount = 0;
+
 function info($stringy) {
     echo 'Info: ' . $stringy. '<br \>';
 }
 function warning($string) {
-    echo 'Warning: ' . $string. '<br \>';
+    echo '<b>Warning:</b> ' . $string. '<br \>';
+    global $warningsCount;
+    $warningsCount++;
 }
 function error($string) {
-    die('Error: ' . $string);
+    die('<b>Error:</b> ' . $string);
 }
 
 
@@ -141,5 +145,11 @@ else {
     else {
         error('NS2+ database is not writable. Check permissions. User <b>' . `whoami` . '</b> should have write access.');
     }
+}
+
+if ($warningsCount == 0) {
+    echo "<br>\nAll systems operating within normal parameters.";
+} else {
+    echo "<br>\nThere have been <b>$warningsCount</b> warnings.";
 }
 ?>
