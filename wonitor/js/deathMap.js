@@ -921,6 +921,3 @@ function main() {
 
 
 main();
-// TODO BUG PulseGrenades have wrong killerTeamNumber (sometimes)
-// TODO CHECK lerkbite poison is active entity?
-// TODO HMG
