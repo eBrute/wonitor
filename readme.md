@@ -4,6 +4,7 @@ Wonitor is a mod for the game Natural Selection 2. It runs on the server and col
 
 ## If you are updating from an older version
 Use the following steps when you update from the previous version
+
 1. The whitelist has been moved to **config.php**, so locate **update.php** and note down the **$serverIdWhiteList* = ...** line
 
 2. If you want to be extra secure, make a copy of you **/data** directory. The repository does not contain this directory (in which all data is stored) so the next step should be safe even if you skip this one.
@@ -94,6 +95,7 @@ When the javascript is loaded afterwards, the appropriate chart will be added to
 ## NS2+ Integration
 Wonitor is capable of saving statistics provided by the NS2+ mod. While these include all the information that Wonitor collects for itself (like round length and winning team), NS2+ tracks many things that Wonitor does not. This includes a full history of all buildings that are dropped/destroyed per round, player stats such as hits/misses per weapon or playtime for each class, a research history, a full kill feed (including information on the killer and the victim) and much more.
 These detailed information come with at the price of increased storage size (probably at ~ 50 MB/1000 rounds, where Wonitor only uses ~ 300 kB / 1000 rounds).
+
 When configured to store NS2+ statistics, they will be saved in a different database (**data/ns2plus.sqlite3**) that is completely independent from Wonitor's own database.
 The main part of Wonitor does not rely on the NS2+ stats, so saving it remains optional. The mod does not rely on the NS2+ mod either and will check for its presence before attempting to gather data from it.
 The downside of this approach of maintaining two independent databases is that only the round information that Wonitor collects for itself is accessible in the charts. Charts that make use of NS2+ data are not supported (yet).
