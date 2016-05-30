@@ -17,6 +17,8 @@ Use the following steps when you update from the previous version
 
 6. Visit **<yourURL>/wonitor/troubleshooting.php** to check if everything works as expected.
 
+7. Take a look at **%configdir%/shine/plugins/wonitor.json**, and modify it as you see fit (see below for details).
+
 ## Setting up the web server
 Note: If you use an existing Wonitor web server, you only need to get your *ServerIdentifier* white-listed.
 1. Setup a web server that runs PHP and SQLite3. <br />
