@@ -63,6 +63,12 @@ else {
 require_once 'dbUtil.php';
 
 
+// index.php
+if (file_exists('./index.php') && file_exists('./index.html')) {
+    warning('More than one landing page found (<a href="./index.php">index.php</a> and <a href="./index.html">index.html</a>). You should probably delete the html version.');
+}
+
+
 // data
 if (file_exists('./data')) {
     info('Data directory exists (./data).');
