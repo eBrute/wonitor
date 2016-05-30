@@ -20,6 +20,16 @@ h2 {
   margin-left: 6px;
   text-shadow: 0px 0px 3px #aaaaaa;
 }
+h2 a {color: #aaaaaa; text-decoration: none;}
+h2 a:link {color: #aaaaaa}
+h2 a:visited {color: #aaaaaa}
+h2 a:hover {color: #ffffff}
+h2 a:active {color: #ffffff}
+h2 span {
+  font-size: 16px;
+  color:rgba(255,255,255,0.3);
+  text-shadow: 0px 0px 2px #555555;
+}
 .container {
   width: 100%;
   height: auto;

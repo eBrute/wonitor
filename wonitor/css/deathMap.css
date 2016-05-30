@@ -3,6 +3,7 @@
   padding:0;
   color: #cdcdcd;
 }
+
 :focus {outline:none;}
 ::-moz-focus-inner {border:0;}
 ::-webkit-focus-inner {border:0;}
@@ -17,10 +18,12 @@ ul {
 
 html {
   height: 100%;
+  width: 100%;
 }
 
 body {
-  height: 100%;
+  /*height: 100%;*/
+  width: 100%;
   display: flex;
   flex-flow: column;
   align-items: stretch;
@@ -31,24 +34,15 @@ body {
 
 .header {
   height: 20px;
-  width: 100%;
+  width:100%;
 }
 
 .middle {
-  height: 100%;
+  width: 100%;
   display: flex;
   flex-flow: row wrap;
   align-items: stretch;
   justify-content: space-between;
-}
-
-#plotDiv {
-  width: 100%;
-  height: 100%;
-  min-width: 400px;
-  min-height: 400px;
-  max-width: 1000px;
-  max-height: 600px;
 }
 
 .footer {
@@ -56,26 +50,19 @@ body {
   width: 100%;
 }
 
-.main {
-  order: 2;
-  flex: 4 auto;
-  padding: 20px;
-}
-
-.aside-examples {
-  width: auto;
-  min-width: 100px;
+.mainpanel {
   order: 1;
-  flex: 1 auto;
-  background: rgba(0, 0, 0, 0.2);
+  flex: 4 auto;
+  margin: 10px;
+  background: rgba(0, 0, 0, 0.1);
   border-width: 0px;
-  border-radius: 0px 8px 8px 0px;
-  padding: 20px 0px 0px 20px;
+  border-radius: 20px 20px 20px 20px;
+  overflow: hidden;
 }
 
 .aside-config {
   height: auto;
-  order: 3;
+  order: 2;
   flex: 1 auto;
   background: rgba(0, 0, 0, 0.2);
   border-width: 0px;
@@ -83,52 +70,106 @@ body {
   padding: 20px 0px 0px 20px;
 }
 
-@media all and (max-width: 1440px) {
-  .main        { order: 1; width: auto; flex: 3 100%; }
-  .aside-examples  { order: 3; width: auto; flex: 1 40%;
-    border-radius: 0px;
-  }
-  .aside-config { order: 2; width: 90px; flex: 1 40%;
-    border-radius: 0px;
-  }
-  .footer { height: 0px; }
+#controls {
+  font-family: Verdana, 'Lucida Sans Unicode', sans-serif;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 24px 24px 24px 24px;
+  width: 100%;
+  align-items: center;
+  height: auto;
 }
 
-@media all and (max-width: 550px) {
-  .main        { order: 1; width: auto; flex: 3 100%; }
-  .aside-examples  { order: 3; width: auto; flex: 1 100%;
-    border-radius: 0px;
-  }
-  .aside-config { order: 2; width: 90px; flex: 1 100%;
-    border-radius: 0px;
-  }
-  .middle {
-    align-content: flex-start;
-  }
-  .footer { height: 0px; }
+#gameTimeSlider {
+  width: 65%;
+  background: transparent;
+}
 
-  .toggle:checked + h2 label::before {
-    content: '▸  ';
-  }
+.controlElement {
+  color: inherit;
+  font-size: 22px;
+}
+.controlElement:hover {
+  color: white;
+  text-shadow: 0px 0px 3px #aaaaaa;
+  cursor:pointer;
+}
+.controlElement:active {
+  color: white;
+  text-shadow: 0px 0px 3px #aaaaaa;
+}
 
-  .toggle:not(:checked) + h2 label::before {
-    content: '▾  ';
-  }
+#killsOverlay {
+  position: absolute;
+  z-index: 3;
+  cursor: crosshair;
+}
 
-  .toggle + h2 + div {
-    max-height: 100%;
-    overflow: hidden;
-    transition: max-height 1s ease-in-out,
-                opacity 0.8s ease;
-  }
+#heatMapOverlay {
+  position: absolute;
+  z-index: 2;
+  width: 0;
+  height: 0;
+}
 
-  .toggle:checked + h2 + div {
-    max-height: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    transition: max-height 0.5s ease-in-out,
-                opacity 0.8s ease;
-  }
+#killsTooltip {
+  position: absolute;
+  z-index: 4;
+  opacity: 0;
+  pointer-events: none;
+  cursor: crosshair;
+  width: 0;
+  height: 0;
+}
+
+#killsTooltip .deathIcon {
+  vertical-align: sub;
+}
+
+#killsTooltipLine {
+  border: 1px solid #D52311;
+  height: 0px;
+  width: 10px;
+}
+
+#killsTooltipBlip {
+}
+
+#killsTooltipMessage {
+  position: absolute;
+  white-space: nowrap;
+  background: rgba(80, 80, 80, 0.8);
+  border: 1px rgba(255, 255, 255, 0.8) solid;
+  padding: 4px;
+}
+
+#killsTooltipMessage span {
+  display: inline-block;
+}
+
+
+#mapcontainer {
+  position: relative;
+}
+
+#map {
+  position: relative;
+}
+
+#map img {
+  /*max-width:780px;*/
+  /*max-height:780px;*/
+  max-width:85vw;
+  /*max-height:90vh;*/
+  display:block;
+  margin:auto;
+  cursor: crosshair;
+}
+
+.helpText {
+  height: 22px;
+  margin-left: 15px;
+  margin-top: 10px;
+  vertical-align: middle;
 }
 
 h2 ~ h3 { padding-left: 10px;}
@@ -139,7 +180,7 @@ h2 ~ h3 { padding-left: 10px;}
   border-collapse: separate;
 }
 
-input, select, button, .hoverinfo {
+input, select, button, textarea, .hoverinfo {
   vertical-align: middle;
   background-color: #353B40;
   background-color: rgba(255, 255, 255, 0.05);
@@ -149,11 +190,40 @@ input, select, button, .hoverinfo {
   outline:none;
 }
 
-input:not(:disabled):hover, select:not(:disabled):hover, button:not(:disabled):hover {
+.radioGroup {
+  display: none;
+}
+
+.radioGroup:not(:checked) + label:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.radioGroup:checked + label {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.radioGroup:not(:checked) + label {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.radioGroup + label {
+  border-radius: 0px 0px 0px 0px;
+  padding: 0px 1px;
+}
+
+.radioGroup:first-of-type + label {
+  border-radius: 4px 0px 0px 4px;
+}
+
+.radioGroup:last-of-type + label {
+  border-radius: 0px 4px 4px 0px;
+}
+
+input:not(:disabled):hover, select:not(:disabled):hover, button:not(:disabled):hover, textarea:not(:disabled):hover {
   background-color: #4D5359;
 }
 
-input:not(:disabled):active, select:not(:disabled):active, button:not(:disabled):active {
+input:not(:disabled):active, select:not(:disabled):active, button:not(:disabled):active, textarea:not(:disabled):active {
   background-color: #696F75;
 }
 
@@ -284,45 +354,26 @@ input[type=checkbox]:disabled + span {
   color: #8C8C8C;
 }
 
-.toggle {
-  display: none;
-}
-
-.toggle:checked + h3 label::before {
-  content: '▸  ';
-}
-
-.toggle:not(:checked) + h3 label::before {
-  content: '▾  ';
-}
-
-.toggle + h3 + div {
-  max-height: 50em;
-  opacity: 1;
-  overflow: hidden;
-  transition: max-height 1s ease-in-out,
-              opacity 0.8s ease;
-}
-
-.toggle:checked + h3 + div {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  transition: max-height 0.5s ease-in-out,
-              opacity 0.8s ease;
-}
-
-.axisDisabled * {
-  color: #8C8C8C;
-}
-.axisDisabled + tr,
-.axisDisabled + tr + tr,
-.axisOptionHidden {
-  display: none;
-}
-
 .generalInfo {
   color: #444444;
   font-size: 10px;
+}
+
+media all and (max-width: 550px) { /* 550px or less */
+  .mainpanel         { order: 1; width: auto; flex: 1 100%;
+      margin: 0;
+      border-radius: 0px;
+  }
+  .aside-config { order: 2; width: auto; flex: 1 100%;
+      border-radius: 0px;
+  }
+  .middle {
+    align-content: flex-start;
+    width: auto;
+  }
+  .footer { height: 0px; }
+  #map img {
+    max-width:90vw;
+    max-height:90vh;
+  }
 }
