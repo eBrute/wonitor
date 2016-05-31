@@ -100,7 +100,7 @@ The downside of this approach of maintaining two independent databases is that o
 
 ## Query API
 **query.php** allows to query the database. The type of query is determined by the GET parameters, the result is returned in JSON format. The following parameters are supported (all optional):
-* **table** specifies which table to query. Defaults to **rounds** in the wonitor database. Other valid options are **RoundInfo**,**ServerInfo**,**Research**,**Buildings**,**MarineCommStats**,**PlayerRoundStats**,**PlayerStats**,**PlayerWeaponStats**,**PlayerClassStats**,**KillFeed**,**NamedKillFeed**, all of which are tables in the NS2+ database. Example: *'query.php?table=KillFeed'*
+* **table** specifies which table to query. Defaults to **rounds** in the wonitor database. Other valid options are **RoundInfo**,**ExtendedRoundInfo**,**ServerInfo**,**Research**,**Buildings**,**MarineCommStats**,**PlayerRoundStats**,**PlayerStats**,**PlayerWeaponStats**,**PlayerClassStats**,**KillFeed**,**NamedKillFeed**, all of which are tables in the NS2+ database. Example: *'query.php?table=KillFeed'*
 
 * **data** contains a comma separated list of field names (see below for a list of fields). I.e. *'query.php?data=id,map,numPlayers'* returns all ids and their respective maps and player counts.
 
