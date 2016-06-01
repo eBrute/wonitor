@@ -380,6 +380,18 @@ function SetPlotConfigData(plotSpecs) {
   var textInfoInput = xpath0('./tr[position()=' + lineNumber++ + ']//input[@type="text"]', advancedOptions);
   textInfoInput.value = plotSpecs['textInfo'] ? unescape(plotSpecs['textInfo']) : '';
 
+  var xTickAngleSelect = xpath0('./tr[position()=' + lineNumber++ + ']//select', advancedOptions);
+  if (plotSpecs['xTickAngle']) {
+    for (i = 0; i < xTickAngleSelect.options.length; i++) {
+      if (xTickAngleSelect.options[i].value == plotSpecs['xTickAngle']) {
+        xTickAngleSelect.options[i].selected = true;
+        break;
+      }
+    }
+  } else {
+    xTickAngleSelect.options[0].selected = true;
+  }
+
   var xLabelInput = xpath0('./tr[position()=' + lineNumber++ + ']//input[@type="text"]', advancedOptions);
   xLabelInput.value = plotSpecs['xLabel'] ? unescape(plotSpecs['xLabel']) : '';
 
@@ -883,6 +895,10 @@ function CreatePlot(responseText, plotSpecs) {
         }
       }
 
+      if (plotSpecs['xTickAngle']) {
+        plotLayout.xaxis.tickangle = plotSpecs['xTickAngle'];
+      }
+
       if (plotType == 'bar') {
         plotLayout.xaxis.showgrid = false;
         plotLayout.yaxis.showgrid = false;
@@ -1152,6 +1168,11 @@ function PlotConfigToString() {
   var textInfoInput = xpath0('./tr[position()=' + lineNumber++ + ']//input[@type="text"]', advancedOptions);
   if (textInfoInput.value != '' && textInfoInput.value != 'all') { // TODO only save if newPlotType == 'pie'
     arr.push('textInfo=' + escape(textInfoInput.value));
+  }
+
+  var xTickAngleSelect = xpath0('./tr[position()=' + lineNumber++ + ']//select', advancedOptions);
+  if (xTickAngleSelect.value != '') {
+    arr.push('xTickAngle=' + xTickAngleSelect.value);
   }
 
   var xLabelInput = xpath0('./tr[position()=' + lineNumber++ + ']//input[@type="text"]', advancedOptions);
