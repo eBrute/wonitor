@@ -401,6 +401,7 @@ function getBlipIconPos(className) {
     case 'Shotgun':
     case 'Flamethrower':
     case 'GrenadeLauncher':
+    case 'MachineGun':
     case 'HeavyMachineGun':
       return [1, 0];
     case 'Exo':
@@ -442,6 +443,7 @@ function getBlipIconPos(className) {
 
 
 function getDeathIconPos(weapon) {
+  if (weapon == 'MachineGun') return getDeathIconPos('HeavyMachineGun');
   var deathMessageIcons = ['None',
     'Rifle', 'RifleButt', 'Pistol', 'Axe', 'Shotgun',
     'Flamethrower', 'ARC', 'GrenadeLauncher', 'Sentry', 'Welder',
@@ -487,6 +489,8 @@ function getColorFilterForBlipIcon(className, highlight) {
     case 'Shotgun':
     case 'Flamethrower':
     case 'GrenadeLauncher':
+    case 'HeavyMachineGun':
+    case 'MachineGun':
     case 'Exo':
     case 'Sentry':
       return highlight ? 'url(#marineLightBlue)' : 'url(#marineBlue)';
