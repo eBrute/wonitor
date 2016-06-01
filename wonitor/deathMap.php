@@ -11,6 +11,8 @@
 <?php
   require_once 'dbUtil.php';
   $db = openDB( $ns2plusDb );
+  $query = 'SELECT serverId, name as [serverName] FROM ServerInfo GROUP BY serverId ORDER BY serverName;';
+  $servers = $db->query( $query, PDO::FETCH_ASSOC )->fetchAll();
   $query = 'SELECT DISTINCT mapName AS map FROM RoundInfo;';
   $maps = $db->query( $query, PDO::FETCH_NUM )->fetchAll(PDO::FETCH_COLUMN, 0);
   $firstMap = $maps[0];
@@ -67,14 +69,21 @@
           </td>
         </tr>
         <tr>
-          <td>Map</td>
-          <td><select id="mapSelect">
+          <td>Server</td>
+          <td><select id="serverSelect">
             <?php
-            foreach ($maps as $map) {
-              echo "<option value=\"$map\">$map</option>";
+            if (count($servers)>1) {
+              echo "<option value=\"\">All Servers</option>";
+            }
+            foreach ($servers as $server) {
+              echo "<option value=\"" . $server['serverId'] . "\">" . $server['serverName'] . "</option>";
             }
             ?>
           </select><span></span></td>
+        </tr>
+        <tr>
+          <td>Map</td>
+          <td><select id="mapSelect"></select><span></span></td>
         </tr>
         <tr>
           <td>

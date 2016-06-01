@@ -48,13 +48,6 @@
         'count' => 'COUNT(1) AS count',
     );
 
-    $specialTables = array(
-       'NamedKillFeed' => 'SELECT temp.*, Playerstats.playerName as [killerName] FROM (
-            SELECT KillFeed.*, Playerstats.playerName as [victimName] FROM KillFeed
-            LEFT JOIN PlayerStats ON KillFeed.victimSteamId = PlayerStats.steamId) AS temp
-            LEFT JOIN PlayerStats ON temp.killerSteamId = PlayerStats.steamId',
-        );
-
     // empty all fields
     foreach ($wonitorStructure as &$table) {
         foreach ($table as &$field) {
@@ -83,12 +76,19 @@
     );
     $wonitorStructure = array_merge_recursive($wonitorStructure, $specialWonitorFields);
 
-    $specialNs2plusFields = array(
-        'NamedKillFeed' => $ns2plusStructure['KillFeed'],
+    $specialTables = array(
+       'NamedKillFeed' => 'SELECT temp.*, Playerstats.playerName as [killerName] FROM (
+            SELECT KillFeed.*, Playerstats.playerName as [victimName] FROM KillFeed
+            LEFT JOIN PlayerStats ON KillFeed.victimSteamId = PlayerStats.steamId) AS temp
+            LEFT JOIN PlayerStats ON temp.killerSteamId = PlayerStats.steamId',
+        'ExtendedRoundInfo' => 'SELECT * from RoundInfo LEFT OUTER JOIN ServerInfo ON RoundInfo.roundId = ServerInfo.roundId',
     );
-    $specialNs2plusFields['NamedKillFeed']['victimName'] = '';
-    $specialNs2plusFields['NamedKillFeed']['killerName'] = '';
-    $ns2plusStructure = array_merge_recursive($ns2plusStructure, $specialNs2plusFields);
+
+    $ns2plusStructure = array_merge_recursive($ns2plusStructure, array(
+          'NamedKillFeed' => array_merge($ns2plusStructure['KillFeed'], ['victimName' => '', 'killerName' => '']),
+          'ExtendedRoundInfo' => array_merge($ns2plusStructure['RoundInfo'], $ns2plusStructure['ServerInfo']),
+      )
+    );
 
     $shortNames = array(
         'teamWins' => 'team1Wins,team2Wins,draws',

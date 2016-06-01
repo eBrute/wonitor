@@ -401,6 +401,7 @@ function getBlipIconPos(className) {
     case 'Shotgun':
     case 'Flamethrower':
     case 'GrenadeLauncher':
+    case 'MachineGun':
     case 'HeavyMachineGun':
       return [1, 0];
     case 'Exo':
@@ -442,6 +443,7 @@ function getBlipIconPos(className) {
 
 
 function getDeathIconPos(weapon) {
+  if (weapon == 'MachineGun') return getDeathIconPos('HeavyMachineGun');
   var deathMessageIcons = ['None',
     'Rifle', 'RifleButt', 'Pistol', 'Axe', 'Shotgun',
     'Flamethrower', 'ARC', 'GrenadeLauncher', 'Sentry', 'Welder',
@@ -487,6 +489,8 @@ function getColorFilterForBlipIcon(className, highlight) {
     case 'Shotgun':
     case 'Flamethrower':
     case 'GrenadeLauncher':
+    case 'HeavyMachineGun':
+    case 'MachineGun':
     case 'Exo':
     case 'Sentry':
       return highlight ? 'url(#marineLightBlue)' : 'url(#marineBlue)';
@@ -693,6 +697,31 @@ function updateRounds(responseText) {
 }
 
 
+function updateMaps(responseText) {
+  var queryData = JSON.parse(responseText);
+  var maps = d3.select('#mapSelect')
+    .selectAll('option')
+    .data(queryData);
+
+  maps.enter()
+    .append('option');
+
+  maps.attr('value',
+      function(d) {
+        return d.mapName;
+      })
+    .text(function(d) {
+      return d.mapName;
+    });
+
+  maps.exit()
+    .remove();
+
+  // we recieved new maps so request the roundList for the current server
+  requestRoundList();
+}
+
+
 function getSelectedRoundIds() {
   var roundSelect = d3.select('#roundSelect')
     .node();
@@ -724,6 +753,19 @@ function getSelectedMap() {
 }
 
 
+function getSelectedServerId() {
+  var serverSelect = d3.select('#serverSelect')
+    .node();
+
+  if (serverSelect.selectedIndex < 0) {
+    serverSelect.options[0].selected = true; // default select first server in list
+    return serverSelect.options[serverSelect.options.length - 1].value;
+  }
+
+  return serverSelect.options[serverSelect.selectedIndex].value;
+}
+
+
 function requestKillFeed() {
   var roundIds = getSelectedRoundIds();
   var queryFilters = d3.select('#queryFilters')
@@ -738,11 +780,19 @@ function requestKillFeed() {
 
 
 function requestRoundList() {
+  var serverId = getSelectedServerId();
   var mapName = getSelectedMap();
-  var queryString = 'table=RoundInfo&data=roundId,roundDate,winningTeam,minimapExtents&mapName_is=' + mapName + '&order_by=roundDate_desc';
+  var queryString = 'table=ExtendedRoundInfo&data=roundId,roundDate,winningTeam,minimapExtents&mapName_is=' + mapName + '&order_by=roundDate_desc' + (serverId != '' ? '&serverId_is=' + serverId : '');
   loadMinimap(mapName);
   resetHeatMap();
   SendQuery('query.php?' + queryString, updateRounds);
+}
+
+
+function requestMapList() {
+  var serverId = getSelectedServerId();
+  var queryString = 'table=ExtendedRoundInfo&data=mapName&group_by=mapName&order_by=mapName' + (serverId != '' ? '&serverId_is=' + serverId : '');
+  SendQuery('query.php?' + queryString, updateMaps);
 }
 
 
@@ -843,6 +893,9 @@ window.onresize = function() {
 
 
 function main() {
+  d3.select('#serverSelect')
+    .on('change', requestMapList);
+
   d3.select('#mapSelect')
     .on('change', requestRoundList);
 
@@ -916,7 +969,7 @@ function main() {
 
   dump(); // dummy call to pacify linter
 
-  setTimeout(requestRoundList, 0);
+  setTimeout(requestMapList, 0);
 }
 
 
