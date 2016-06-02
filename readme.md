@@ -1,6 +1,6 @@
 Wonitor - Server-side Statistics for Natural Selection 2
 ========================================================
-Wonitor is a mod for the game Natural Selection 2. It runs on the server and collects certain data which is used for statistical analysis. The data is send to the Wonitor web server, where it is stored and can also be viewed. The mod can also be configured to save NS2+ statistics which are stored in a seperate database.
+Wonitor is a mod for the game Natural Selection 2. It runs on the server and collects certain data which is used for statistical analysis. The data is send to the Wonitor web server, where it is stored and can also be viewed. The mod can also be configured to save NS2+ statistics which are stored in a separate database.
 
 ## If you are updating from an older version
 Use the following steps when you update from the previous version
