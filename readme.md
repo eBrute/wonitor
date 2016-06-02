@@ -21,6 +21,7 @@ Use the following steps when you update from the previous version
 
 ## Setting up the web server
 Note: If you use an existing Wonitor web server, you only need to get your *ServerIdentifier* white-listed.
+
 1. Setup a web server that runs PHP and SQLite3. <br />
    It should be reachable via HTTP, so make sure you have no redirect to HTTPS (for the bare minimum, *update.php* needs to be served via HTTP, you are free to use HTTPS for everything else)
 
