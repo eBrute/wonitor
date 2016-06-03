@@ -214,7 +214,7 @@ numCCs | number of command stations at round end
 numTechPointsCaptured | number of captured tech points at round end
 biomassLevel | biomass level at round end
 
-**data/ns2plus.sqlite3** contains all statistics gathered from the NS2+ mod. The tablenames and fieldnames are largely identical to the ones NS2+ uses. The **roundId** gives a unique round number that is referrered to in all tables. The PlayerStats table contains accumulated data over all rounds, while the stats for individual rounds is stored in PlayerRoundStats.
+**data/ns2plus.sqlite3** contains all statistics gathered from the NS2+ mod. The table names and field names are largely identical to the ones NS2+ uses. The **roundId** field contains the unique round number that is referred to in all tables. The PlayerStats table contains accumulated data over all rounds, while the stats for individual rounds is stored in PlayerRoundStats.
 For further information head to <br />
 https://github.com/sclark39/NS2Plus
 
