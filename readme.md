@@ -163,7 +163,7 @@ The downside of this approach of maintaining two independent databases is that o
 
 **getInfo.php** contains a hard-wired query, that returns information on all servers, maps and start locations in the data base. Server data returned always refers to the most recent entry.
 
-**deathMap.php** shows a minimap with all recorded death locations and additional information such as victim name and weapon used for one or multiple rounds. In order to work, Wonitor needs to be configured to save NS2+ data with the KillFeed information. If a minimap is missing or needs to be updated, locate *%mapname%.tga* in your NS2 directory (for official maps) or your NS2 Workshop directory(for custom maps, **%APPDATA%/Natural Selection 2/Workshop**), convert it into a PNG file and place it under **/images/minimaps**.
+**deathMap.php** shows a minimap with all recorded death locations and additional information such as victim name and weapon used for one or multiple rounds. In order to work, Wonitor needs to be configured to save NS2+ data with the KillFeed information. If a minimap is missing or needs to be updated, locate *%mapname%.tga* in your NS2 directory (for official maps) or your NS2 Workshop directory(for custom maps, **%APPDATA%/Natural Selection 2/Workshop**), convert it into a PNG file and place it under **/images/minimaps/%mapname%.png** (case sensitive!).
 
 ## Structure of the SQLite Files
 If you wish, you could skip the query api and access the data directly.
