@@ -72,6 +72,10 @@
             'winDiff' => 'SUM( CASE WHEN winner=1 THEN 1 WHEN winner=2 THEN -1 ELSE 0 END )',
             'relWinDiff' => 'SUM( CASE WHEN winner=1 THEN 1 WHEN winner=2 THEN -1 ELSE 0 END ) * 1. / COUNT(1)',
             'skillDiff' => '(skillTeam1 - skillTeam2)',
+            'averageSkillTeam1' => 'IFNULL(skillTeam1/numPlayers1, 0)',
+            'averageSkillTeam2' => 'IFNULL(skillTeam2/numPlayers2, 0)',
+            'averageSkillDiff' => '(IFNULL(skillTeam1/numPlayers1, 0) - IFNULL(skillTeam2/numPlayers2, 0))',
+            'numPlayersDiff' => '(numPlayers1 - numPlayers2)',
         ),
     );
     $wonitorStructure = array_merge_recursive($wonitorStructure, $specialWonitorFields);
@@ -312,7 +316,7 @@
 
         // bind values
         foreach ($bindings as $binding) {
-            $statement->bindValue($binding['key'], $binding['value']); // NOTE this is safe because we check the key above
+            $statement->bindValue($binding['key'], $binding['value'], is_numeric($binding['value']) ? PDO::PARAM_INT : PDO::PARAM_STR); // NOTE this is safe because we check the key above
         }
 
         // query db
