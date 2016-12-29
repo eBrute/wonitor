@@ -35,6 +35,9 @@ Note: If you use an existing Wonitor web server, you only need to get your *Serv
 
 Note that the pages will not show anything, since there is no database yet. The database will be created after the first stats have been uploaded (after the first finished round).
 
+Optional: you can configure your webserver to restrict public access of the **/data** directory, which contains the raw databases. However, all the data can still be accessed through the query API.
+
+
 ## Setting up the game server
 Note: You could do this part before setting up the web server. In this case Wonitor will probably throw some errors and deactivate itself until it gets reloaded (i.e. on mapchange).
 
@@ -220,6 +223,8 @@ https://github.com/sclark39/NS2Plus
 
 ## Troubleshooting
 If something does not work as expected, try **troubleshooting.php**. It tests for some common errors and will give advice on how to fix them.
+
+If you don't seem to get any data from your game server, you can try to enable logging in **config.php**. This will create **data/logfile.txt**, which will contain a dump of everything that is send to **update.php**. It allows you to see, whether or not you recieve any data from your game server and which data is send, including the pre-hashed serverId. Please be aware that the logfile is publically accessible (unless you manually restricted access to it), so don't forget so disable logging after you are done. Disabling logging will also delete the logfile.
 
 ## Feedback
 Need something added? Head to <br />
