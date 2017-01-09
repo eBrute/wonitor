@@ -716,7 +716,7 @@ function updateMaps(responseText) {
       return d.mapName;
     })
     .property('selected', function(d) {
-      return args.map && d.mapName == args.map; // select map if specified in URL hash
+      return args.map && d.mapName.match(args.map); // select map if specified in URL hash
     });
 
   maps.exit()
