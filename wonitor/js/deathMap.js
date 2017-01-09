@@ -703,6 +703,8 @@ function updateMaps(responseText) {
     .selectAll('option')
     .data(queryData);
 
+  var args = GetArgumentsFromHash();
+
   maps.enter()
     .append('option');
 
@@ -712,6 +714,9 @@ function updateMaps(responseText) {
       })
     .text(function(d) {
       return d.mapName;
+    })
+    .property('selected', function(d) {
+      return args.map && d.mapName == args.map; // select map if specified in URL hash
     });
 
   maps.exit()
@@ -844,6 +849,20 @@ function SendQuery(url, callback) {
   console.log('Sending GET to ' + url);
   xhttp.open('GET', url, true);
   xhttp.send();
+}
+
+
+function GetArgumentsFromHash() {
+  var args = {};
+  var str = window.location.hash;
+  if (str.startsWith('#')) str = str.substr(1);
+  var pairs = str.split('&');
+  for (var i = 0; i < pairs.length; i++) {
+    var key = pairs[i].split('=')[0];
+    var value = pairs[i].split('=')[1] || true;
+    args[key] = value;
+  }
+  return args;
 }
 
 
