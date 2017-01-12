@@ -105,6 +105,10 @@
 
         global $specialFields;
 
+        if ($dataField == 'timeDiff') {
+            return isValidField($dbStructure, $table, 'time');
+        }
+
         if (isset($specialFields[$dataField])) {
             return true;
         }
@@ -118,6 +122,10 @@
     function getFieldQuery($dbStructure, $table, $dataField) {
 
         global $specialFields;
+
+        if ($dataField == 'timeDiff') {
+            return getFieldQuery($dbStructure, $table, 'time');
+        }
 
         if (isset($specialFields[$dataField])) {
             return $specialFields[$dataField];
@@ -236,18 +244,14 @@
                 continue;
             }
 
-            $isTimeDiffConstraint = false;
-            if ($constraintField == 'timeDiff') {
-                $constraintField = 'time';
-                $isTimeDiffConstraint = true;
-            }
             if (!isValidField($dbStructure, $table, $constraintField)) {
                 continue;
             }
             $constraintFieldQuery = getFieldQuery($dbStructure, $table, $constraintField);
 
             $subconstraints = array();
-            if ($isTimeDiffConstraint) {
+            if ($constraintField == 'timeDiff') {
+                // subconstraints for timeDiff are arguments to datetime()
                 // WHERE time > datetime('now', :timediff_ge1, :timediff_ge2);
                 $subconstraints[] = $constraintFieldQuery.' '.$constraintTypes[$constraintType].' datetime(\'now\'';
                 foreach ($constraintValues as $index => $constraintValue) {
