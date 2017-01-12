@@ -280,7 +280,7 @@
             }
 
             foreach ($constraintValues as $index => $constraintValue) {
-                $bindings[] = array('key' => ':'.$key.($index + 1), 'value' => $constraintValue);
+                $bindings[] = array('key' => ':'.$key.($index + 1), 'value' => $constraintValue); // NOTE no direct key=>value here since key is userinput
             }
         }
 
