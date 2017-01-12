@@ -144,7 +144,15 @@
 
         foreach ($dataRequests as $value) {
             $dataField = $value;
-            $dataFieldRename = '';
+
+            if ($dataField == '') {
+                continue;
+            }
+
+            if (isset($specialFields[$dataField])) {
+                $dataFields[] = $specialFields[$dataField];
+                continue;
+            }
 
             /* i.e. data=length_sum, data=winner_avg, data=numPlayers_cnt */
             $dataStatsMethod = substr($value, -4);
@@ -154,19 +162,11 @@
                 $dataStatsMethod = '';
             }
 
-            if ($dataField == '') {
-                continue;
-            }
-
             if (!isValidField($dbStructure, $table, $dataField)) {
                 exit(); // exit here to indicate sth is wrong
             }
 
-            if (isset($specialFields[$dataField])) {
-                $dataFields[] = $specialFields[$dataField];
-                continue;
-            }
-
+            $dataFieldRename = '';
             $dataFieldQuery = getFieldQuery($dbStructure, $table, $dataField);
             if ($dataFieldQuery != $dataField) {
                 $dataFieldRename = ' AS '.$dataField;
@@ -175,7 +175,7 @@
             if ($dataStatsMethod == '') {
                 $dataFields[] = $dataFieldQuery.$dataFieldRename;
             } else {
-                //              COUNT                               (  length      ) AS   length_cnt                                                      ,   length
+                //              COUNT                               (  length           ) AS   length_cnt                                                 ,   length
                 $dataFields[] = $statsMethodDefs[$dataStatsMethod].'('.$dataFieldQuery.') AS '.$dataField.$dataStatsMethod.($dataStatsMethod == '_cnt' ? ', '.$dataFieldQuery.$dataFieldRename : ''); // no injection here because we tested the fields earlier
             }
         }
@@ -183,7 +183,6 @@
         if (!$dataFields) {
             exit(); // data field is required
         }
-        $data = implode(', ', $dataFields);
 
         // grouping
         $groupBy = array();
@@ -208,10 +207,10 @@
                     if ($binsize == 0) {
                         $binsize = 1;
                     }
-                    $data .= ', CAST('.$groupFieldQuery.'/'.$binsize.' AS INTEGER)*'.$binsize.' AS [group'.($index + 1).']';  // no injection here because we tested the group earlier
-                    //$data .= ', ROUND(' . $groupField . '/' . $binsize . ')*' . $binsize.' AS [group'.($index==0 ? '' : $index+1 ).']';
+                    $dataFields[] = 'CAST('.$groupFieldQuery.'/'.$binsize.' AS INTEGER)*'.$binsize.' AS [group'.($index + 1).']';  // no injection here because we tested the group earlier
+                    //$dataFields[] = 'ROUND(' . $groupField . '/' . $binsize . ')*' . $binsize.' AS [group'.($index==0 ? '' : $index+1 ).']';
                 } else {
-                    $data .= ', '.$groupFieldQuery.' AS [group'.($index + 1).']';
+                    $dataFields[] = $groupFieldQuery.' AS [group'.($index + 1).']';
                 }
                 $groupBy[] = '[group'.($index + 1).']';
             }
@@ -286,7 +285,7 @@
         }
 
         // build and prepare query
-        $query = 'SELECT '.$data;
+        $query = 'SELECT '.implode(', ', $dataFields);
         if (isset($specialTables[$table])) {
             $query .= ' FROM ('.$specialTables[$table].') AS '.$table.' '; // NOTE this is safe because we checked the table exists
         } else {
