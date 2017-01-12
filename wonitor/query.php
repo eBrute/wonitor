@@ -301,16 +301,20 @@
             $query .= ' ORDER BY '.implode(', ', $orderBy);
         }
 
-        if (isset($_GET['showQuery'])) {
-            echo $query."<br /><br />\n";
-        }
-
         $statement = $db->prepare($query);
 
         // bind values
         foreach ($bindings as $binding) {
             $statement->bindValue($binding['key'], $binding['value'], is_numeric($binding['value']) ? PDO::PARAM_INT : PDO::PARAM_STR); // NOTE this is safe because we check the key above
         }
+
+        if (isset($_GET['showQuery'])) {
+            echo $query."<br /><br />\n";
+            foreach ($bindings as $binding) {
+                echo $binding['key'].' => '.$binding['value']."<br>\n";
+            }
+        }
+        //echo interpolateQuery($query, $bindings)."<br /><br />\n";
 
         // query db
         $statement->setFetchMode(PDO::FETCH_ASSOC);
@@ -336,12 +340,25 @@
         //foreach( $result as $row ) {var_dump( $row );}
     }
 
+
     function strReplaceAssoc(array $replace, $subject) {
         return str_replace(array_keys($replace), array_values($replace), $subject);
     }
 
-    function main() {
 
+    function interpolateQuery($query, $params) {
+        $keys = array();
+        $replacements = array();
+        foreach ($params as $param) {
+            $keys[] = '/'.$param['key'].'/';
+            $replacements[] = $param['value'];
+        }
+        $query = preg_replace($keys, $replacements, $query, 1, $count);
+        return $query;
+    }
+
+
+    function main() {
 
         global $wonitorDb, $wonitorStructure;
         global $ns2plusDb, $ns2plusStructure;
