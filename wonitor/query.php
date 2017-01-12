@@ -49,12 +49,12 @@
     );
 
     // empty all native fields (fields contain the SQL type but will contain their construction query)
-    foreach ($wonitorDbStructure as &$table) {
+    foreach ($wonitorStructure as &$table) {
         foreach ($table as &$field) {
             $field = '';
         }
     }
-    foreach ($ns2plusDbStructure as &$table) {
+    foreach ($ns2plusStructure as &$table) {
         foreach ($table as &$field) {
             $field = '';
         }
@@ -78,7 +78,7 @@
             'numPlayersDiff' => '(numPlayers1 - numPlayers2)',
         ),
     );
-    $wonitorDbStructure = array_merge_recursive($wonitorDbStructure, $specialWonitorFields);
+    $wonitorStructure = array_merge_recursive($wonitorStructure, $specialWonitorFields);
 
     $specialTables = array(
        'NamedKillFeed' => 'SELECT temp.*, Playerstats.playerName as [killerName] FROM (
@@ -88,9 +88,9 @@
         'ExtendedRoundInfo' => 'SELECT * from RoundInfo LEFT OUTER JOIN ServerInfo ON RoundInfo.roundId = ServerInfo.roundId',
     );
 
-    $ns2plusDbStructure = array_merge_recursive($ns2plusDbStructure, array(
-          'NamedKillFeed' => array_merge($ns2plusDbStructure['KillFeed'], ['victimName' => '', 'killerName' => '']),
-          'ExtendedRoundInfo' => array_merge($ns2plusDbStructure['RoundInfo'], $ns2plusDbStructure['ServerInfo']),
+    $ns2plusStructure = array_merge_recursive($ns2plusStructure, array(
+          'NamedKillFeed' => array_merge($ns2plusStructure['KillFeed'], ['victimName' => '', 'killerName' => '']),
+          'ExtendedRoundInfo' => array_merge($ns2plusStructure['RoundInfo'], $ns2plusStructure['ServerInfo']),
       )
     );
 
@@ -343,9 +343,9 @@
 
     function main() {
 
-        global $wonitorDb, $wonitorDbStructure;
-        global $ns2plusDb, $ns2plusDbStructure;
 
+        global $wonitorDb, $wonitorStructure;
+        global $ns2plusDb, $ns2plusStructure;
         $table = 'rounds';
         if (isset($_GET['table'])) {
             $table = $_GET['table'];
@@ -353,12 +353,12 @@
 
         $db = null;
         $dbStructure = null;
-        if (isset($wonitorDbStructure[$table])) {
+        if (isset($wonitorStructure[$table])) {
             $db = openDB($wonitorDb);
-            $dbStructure = $wonitorDbStructure;
-        } elseif (isset($ns2plusDbStructure[$table])) {
+            $dbStructure = $wonitorStructure;
+        } elseif (isset($ns2plusStructure[$table])) {
             $db = openDB($ns2plusDb);
-            $dbStructure = $ns2plusDbStructure;
+            $dbStructure = $ns2plusStructure;
         } else {
             exit();
         }
