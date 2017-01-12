@@ -113,6 +113,7 @@
         if (isset($specialFields[$dataField])) {
             return true;
         }
+
         if (isset($dbStructure[$table][$dataField])) {
             return true;
         }
@@ -132,6 +133,7 @@
         if (isset($specialFields[$dataField])) {
             return $specialFields[$dataField];
         }
+
         if (isset($dbStructure[$table][$dataField])) {
             return $dbStructure[$table][$dataField] != '' ? $dbStructure[$table][$dataField] : $dataField;
         }
@@ -357,7 +359,7 @@
 
         // print results
         echo json_encode($result)."\n";
-        //foreach( $result as $row ) {var_dump( $row );}
+        // foreach( $result as $row ) {var_dump( $row );}
     }
 
 
