@@ -235,29 +235,39 @@
             if (!isset($constraintTypes[$constraintType])) {
                 continue;
             }
+
+            $isTimeDiffConstraint = false;
+            if ($constraintField == 'timeDiff') {
+                $constraintField = 'time';
+                $isTimeDiffConstraint = true;
+            }
             if (!isValidField($dbStructure, $table, $constraintField)) {
                 continue;
             }
             $constraintFieldQuery = getFieldQuery($dbStructure, $table, $constraintField);
 
-            if ($constraintType == '_is') {
-                // IS constraints are chained with OR
-                $subconstraint = array();
+            $subconstraints = array();
+            if ($isTimeDiffConstraint) {
+                // WHERE time > datetime('now', :timediff_ge1, :timediff_ge2);
+                $subconstraints[] = $constraintFieldQuery.' '.$constraintTypes[$constraintType].' datetime(\'now\'';
                 foreach ($constraintValues as $index => $constraintValue) {
-                    //                 numPlayers               >=                                     :numPlayers_ge1
-                    $subconstraint[] = $constraintFieldQuery.' '.$constraintTypes[$constraintType].' :'.$key.($index + 1);
+                    $subconstraints[0] .= ', :'.$key.($index + 1);
                 }
+                $subconstraints[0] .= ')';
+            }
+            else {
+                foreach ($constraintValues as $index => $constraintValue) {
+                    //                  numPlayers                >=                                  :numPlayers_ge1
+                    $subconstraints[] = $constraintFieldQuery.' '.$constraintTypes[$constraintType].' :'.$key.($index + 1);
+                }
+            }
 
-                if (count($subconstraint) == 1) {
-                    // no ugly brackets in query for a single constraint
-                    $constraints[] = $subconstraint[0];
-                } else {
-                    $constraints[] = '( '.implode(' OR ', $subconstraint).' )';
-                }
+            if ($constraintType == '_is' && count($subconstraints) > 1) {
+                // IS constraints are chained with OR
+                $constraints[] = '( '.implode(' OR ', $subconstraints).' )';
             } else {
-                foreach ($constraintValues as $index => $constraintValue) {
-                    $constraints[] = $constraintFieldQuery.' '.$constraintTypes[$constraintType].' :'.$key.($index + 1);
-                }
+                // everything else is chained with AND
+                $constraints = array_merge($constraints, $subconstraints);
             }
 
             foreach ($constraintValues as $index => $constraintValue) {
