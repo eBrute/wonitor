@@ -101,6 +101,7 @@
         'serverInfo' => 'serverName,serverIp,serverPort,serverId',
     );
 
+
     function isValidField($dbStructure, $table, $dataField) {
 
         global $specialFields;
@@ -119,6 +120,7 @@
         return false;
     }
 
+
     function getFieldQuery($dbStructure, $table, $dataField) {
 
         global $specialFields;
@@ -136,6 +138,7 @@
 
         return '';
     }
+
 
     function queryDB(&$db, $dbStructure, $table) {
 
@@ -404,8 +407,6 @@
 
     main();
 
-    // TODO SELECT time FROM rounds WHERE time > datetime('now', '-2 day');
-    // timediff_gt=-2_day,-10_month , timediff_is
     // TODO make fieldnames and tables case insensitive
     // curl --request GET 'http://example.com/wonitor/query.php?data=length_avg&group_by=serverId&length_gt=500'
     // curl --request GET 'http://example.com/wonitor/query.php?data=teamWins&map_is=ns2_veil&group_by=serverId'
