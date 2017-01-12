@@ -48,13 +48,13 @@
         'count' => 'COUNT(1) AS count',
     );
 
-    // empty all fields
-    foreach ($wonitorStructure as &$table) {
+    // empty all native fields (fields contain the SQL type but will contain their construction query)
+    foreach ($wonitorDbStructure as &$table) {
         foreach ($table as &$field) {
             $field = '';
         }
     }
-    foreach ($ns2plusStructure as &$table) {
+    foreach ($ns2plusDbStructure as &$table) {
         foreach ($table as &$field) {
             $field = '';
         }
@@ -78,7 +78,7 @@
             'numPlayersDiff' => '(numPlayers1 - numPlayers2)',
         ),
     );
-    $wonitorStructure = array_merge_recursive($wonitorStructure, $specialWonitorFields);
+    $wonitorDbStructure = array_merge_recursive($wonitorDbStructure, $specialWonitorFields);
 
     $specialTables = array(
        'NamedKillFeed' => 'SELECT temp.*, Playerstats.playerName as [killerName] FROM (
@@ -88,9 +88,9 @@
         'ExtendedRoundInfo' => 'SELECT * from RoundInfo LEFT OUTER JOIN ServerInfo ON RoundInfo.roundId = ServerInfo.roundId',
     );
 
-    $ns2plusStructure = array_merge_recursive($ns2plusStructure, array(
-          'NamedKillFeed' => array_merge($ns2plusStructure['KillFeed'], ['victimName' => '', 'killerName' => '']),
-          'ExtendedRoundInfo' => array_merge($ns2plusStructure['RoundInfo'], $ns2plusStructure['ServerInfo']),
+    $ns2plusDbStructure = array_merge_recursive($ns2plusDbStructure, array(
+          'NamedKillFeed' => array_merge($ns2plusDbStructure['KillFeed'], ['victimName' => '', 'killerName' => '']),
+          'ExtendedRoundInfo' => array_merge($ns2plusDbStructure['RoundInfo'], $ns2plusDbStructure['ServerInfo']),
       )
     );
 
@@ -101,47 +101,38 @@
         'serverInfo' => 'serverName,serverIp,serverPort,serverId',
     );
 
-    function isValidField($structure, $table, $dataField)
-    {
-        global $specialFields;
-        global $wonitorStructure, $ns2plusStructure;
+    function isValidField($dbStructure, $table, $dataField) {
 
-        $isWonitor = $structure == $wonitorStructure;
+        global $specialFields;
 
         if (isset($specialFields[$dataField])) {
             return true;
         }
-        if (isset($structure[$table][$dataField])) {
+        if (isset($dbStructure[$table][$dataField])) {
             return true;
         }
 
         return false;
     }
 
-    function getFieldQuery($structure, $table, $dataField)
-    {
-        global $specialFields;
-        global $wonitorStructure, $ns2plusStructure;
+    function getFieldQuery($dbStructure, $table, $dataField) {
 
-        $isWonitor = $structure == $wonitorStructure;
+        global $specialFields;
 
         if (isset($specialFields[$dataField])) {
             return $specialFields[$dataField];
         }
-        if (isset($structure[$table][$dataField])) {
-            return $structure[$table][$dataField] != '' ? $structure[$table][$dataField] : $dataField;
+        if (isset($dbStructure[$table][$dataField])) {
+            return $dbStructure[$table][$dataField] != '' ? $dbStructure[$table][$dataField] : $dataField;
         }
 
         return '';
     }
 
-    function queryDB(&$db, $structure, $table)
-    {
+    function queryDB(&$db, $dbStructure, $table) {
+
         global $statsMethodDefs, $constraintTypes, $orderOptions, $shortNames;
         global $specialTables, $specialFields;
-        global $wonitorStructure, $ns2plusStructure;
-
-        $isWonitor = $structure == $wonitorStructure;
 
         // select data
         $dataFields = array();
@@ -165,15 +156,18 @@
 
             if ($dataField == '') {
                 continue;
-            } elseif (isset($specialFields[$dataField])) {
-                $dataFields[] = $specialFields[$dataField];
-                continue;
-            } elseif (isValidField($structure, $table, $dataField)) {
-                $dataFieldQuery = getFieldQuery($structure, $table, $dataField);
-            } else {
+            }
+
+            if (!isValidField($dbStructure, $table, $dataField)) {
                 exit(); // exit here to indicate sth is wrong
             }
 
+            if (isset($specialFields[$dataField])) {
+                $dataFields[] = $specialFields[$dataField];
+                continue;
+            }
+
+            $dataFieldQuery = getFieldQuery($dbStructure, $table, $dataField);
             if ($dataFieldQuery != $dataField) {
                 $dataFieldRename = ' AS '.$dataField;
             }
@@ -204,10 +198,10 @@
                 $group = explode('_every_', $value);
                 $groupField = $group[0];
 
-                if (!isValidField($structure, $table, $groupField)) {
+                if (!isValidField($dbStructure, $table, $groupField)) {
                     continue;
                 }
-                $groupFieldQuery = getFieldQuery($structure, $table, $groupField);
+                $groupFieldQuery = getFieldQuery($dbStructure, $table, $groupField);
 
                 if (isset($group[1])) {
                     $binsize = (float) $group[1];
@@ -242,22 +236,22 @@
             if (!isset($constraintTypes[$constraintType])) {
                 continue;
             }
-            if (!isValidField($structure, $table, $constraintField)) {
+            if (!isValidField($dbStructure, $table, $constraintField)) {
                 continue;
             }
-            $constraintFieldQuery = getFieldQuery($structure, $table, $constraintField);
+            $constraintFieldQuery = getFieldQuery($dbStructure, $table, $constraintField);
 
             if ($constraintType == '_is') {
                 // IS constraints are chained with OR
-              $subconstraint = array();
+                $subconstraint = array();
                 foreach ($constraintValues as $index => $constraintValue) {
                     //                 numPlayers               >=                                     :numPlayers_ge1
-                  $subconstraint[] = $constraintFieldQuery.' '.$constraintTypes[$constraintType].' :'.$key.($index + 1);
+                    $subconstraint[] = $constraintFieldQuery.' '.$constraintTypes[$constraintType].' :'.$key.($index + 1);
                 }
 
                 if (count($subconstraint) == 1) {
                     // no ugly brackets in query for a single constraint
-                  $constraints[] = $subconstraint[0];
+                    $constraints[] = $subconstraint[0];
                 } else {
                     $constraints[] = '( '.implode(' OR ', $subconstraint).' )';
                 }
@@ -282,10 +276,10 @@
                 $orderField = $order[0];
                 $orderDirection = $order[1];
 
-                if (!isValidField($structure, $table, $orderField)) {
+                if (!isValidField($dbStructure, $table, $orderField)) {
                     continue;
                 }
-                $orderFieldQuery = getFieldQuery($structure, $table, $orderField);
+                $orderFieldQuery = getFieldQuery($dbStructure, $table, $orderField);
 
                 $orderBy[] = $orderField.(isset($orderDirection, $orderOptions[$orderDirection]) ? ' '.$orderOptions[$orderDirection] : '');
             }
@@ -343,15 +337,14 @@
         //foreach( $result as $row ) {var_dump( $row );}
     }
 
-    function strReplaceAssoc(array $replace, $subject)
-    {
+    function strReplaceAssoc(array $replace, $subject) {
         return str_replace(array_keys($replace), array_values($replace), $subject);
     }
 
-    function main()
-    {
-        global $wonitorDb, $wonitorStructure;
-        global $ns2plusDb, $ns2plusStructure;
+    function main() {
+
+        global $wonitorDb, $wonitorDbStructure;
+        global $ns2plusDb, $ns2plusDbStructure;
 
         $table = 'rounds';
         if (isset($_GET['table'])) {
@@ -359,19 +352,19 @@
         }
 
         $db = null;
-        $structure = null;
-        if (isset($wonitorStructure[$table])) {
+        $dbStructure = null;
+        if (isset($wonitorDbStructure[$table])) {
             $db = openDB($wonitorDb);
-            $structure = $wonitorStructure;
-        } elseif (isset($ns2plusStructure[$table])) {
+            $dbStructure = $wonitorDbStructure;
+        } elseif (isset($ns2plusDbStructure[$table])) {
             $db = openDB($ns2plusDb);
-            $structure = $ns2plusStructure;
+            $dbStructure = $ns2plusDbStructure;
         } else {
             exit();
         }
 
         try {
-            queryDB($db, $structure, $table);
+            queryDB($db, $dbStructure, $table);
         } catch (PDOException $e) {
             echo $e->getMessage();
         }
