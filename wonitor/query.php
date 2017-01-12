@@ -326,12 +326,15 @@
         }
 
         if (isset($_GET['showQuery'])) {
-            echo $query."<br /><br />\n";
+            echo $query."<br />\n";
             foreach ($bindings as $binding) {
-                echo $binding['key'].' => '.$binding['value']."<br>\n";
+                echo $binding['key'].' => '.$binding['value']."<br />\n";
+            }
+            echo "<br />\n";
+            if (count($bindings) > 0) {
+                echo "[SQL] ".interpolateQuery($query, $bindings)."<br />\n<br />\n";
             }
         }
-        //echo interpolateQuery($query, $bindings)."<br /><br />\n";
 
         // query db
         $statement->setFetchMode(PDO::FETCH_ASSOC);
