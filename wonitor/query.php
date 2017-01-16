@@ -261,6 +261,7 @@
                 $subconstraints[] = $constraintFieldQuery.' '.$constraintTypes[$constraintType].' datetime(\'now\'';
                 foreach ($constraintValues as $index => $constraintValue) {
                     $subconstraints[0] .= ', :'.$key.($index + 1);
+                    $constraintValues[$index] = '-'.$constraintValues[$index];
                 }
                 $subconstraints[0] .= ')';
             }
