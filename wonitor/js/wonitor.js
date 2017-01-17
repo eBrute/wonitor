@@ -492,15 +492,11 @@ function AddConstraintToTable(constraint, constraintValue) {
       }
     }
     cell.append('span');
-  } else if (constraintField == 'timeDiff') { // TODO if !constraintValue or constraintValue matches pattern
+  } else if (constraintField == 'timeDiff' && (!constraintValue || ['is', 'ne', 'gt', 'lt', 'mt', 'nm'].indexOf(constraintOperator) == -1)) {
     cell = row.append('td');
     select = cell.append('select');
-    select.append('option').attr('value', 'gt').text('>').property('selected', constraintOperator == 'gt');
     select.append('option').attr('value', 'ge').text('≥').property('selected', constraintOperator == 'ge');
-    select.append('option').attr('value', 'is').text('=').property('selected', constraintOperator == 'is');
-    select.append('option').attr('value', 'ne').text('≠').property('selected', constraintOperator == 'ne');
     select.append('option').attr('value', 'le').text('≤').property('selected', constraintOperator == 'le');
-    select.append('option').attr('value', 'lt').text('<').property('selected', constraintOperator == 'lt');
     cell.append('span');
 
     cell = row.append('td').text('now -');
@@ -518,6 +514,13 @@ function AddConstraintToTable(constraint, constraintValue) {
       select.append('option').attr('value', timespan).text(timespan).property('selected', constraintValue && constraintUnit === timespan);
     }
     cell.append('span');
+  } else  if (constraintField == 'time' && (!constraintValue || ['is', 'ne', 'gt', 'lt', 'mt', 'nm'].indexOf(constraintOperator) == -1)) {
+    cell = row.append('td');
+    select = cell.append('select');
+    select.append('option').attr('value', 'ge').text('≥').property('selected', constraintOperator == 'ge');
+    select.append('option').attr('value', 'le').text('≤').property('selected', constraintOperator == 'le');
+    cell.append('span');
+    row.append('td').append('input').attr('type', 'text').attr('size', '8').attr('value', constraintValue ? constraintValue : '');
   } else if (fields[constraintField] && fields[constraintField].legend && (constraintOperator == 'is' || constraintOperator == 'ne') && (!constraintValue || fields[constraintField].legend[constraintValue] != null)) {
     cell = row.append('td');
     select = cell.append('select');
@@ -531,7 +534,7 @@ function AddConstraintToTable(constraint, constraintValue) {
       select.append('option').attr('value', value).text(name).property('selected', constraintValue == value);
     }
     cell.append('span');
-  } else {
+  }  else {
     cell = row.append('td');
     select = cell.append('select');
     select.append('option').attr('value', 'gt').text('>').property('selected', constraintOperator == 'gt');
