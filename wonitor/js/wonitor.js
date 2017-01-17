@@ -409,7 +409,7 @@ function SetPlotConfigData(plotSpecs) {
   ClearConstraintTable();
   for (var key in plotSpecs) {
     if (!IsKeyConstraint(key)) continue;
-    var subconstraints = plotSpecs[key].split(',');
+    var subconstraints = unescape(plotSpecs[key]).split(',');
     for (var subconstraint in subconstraints) {
       AddConstraintToTable(key, subconstraints[subconstraint]);
     }
