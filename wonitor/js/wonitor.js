@@ -506,7 +506,7 @@ function AddConstraintToTable(constraint, constraintValue) {
     cell = row.append('td').text('now -');
     var constraintValueSplits = constraintValue.split(' ');
     var constraintUnit = '';
-    var timespans = ['', 'minutes', 'hours', 'days', 'weeks', 'months', 'years'];
+    var timespans = ['', 'minutes', 'hours', 'days', 'months', 'years'];
     if (constraintValueSplits.length == 2 && timespans.indexOf(constraintValueSplits[1]) != -1) {
       constraintValue = constraintValueSplits[0];
       constraintUnit = constraintValueSplits[1];
