@@ -374,7 +374,7 @@
         $replacements = array();
         foreach ($params as $param) {
             $keys[] = '/'.$param['key'].'/';
-            $replacements[] = $param['value'];
+            $replacements[] = "'".$param['value']."'";
         }
         $query = preg_replace($keys, $replacements, $query, 1, $count);
         return $query;
