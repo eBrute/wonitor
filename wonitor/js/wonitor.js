@@ -12,8 +12,8 @@ var huslLight = 45;
 var gridcolor = '#444444';
 
 var fields = {
-  'numRounds': { isNum: true, isNotNative: true, name: '# Rounds' },
-  'count': { isNum: true, isNotNative: true, name: 'Count' },
+  'numRounds': { isNum: true, isNotNative: true, isConstrainable: false, name: '# Rounds' },
+  'count': { isNum: true, isNotNative: true, isConstrainable: false, name: 'Count' },
   'id': { isNum: true, name: 'Round Id' },
   'serverName': { isNum: false, name: 'Server Name' },
   'serverIp': { isNum: false, name: 'Server Ip' },
@@ -22,10 +22,11 @@ var fields = {
   'version': { isNum: true, name: 'Version' },
   'modIds': { isNum: false, name: 'ModIds' },
   'time': { isNum: false, name: 'Time' },
+  'timeDiff': { isNum: false, isPlottable: false, isConstrainable: true, name: 'Time (relative)' },
   'map': { isNum: false, name: 'Map' },
   'winner': { isNum: false, name: 'Winner', legend: { 0: 'Draw', 1: 'Marines', 2: 'Aliens' } },
-  'winDiff': { isNum: true, isNotNative: true, name: 'Win Difference' },
-  'relWinDiff': { isNum: true, isNotNative: true, name: 'Relative Win Difference' },
+  'winDiff': { isNum: true, isNotNative: true, isConstrainable: false, name: 'Win Difference' },
+  'relWinDiff': { isNum: true, isNotNative: true, isConstrainable: false, name: 'Relative Win Difference' },
   'length': { isNum: true, isFloat: true, name: 'Round Length', unit: 's' },
   'isTournamentMode': { isNum: false, name: 'Tournament Mode', legend: { 0: 'Disabled', 1: 'Enabled' } },
   'isRookieServer': { isNum: false, name: 'Rookie Server', legend: { 0: 'Disabled', 1: 'Enabled' } },
@@ -52,12 +53,12 @@ var fields = {
   'averageSkillTeam1': { isNum: true, isFloat: true, name: 'Average Marine Skill' },
   'averageSkillTeam2': { isNum: true, isFloat: true, name: 'Average Alien Skill' },
   'averageSkillDiff': { isNum: true, isFloat: true, name: 'Average Team Skill Difference' },
-  'team1Wins': { isNum: true, isNotNative: true, name: '# Marine Wins' },
-  'team2Wins': { isNum: true, isNotNative: true, name: '# Alien Wins' },
-  'draws': { isNum: true, isNotNative: true, name: '# Draws' },
-  'relTeam1Wins': { isNum: true, isNotNative: true, name: '% Marine Wins' },
-  'relTeam2Wins': { isNum: true, isNotNative: true, name: '% Alien Wins' },
-  'relDraws': { isNum: true, isNotNative: true, name: '% Draws' },
+  'team1Wins': { isNum: true, isNotNative: true, isConstrainable: false, name: '# Marine Wins' },
+  'team2Wins': { isNum: true, isNotNative: true, isConstrainable: false, name: '# Alien Wins' },
+  'draws': { isNum: true, isNotNative: true, isConstrainable: false, name: '# Draws' },
+  'relTeam1Wins': { isNum: true, isNotNative: true, isConstrainable: false, name: '% Marine Wins' },
+  'relTeam2Wins': { isNum: true, isNotNative: true, isConstrainable: false, name: '% Alien Wins' },
+  'relDraws': { isNum: true, isNotNative: true, isConstrainable: false, name: '% Draws' },
   'killsTeam1': { isNum: true, name: '# Marine Kills' },
   'killsTeam2': { isNum: true, name: '# Alien Kills' },
   'kills': { isNum: true, name: '# Kills' },
@@ -129,14 +130,17 @@ function BuildConfigurator() {
 
   // add selectors
   for (var key in fields) {
-    d3.select('#xAxisSelector').append('option').text(fields[key].name).attr('value', key);
-    d3.select('#yAxisSelector').append('option').text(fields[key].name).attr('value', key);
-    if (fields[key].isNum) {
-      d3.select('#sAxisSelector').append('option').text(fields[key].name).attr('value', key);
+    if(fields[key].isPlottable !== false) {
+      d3.select('#xAxisSelector').append('option').text(fields[key].name).attr('value', key);
+      d3.select('#yAxisSelector').append('option').text(fields[key].name).attr('value', key);
+      if (fields[key].isNum) {
+        d3.select('#sAxisSelector').append('option').text(fields[key].name).attr('value', key);
+      }
+      d3.select('#tAxisSelector').append('option').text(fields[key].name).attr('value', key);
     }
-    d3.select('#tAxisSelector').append('option').text(fields[key].name).attr('value', key);
-    if (fields[key].isNotNative) continue;
-    d3.select('#constraintsAdd').append('option').text(fields[key].name).attr('value', key);
+    if (fields[key].isConstrainable !== false) {
+      d3.select('#constraintsAdd').append('option').text(fields[key].name).attr('value', key);
+    }
     // TODO make GLOB matching available for all fields
   }
 
@@ -409,7 +413,7 @@ function SetPlotConfigData(plotSpecs) {
   ClearConstraintTable();
   for (var key in plotSpecs) {
     if (!IsKeyConstraint(key)) continue;
-    var subconstraints = plotSpecs[key].split(',');
+    var subconstraints = unescape(plotSpecs[key]).split(',');
     for (var subconstraint in subconstraints) {
       AddConstraintToTable(key, subconstraints[subconstraint]);
     }
@@ -488,6 +492,35 @@ function AddConstraintToTable(constraint, constraintValue) {
       }
     }
     cell.append('span');
+  } else if (constraintField == 'timeDiff' && (!constraintValue || ['is', 'ne', 'gt', 'lt', 'mt', 'nm'].indexOf(constraintOperator) == -1)) {
+    cell = row.append('td');
+    select = cell.append('select');
+    select.append('option').attr('value', 'ge').text('≥').property('selected', constraintOperator == 'ge');
+    select.append('option').attr('value', 'le').text('≤').property('selected', constraintOperator == 'le');
+    cell.append('span');
+
+    cell = row.append('td').text('now -');
+    var constraintValueSplits = constraintValue && constraintValue.split(' ');
+    var constraintUnit = '';
+    var timespans = ['', 'minutes', 'hours', 'days', 'months', 'years'];
+    if (constraintValue && constraintValueSplits.length == 2 && timespans.indexOf(constraintValueSplits[1]) != -1) {
+      constraintValue = constraintValueSplits[0];
+      constraintUnit = constraintValueSplits[1];
+    }
+    cell.append('input').attr('type', 'text').attr('size', '8').attr('value', constraintValue ? constraintValue : '');
+    select = cell.append('select');
+    for (i = 0; i < timespans.length; i++) {
+      var timespan = timespans[i];
+      select.append('option').attr('value', timespan).text(timespan).property('selected', constraintValue && constraintUnit === timespan);
+    }
+    cell.append('span');
+  } else  if (constraintField == 'time' && (!constraintValue || ['is', 'ne', 'gt', 'lt', 'mt', 'nm'].indexOf(constraintOperator) == -1)) {
+    cell = row.append('td');
+    select = cell.append('select');
+    select.append('option').attr('value', 'ge').text('≥').property('selected', constraintOperator == 'ge');
+    select.append('option').attr('value', 'le').text('≤').property('selected', constraintOperator == 'le');
+    cell.append('span');
+    row.append('td').append('input').attr('type', 'text').attr('size', '8').attr('value', constraintValue ? constraintValue : '');
   } else if (fields[constraintField] && fields[constraintField].legend && (constraintOperator == 'is' || constraintOperator == 'ne') && (!constraintValue || fields[constraintField].legend[constraintValue] != null)) {
     cell = row.append('td');
     select = cell.append('select');
@@ -501,7 +534,7 @@ function AddConstraintToTable(constraint, constraintValue) {
       select.append('option').attr('value', value).text(name).property('selected', constraintValue == value);
     }
     cell.append('span');
-  } else {
+  }  else {
     cell = row.append('td');
     select = cell.append('select');
     select.append('option').attr('value', 'gt').text('>').property('selected', constraintOperator == 'gt');
@@ -1071,7 +1104,7 @@ function CreatePlot(responseText, plotSpecs) {
 
 function PlotConfigToString() {
   var arr = [];
-  var i;
+  var i, j;
 
   // get axes
   function getAxisConfigData(axis) {
@@ -1205,7 +1238,12 @@ function PlotConfigToString() {
       constraintType = constraintTypeSelect.value;
     }
     var constraintName = constraintField + '_' + constraintType;
-    var constraintValue = xpath0('./td[3]/select|./td[3]/input', constraintsRows[i]).value;
+    var constraintValueSelectors = xpath('./td[3]/select|./td[3]/input', constraintsRows[i]);
+    var constraintValues = [];
+    for (j = 0; j < constraintValueSelectors.length; j++) {
+      if (constraintValueSelectors[j].value != '') constraintValues.push(constraintValueSelectors[j].value);
+    }
+    var constraintValue = constraintValues.join(' ');
     if (constraintValue != '') {
       if (!constraints[constraintName]) constraints[constraintName] = [];
       constraints[constraintName].push(constraintValue);

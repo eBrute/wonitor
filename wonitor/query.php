@@ -48,7 +48,7 @@
         'count' => 'COUNT(1) AS count',
     );
 
-    // empty all fields
+    // empty all native fields (fields contain the SQL type but will contain their construction query)
     foreach ($wonitorStructure as &$table) {
         foreach ($table as &$field) {
             $field = '';
@@ -101,47 +101,51 @@
         'serverInfo' => 'serverName,serverIp,serverPort,serverId',
     );
 
-    function isValidField($structure, $table, $dataField)
-    {
-        global $specialFields;
-        global $wonitorStructure, $ns2plusStructure;
 
-        $isWonitor = $structure == $wonitorStructure;
+    function isValidField($dbStructure, $table, $dataField) {
+
+        global $specialFields;
+
+        if ($dataField == 'timeDiff') {
+            return isValidField($dbStructure, $table, 'time');
+        }
 
         if (isset($specialFields[$dataField])) {
             return true;
         }
-        if (isset($structure[$table][$dataField])) {
+
+        if (isset($dbStructure[$table][$dataField])) {
             return true;
         }
 
         return false;
     }
 
-    function getFieldQuery($structure, $table, $dataField)
-    {
-        global $specialFields;
-        global $wonitorStructure, $ns2plusStructure;
 
-        $isWonitor = $structure == $wonitorStructure;
+    function getFieldQuery($dbStructure, $table, $dataField) {
+
+        global $specialFields;
+
+        if ($dataField == 'timeDiff') {
+            return getFieldQuery($dbStructure, $table, 'time');
+        }
 
         if (isset($specialFields[$dataField])) {
             return $specialFields[$dataField];
         }
-        if (isset($structure[$table][$dataField])) {
-            return $structure[$table][$dataField] != '' ? $structure[$table][$dataField] : $dataField;
+
+        if (isset($dbStructure[$table][$dataField])) {
+            return $dbStructure[$table][$dataField] != '' ? $dbStructure[$table][$dataField] : $dataField;
         }
 
         return '';
     }
 
-    function queryDB(&$db, $structure, $table)
-    {
+
+    function queryDB(&$db, $dbStructure, $table) {
+
         global $statsMethodDefs, $constraintTypes, $orderOptions, $shortNames;
         global $specialTables, $specialFields;
-        global $wonitorStructure, $ns2plusStructure;
-
-        $isWonitor = $structure == $wonitorStructure;
 
         // select data
         $dataFields = array();
@@ -153,7 +157,15 @@
 
         foreach ($dataRequests as $value) {
             $dataField = $value;
-            $dataFieldRename = '';
+
+            if ($dataField == '') {
+                continue;
+            }
+
+            if (isset($specialFields[$dataField])) {
+                $dataFields[] = $specialFields[$dataField];
+                continue;
+            }
 
             /* i.e. data=length_sum, data=winner_avg, data=numPlayers_cnt */
             $dataStatsMethod = substr($value, -4);
@@ -163,17 +175,12 @@
                 $dataStatsMethod = '';
             }
 
-            if ($dataField == '') {
-                continue;
-            } elseif (isset($specialFields[$dataField])) {
-                $dataFields[] = $specialFields[$dataField];
-                continue;
-            } elseif (isValidField($structure, $table, $dataField)) {
-                $dataFieldQuery = getFieldQuery($structure, $table, $dataField);
-            } else {
+            if (!isValidField($dbStructure, $table, $dataField)) {
                 exit(); // exit here to indicate sth is wrong
             }
 
+            $dataFieldRename = '';
+            $dataFieldQuery = getFieldQuery($dbStructure, $table, $dataField);
             if ($dataFieldQuery != $dataField) {
                 $dataFieldRename = ' AS '.$dataField;
             }
@@ -181,7 +188,7 @@
             if ($dataStatsMethod == '') {
                 $dataFields[] = $dataFieldQuery.$dataFieldRename;
             } else {
-                //              COUNT                               (  length      ) AS   length_cnt                                                      ,   length
+                //              COUNT                               (  length           ) AS   length_cnt                                                 ,   length
                 $dataFields[] = $statsMethodDefs[$dataStatsMethod].'('.$dataFieldQuery.') AS '.$dataField.$dataStatsMethod.($dataStatsMethod == '_cnt' ? ', '.$dataFieldQuery.$dataFieldRename : ''); // no injection here because we tested the fields earlier
             }
         }
@@ -189,7 +196,6 @@
         if (!$dataFields) {
             exit(); // data field is required
         }
-        $data = implode(', ', $dataFields);
 
         // grouping
         $groupBy = array();
@@ -204,20 +210,20 @@
                 $group = explode('_every_', $value);
                 $groupField = $group[0];
 
-                if (!isValidField($structure, $table, $groupField)) {
+                if (!isValidField($dbStructure, $table, $groupField)) {
                     continue;
                 }
-                $groupFieldQuery = getFieldQuery($structure, $table, $groupField);
+                $groupFieldQuery = getFieldQuery($dbStructure, $table, $groupField);
 
                 if (isset($group[1])) {
                     $binsize = (float) $group[1];
                     if ($binsize == 0) {
                         $binsize = 1;
                     }
-                    $data .= ', CAST('.$groupFieldQuery.'/'.$binsize.' AS INTEGER)*'.$binsize.' AS [group'.($index + 1).']';  // no injection here because we tested the group earlier
-                    //$data .= ', ROUND(' . $groupField . '/' . $binsize . ')*' . $binsize.' AS [group'.($index==0 ? '' : $index+1 ).']';
+                    $dataFields[] = 'CAST('.$groupFieldQuery.'/'.$binsize.' AS INTEGER)*'.$binsize.' AS [group'.($index + 1).']';  // no injection here because we tested the group earlier
+                    //$dataFields[] = 'ROUND(' . $groupField . '/' . $binsize . ')*' . $binsize.' AS [group'.($index==0 ? '' : $index+1 ).']';
                 } else {
-                    $data .= ', '.$groupFieldQuery.' AS [group'.($index + 1).']';
+                    $dataFields[] = $groupFieldQuery.' AS [group'.($index + 1).']';
                 }
                 $groupBy[] = '[group'.($index + 1).']';
             }
@@ -242,33 +248,40 @@
             if (!isset($constraintTypes[$constraintType])) {
                 continue;
             }
-            if (!isValidField($structure, $table, $constraintField)) {
+
+            if (!isValidField($dbStructure, $table, $constraintField)) {
                 continue;
             }
-            $constraintFieldQuery = getFieldQuery($structure, $table, $constraintField);
+            $constraintFieldQuery = getFieldQuery($dbStructure, $table, $constraintField);
 
-            if ($constraintType == '_is') {
+            $subconstraints = array();
+            if ($constraintField == 'timeDiff') {
+                // subconstraints for timeDiff are arguments to datetime()
+                // WHERE time > datetime('now', :timediff_ge1, :timediff_ge2);
+                $subconstraints[] = $constraintFieldQuery.' '.$constraintTypes[$constraintType].' datetime(\'now\'';
+                foreach ($constraintValues as $index => $constraintValue) {
+                    $subconstraints[0] .= ', :'.$key.($index + 1);
+                    $constraintValues[$index] = '-'.$constraintValues[$index];
+                }
+                $subconstraints[0] .= ')';
+            }
+            else {
+                foreach ($constraintValues as $index => $constraintValue) {
+                    //                  numPlayers                >=                                  :numPlayers_ge1
+                    $subconstraints[] = $constraintFieldQuery.' '.$constraintTypes[$constraintType].' :'.$key.($index + 1);
+                }
+            }
+
+            if ($constraintType == '_is' && count($subconstraints) > 1) {
                 // IS constraints are chained with OR
-              $subconstraint = array();
-                foreach ($constraintValues as $index => $constraintValue) {
-                    //                 numPlayers               >=                                     :numPlayers_ge1
-                  $subconstraint[] = $constraintFieldQuery.' '.$constraintTypes[$constraintType].' :'.$key.($index + 1);
-                }
-
-                if (count($subconstraint) == 1) {
-                    // no ugly brackets in query for a single constraint
-                  $constraints[] = $subconstraint[0];
-                } else {
-                    $constraints[] = '( '.implode(' OR ', $subconstraint).' )';
-                }
+                $constraints[] = '( '.implode(' OR ', $subconstraints).' )';
             } else {
-                foreach ($constraintValues as $index => $constraintValue) {
-                    $constraints[] = $constraintFieldQuery.' '.$constraintTypes[$constraintType].' :'.$key.($index + 1);
-                }
+                // everything else is chained with AND
+                $constraints = array_merge($constraints, $subconstraints);
             }
 
             foreach ($constraintValues as $index => $constraintValue) {
-                $bindings[] = array('key' => ':'.$key.($index + 1), 'value' => $constraintValue);
+                $bindings[] = array('key' => ':'.$key.($index + 1), 'value' => $constraintValue); // NOTE no direct key=>value here since key is userinput
             }
         }
 
@@ -282,17 +295,17 @@
                 $orderField = $order[0];
                 $orderDirection = $order[1];
 
-                if (!isValidField($structure, $table, $orderField)) {
+                if (!isValidField($dbStructure, $table, $orderField)) {
                     continue;
                 }
-                $orderFieldQuery = getFieldQuery($structure, $table, $orderField);
+                $orderFieldQuery = getFieldQuery($dbStructure, $table, $orderField);
 
                 $orderBy[] = $orderField.(isset($orderDirection, $orderOptions[$orderDirection]) ? ' '.$orderOptions[$orderDirection] : '');
             }
         }
 
         // build and prepare query
-        $query = 'SELECT '.$data;
+        $query = 'SELECT '.implode(', ', $dataFields);
         if (isset($specialTables[$table])) {
             $query .= ' FROM ('.$specialTables[$table].') AS '.$table.' '; // NOTE this is safe because we checked the table exists
         } else {
@@ -308,15 +321,22 @@
             $query .= ' ORDER BY '.implode(', ', $orderBy);
         }
 
-        if (isset($_GET['showQuery'])) {
-            echo $query."<br /><br />\n";
-        }
-
         $statement = $db->prepare($query);
 
         // bind values
         foreach ($bindings as $binding) {
             $statement->bindValue($binding['key'], $binding['value'], is_numeric($binding['value']) ? PDO::PARAM_INT : PDO::PARAM_STR); // NOTE this is safe because we check the key above
+        }
+
+        if (isset($_GET['showQuery'])) {
+            echo $query."<br />\n";
+            foreach ($bindings as $binding) {
+                echo $binding['key'].' => '.$binding['value']."<br />\n";
+            }
+            echo "<br />\n";
+            if (count($bindings) > 0) {
+                echo "[SQL] ".interpolateQuery($query, $bindings)."<br />\n<br />\n";
+            }
         }
 
         // query db
@@ -340,38 +360,50 @@
 
         // print results
         echo json_encode($result)."\n";
-        //foreach( $result as $row ) {var_dump( $row );}
+        // foreach( $result as $row ) {var_dump( $row );}
     }
 
-    function strReplaceAssoc(array $replace, $subject)
-    {
+
+    function strReplaceAssoc(array $replace, $subject) {
         return str_replace(array_keys($replace), array_values($replace), $subject);
     }
 
-    function main()
-    {
+
+    function interpolateQuery($query, $params) {
+        $keys = array();
+        $replacements = array();
+        foreach ($params as $param) {
+            $keys[] = '/'.$param['key'].'/';
+            $replacements[] = "'".$param['value']."'";
+        }
+        $query = preg_replace($keys, $replacements, $query, 1, $count);
+        return $query;
+    }
+
+
+    function main() {
+
         global $wonitorDb, $wonitorStructure;
         global $ns2plusDb, $ns2plusStructure;
-
         $table = 'rounds';
         if (isset($_GET['table'])) {
             $table = $_GET['table'];
         }
 
         $db = null;
-        $structure = null;
+        $dbStructure = null;
         if (isset($wonitorStructure[$table])) {
             $db = openDB($wonitorDb);
-            $structure = $wonitorStructure;
+            $dbStructure = $wonitorStructure;
         } elseif (isset($ns2plusStructure[$table])) {
             $db = openDB($ns2plusDb);
-            $structure = $ns2plusStructure;
+            $dbStructure = $ns2plusStructure;
         } else {
             exit();
         }
 
         try {
-            queryDB($db, $structure, $table);
+            queryDB($db, $dbStructure, $table);
         } catch (PDOException $e) {
             echo $e->getMessage();
         }
@@ -381,8 +413,6 @@
 
     main();
 
-    // TODO SELECT time FROM rounds WHERE time > datetime('now', '-2 day');
-    // timediff_gt=-2_day,-10_month , timediff_is
     // TODO make fieldnames and tables case insensitive
     // curl --request GET 'http://example.com/wonitor/query.php?data=length_avg&group_by=serverId&length_gt=500'
     // curl --request GET 'http://example.com/wonitor/query.php?data=teamWins&map_is=ns2_veil&group_by=serverId'
