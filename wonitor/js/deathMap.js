@@ -686,7 +686,7 @@ function updateRounds(responseText) {
       return d.roundId + ' | ' + d.roundDate + ' ' + winningTeamToIcon(d.winningTeam);
     })
     .property('selected', function(d, i) {
-      if (args.roundId) return args.roundId.split(',').indexOf(d.roundId) >= 0;
+      if (args.roundId) return args.roundId.split(',').indexOf(d.roundId) >= 0; // select all roundIds specified in URL hash
       return i == 0; // select first round and deselect all others
     });
 
