@@ -673,6 +673,8 @@ function updateRounds(responseText) {
     .selectAll('option')
     .data(queryData);
 
+  var args = GetArgumentsFromHash();
+
   rounds.enter()
     .append('option');
 
@@ -684,6 +686,7 @@ function updateRounds(responseText) {
       return d.roundId + ' | ' + d.roundDate + ' ' + winningTeamToIcon(d.winningTeam);
     })
     .property('selected', function(d, i) {
+      if (args.roundId) return args.roundId.split(',').indexOf(d.roundId) >= 0;
       return i == 0; // select first round and deselect all others
     });
 
