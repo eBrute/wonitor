@@ -35,7 +35,7 @@
   foreach ($servers as $server) {
     $serverConstraint = isset($server['serverId']) ? '&serverId_is='.$server['serverId'] : '';
     $constraints = $serverConstraint;
-    if (preg_match('/[Ss]iege/', $server['serverName'])) {
+    if (preg_match('/[Ss]iege/', $server['serverName'])) { // dont show siege servers by default
       $constraints .= '&map_mt=sg_*' . '&numPlayers_gt=4';
     } else {
       $constraints .= '&map_mt=ns2_*' . '&numPlayers_gt=6';
