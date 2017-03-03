@@ -1238,7 +1238,7 @@ function PlotConfigToString() {
       constraintType = constraintTypeSelect.value;
     }
     var constraintName = constraintField + '_' + constraintType;
-    var constraintValueSelectors = xpath('./td[3]/select|./td[3]/input', constraintsRows[i]);
+    var constraintValueSelectors = xpath('./td[3]/input|./td[3]/select', constraintsRows[i]);
     var constraintValues = [];
     for (j = 0; j < constraintValueSelectors.length; j++) {
       if (constraintValueSelectors[j].value != '') constraintValues.push(constraintValueSelectors[j].value);
