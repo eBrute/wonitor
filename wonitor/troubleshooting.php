@@ -95,15 +95,20 @@ if (!databaseExists( $wonitorDb )) {
 }
 else {
     info('Wonitor database found (./data/rounds.sqlite3).');
-    try {
-        $db = openDB( $wonitorDb );
-        $query = 'SELECT COUNT(1) as numentries FROM rounds';
-        $numentries = $db->query( $query, PDO::FETCH_NUM )->fetchAll(PDO::FETCH_COLUMN, 0)[0];
-        closeDB( $db );
-        info('Wonitor database query successful. ' . $numentries . ' entries on record.');
-    }
-    catch (PDOException $e) {
-        warning($e->getMessage());
+
+    if (filesize('./data/rounds.sqlite3') == 0) {
+        warning('Wonitor database has size 0. This is not a problem. Once the first data is recieved, the tables will be created. If not, you might try to delete the database and wait for the creation of a new one.');
+    } else {
+        try {
+            $db = openDB( $wonitorDb );
+            $query = 'SELECT COUNT(1) as numentries FROM rounds';
+            $numentries = $db->query( $query, PDO::FETCH_NUM )->fetchAll(PDO::FETCH_COLUMN, 0)[0];
+            closeDB( $db );
+            info('Wonitor database query successful. ' . $numentries . ' entries on record.');
+        }
+        catch (PDOException $e) {
+            warning($e->getMessage());
+        }
     }
 
     if (is_writable('./data/rounds.sqlite3')) {
@@ -134,15 +139,19 @@ if (!databaseExists( $ns2plusDb )) {
 }
 else {
     info('NS2+ database found (./data/ns2plus.sqlite3).');
-    try {
-        $db = openDB( $ns2plusDb );
-        $query = 'SELECT COUNT(1) as numentries FROM RoundInfo';
-        $numentries = $db->query( $query, PDO::FETCH_NUM )->fetchAll(PDO::FETCH_COLUMN, 0)[0];
-        closeDB( $db );
-        info('NS2+ database query successful. ' . $numentries . ' entries on record.');
-    }
-    catch (PDOException $e) {
-        warning($e->getMessage());
+    if (filesize('./data/ns2plus.sqlite3') == 0) {
+        warning('NS2+ database has size 0. This is not a problem. Once the first data is recieved, the tables will be created. If not, you might try to delete the database and wait for the creation of a new one.');
+    } else {
+        try {
+            $db = openDB( $ns2plusDb );
+            $query = 'SELECT COUNT(1) as numentries FROM RoundInfo';
+            $numentries = $db->query( $query, PDO::FETCH_NUM )->fetchAll(PDO::FETCH_COLUMN, 0)[0];
+            closeDB( $db );
+            info('NS2+ database query successful. ' . $numentries . ' entries on record.');
+        }
+        catch (PDOException $e) {
+            warning($e->getMessage());
+        }
     }
 
     if (is_writable('./data/ns2plus.sqlite3'))  {

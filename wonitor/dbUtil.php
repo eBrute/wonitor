@@ -16,7 +16,7 @@
           $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
         catch (PDOException $e) {
-            die( 'Error: ' . $e->getMessage() . ".<br />\nProbably you need to install php5-sqlite / php7.0-sqlite3." );
+            die( 'Error: ' . $e->getMessage() . ".<br />\nProbably you need to install php5-sqlite / php7.0-sqlite3.<br />\nAlso check check <a href=\"./troubleshooting.php\">troubleshooting.php</a> for additional information." );
         }
         return $db;
     }
