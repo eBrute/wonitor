@@ -1564,6 +1564,7 @@ function xpath0(p, context) {
   return xpr.snapshotItem(0);
 }
 
+
 function Init() {
   SendQuery('getInfo.php', OnServerDataRecieve);
 }
