@@ -7,7 +7,7 @@
         $query = 'SELECT serverId, serverName, serverIp, serverPort FROM rounds GROUP BY serverId ORDER BY serverName';
         $servers = $db->query( $query, PDO::FETCH_ASSOC )->fetchAll();
 
-        $query = 'SELECT DISTINCT map FROM rounds';
+        $query = 'SELECT DISTINCT map FROM rounds ORDER BY map';
         $result = $db->query( $query, PDO::FETCH_ASSOC )->fetchAll();
         $maps = array();
         foreach ( $result as $row ) {
