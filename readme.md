@@ -50,7 +50,7 @@ Note: You could do this part before setting up the web server. In this case Woni
   http://steamcommunity.com/sharedfiles/filedetails/?id=117887554
   
   NS2+ is optional and only needed if you plan to (additionally) store stats provided by it:<br />
-  Mod ID: 28eb0f83 <br />
+  Mod ID: 334982d2 <br />
   http://steamcommunity.com/sharedfiles/filedetails/?id=686493571
 
 2. Create a mod config file. <br />
