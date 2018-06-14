@@ -11,7 +11,7 @@
 <?php
   require_once 'dbUtil.php';
   $db = openDB( $ns2plusDb );
-  $query = 'SELECT serverId, name as [serverName] FROM ServerInfo GROUP BY serverId ORDER BY serverName;';
+  $query = 'SELECT serverId, name as serverName FROM ServerInfo GROUP BY serverId ORDER BY serverName;';
   $servers = $db->query( $query, PDO::FETCH_ASSOC )->fetchAll();
   $query = 'SELECT DISTINCT mapName AS map FROM RoundInfo;';
   $maps = $db->query( $query, PDO::FETCH_NUM )->fetchAll(PDO::FETCH_COLUMN, 0);
