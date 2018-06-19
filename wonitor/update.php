@@ -264,7 +264,7 @@
         }
 
         // PlayerStats
-        $insertStatement = 'INSERT OR IGNORE INTO PlayerStats (steamId) VALUES ( :steamId );';
+        $insertStatement = 'INSERT IGNORE INTO PlayerStats (steamId) VALUES ( :steamId );';
         $updateStatement = 'UPDATE PlayerStats SET
             playerName = :playerName,
             hiveSkill = :hiveSkill,
@@ -285,7 +285,7 @@
             kills = kills + :kills,
             deaths = deaths + :deaths,
             assists = assists + :assists,
-            killstreak = MAX(killstreak, :killstreak),
+            killstreak = GREATEST(killstreak, :killstreak),
             hits = hits + :hits,
             onosHits = onosHits + :onosHits,
             misses = misses + :misses,
