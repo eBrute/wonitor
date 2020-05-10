@@ -104,7 +104,7 @@ else {
             $query = 'SELECT COUNT(1) as numentries FROM rounds';
             $numentries = $db->query( $query, PDO::FETCH_NUM )->fetchAll(PDO::FETCH_COLUMN, 0)[0];
             closeDB( $db );
-            info('Wonitor database query successful. ' . $numentries . ' entries on record.');
+            info("Wonitor database query successful. $numentries entries on record.");
         }
         catch (PDOException $e) {
             warning($e->getMessage());
@@ -147,7 +147,7 @@ else {
             $query = 'SELECT COUNT(1) as numentries FROM RoundInfo';
             $numentries = $db->query( $query, PDO::FETCH_NUM )->fetchAll(PDO::FETCH_COLUMN, 0)[0];
             closeDB( $db );
-            info('NS2+ database query successful. ' . $numentries . ' entries on record.');
+            info("NS2+ database query successful. $numentries entries on record.");
         }
         catch (PDOException $e) {
             warning($e->getMessage());
