@@ -160,7 +160,7 @@ The downside of this approach of maintaining two independent databases is that o
         query.php?data=id&map_mt=ns2_.*
     Support for regexp has to be enabled in your sqlite configuration and will most likely not work. Default to globbing.
     
-  For map constraints, there exists the special keyword *@official* which is a shorthand for all official maps. The following queries are identical: *'query.php?data=id&map_is=@official'*, *'query.php?data=id&map_is=ns2_derelict,ns2_docking,ns2_kodiak,ns2_refinery,ns2_tram,ns2_biodome,ns2_descent,ns2_eclipse,ns2_mineshaft,ns2_summit,ns2_veil,ns2_unearthed,ns2_origin'*
+  For map constraints, there exists the special keyword *@official* which is a shorthand for all official maps. The following queries are identical: *'query.php?data=id&map_is=@official'*, *'query.php?data=id&map_is=ns2_derelict,ns2_docking,ns2_kodiak,ns2_refinery,ns2_tram,ns2_biodome,ns2_descent,ns2_eclipse,ns2_mineshaft,ns2_summit,ns2_veil,ns2_unearthed,ns2_origin,ns2_metro'*
 
 * **showQuery** without parameters; reveals the underlying SQL query. I.e. *'query.php?data=count,map&group_by=map&length_ge=300&showQuery'* shows *'SELECT COUNT(1) AS count, map, map AS [group1] FROM rounds WHERE length >= :length_ge GROUP BY [group1]'*
 
