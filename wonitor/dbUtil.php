@@ -4,11 +4,14 @@
      * or   $wonitorDb = ['mysql:host=localhost;dbname=rounds', 'username', 'password'];
      * ./data is created if it does not exist
      */
-    $wonitorDb  = ['sqlite:./data/rounds.sqlite3'];
+    $wonitorDb = ['sqlite:./data/rounds.sqlite3'];
     $ns2plusDb = ['sqlite:./data/ns2plus.sqlite3'];
+    
+    // $wonitorDb  = ['mysql:host=yourhostname;dbname=wonitor_rounds', 'user', 'password'];
+    // $ns2plusDb =  ['mysql:host=yourhostname;dbname=wonitor_ns2plus', 'user', 'password'];
 
     function openDB($dbDef) {
-        try{
+        try {
           // Connect to database
           //$db = new PDO( $dbName );
           $db = (new ReflectionClass('PDO'))->newInstanceArgs($dbDef);
@@ -32,7 +35,19 @@
     }
     
     function databaseExists(& $dbDef) {
-        return file_exists( explode( ':', $dbDef[0] )[1] );
+        if (strpos($dbDef[0], 'sqlite') === 0) {
+            return file_exists( explode( ':', $dbDef[0] )[1] );
+        }
+        if (strpos($dbDef[0], 'mysql') === 0) {
+            try {
+                openDB($dbDef);
+                return true;
+            }
+            catch (Exception $e) {
+                return false;
+            }
+        }
+            return false;
     }
 
     // all fields listed here are query-able

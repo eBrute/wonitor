@@ -31,8 +31,8 @@
         '_ge' => '>=',
         '_lk' => 'LIKE',
         '_nl' => 'NOT LIKE',
-        '_mt' => 'GLOB',
-        '_nm' => 'NOT GLOB',
+        '_mt' => 'LIKE',
+        '_nm' => 'NOT LIKE',
         '_re' => 'REGEXP',
         '_nr' => 'NOT REGEXP',
         );
@@ -81,11 +81,11 @@
     $wonitorStructure = array_merge_recursive($wonitorStructure, $specialWonitorFields);
 
     $specialTables = array(
-       'NamedKillFeed' => 'SELECT temp.*, Playerstats.playerName as [killerName] FROM (
-            SELECT KillFeed.*, Playerstats.playerName as [victimName] FROM KillFeed
+       'NamedKillFeed' => 'SELECT temp.*, PlayerStats.playerName as killerName FROM (
+            SELECT KillFeed.*, PlayerStats.playerName as victimName FROM KillFeed
             LEFT JOIN PlayerStats ON KillFeed.victimSteamId = PlayerStats.steamId) AS temp
             LEFT JOIN PlayerStats ON temp.killerSteamId = PlayerStats.steamId',
-        'ExtendedRoundInfo' => 'SELECT * from RoundInfo LEFT OUTER JOIN ServerInfo ON RoundInfo.roundId = ServerInfo.roundId',
+        'ExtendedRoundInfo' => 'SELECT RoundInfo.*, ServerInfo.serverId from RoundInfo LEFT OUTER JOIN ServerInfo ON RoundInfo.roundId = ServerInfo.roundId',
     );
 
     $ns2plusStructure = array_merge_recursive($ns2plusStructure, array(
@@ -220,12 +220,11 @@
                     if ($binsize == 0) {
                         $binsize = 1;
                     }
-                    $dataFields[] = 'CAST('.$groupFieldQuery.'/'.$binsize.' AS INTEGER)*'.$binsize.' AS [group'.($index + 1).']';  // no injection here because we tested the group earlier
-                    //$dataFields[] = 'ROUND(' . $groupField . '/' . $binsize . ')*' . $binsize.' AS [group'.($index==0 ? '' : $index+1 ).']';
+                    $dataFields[] = 'ROUND('.$groupFieldQuery.'/'.$binsize.',0)*'.$binsize.' AS group'.($index + 1).'';  // no injection here because we tested the group earlier
                 } else {
-                    $dataFields[] = $groupFieldQuery.' AS [group'.($index + 1).']';
+                    $dataFields[] = $groupFieldQuery.' AS group'.($index + 1).'';
                 }
-                $groupBy[] = '[group'.($index + 1).']';
+                $groupBy[] = 'group'.($index + 1).'';
             }
         }
 
@@ -281,6 +280,9 @@
             }
 
             foreach ($constraintValues as $index => $constraintValue) {
+                if (strpos($constraintValue, '*') == true) { 
+                    $constraintValue = str_replace('*', '%', $constraintValue);
+                }
                 $bindings[] = array('key' => ':'.$key.($index + 1), 'value' => $constraintValue); // NOTE no direct key=>value here since key is userinput
             }
         }

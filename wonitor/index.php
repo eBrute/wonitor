@@ -13,20 +13,21 @@
 <?php
   require_once 'dbUtil.php';
   $db = openDB( $wonitorDb );
+
   if (isset($_GET['serverId'])) {
-    $query = 'SELECT serverId, serverName, COUNT(1) as rounds, CAST(AVG(averageSkill) as INT) as averageSkill FROM rounds WHERE serverId = :serverId';
+    $query = 'SELECT serverId, serverName, COUNT(1) as rounds, ROUND(AVG(averageSkill),0) as averageSkill FROM rounds WHERE serverId = :serverId';
     $statement = $db->prepare($query);
     $statement->bindValue(':serverId', $_GET['serverId']);
     $statement->setFetchMode(PDO::FETCH_ASSOC);
     $statement->execute();
     $servers = $statement->fetchAll();
   } else {
-    $query = 'SELECT serverId, serverName, COUNT(1) as rounds, CAST(AVG(averageSkill) as INT) as averageSkill FROM rounds GROUP BY serverId ORDER BY count(1) DESC';
+    $query = 'SELECT serverId, serverName, COUNT(1) as rounds, ROUND(AVG(averageSkill),0) as averageSkill FROM rounds GROUP BY serverId ORDER BY count(1) DESC';
     $servers = $db->query( $query, PDO::FETCH_ASSOC )->fetchAll();
   }
   // add total stats
   if (count($servers)>1) {
-    $query = 'SELECT COUNT(1) as rounds, CAST(AVG(averageSkill) as INT) as averageSkill FROM rounds';
+    $query = 'SELECT COUNT(1) as rounds, ROUND(AVG(averageSkill),0) as averageSkill FROM rounds';
     $allServers = $db->query( $query, PDO::FETCH_ASSOC )->fetch();
     $allServers['serverName'] = 'All Servers';
     $servers[] = $allServers;
